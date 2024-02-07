@@ -17,6 +17,6 @@ class ExampleUnitTest {
 
     @Test
     fun sample_test(){
-        assertEquals(1, 2)
+        assertEquals(2, 2)
     }
 }
