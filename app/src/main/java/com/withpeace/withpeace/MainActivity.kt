@@ -1,6 +1,8 @@
 package com.withpeace.withpeace
 
+import GoogleLogin
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +17,7 @@ import com.withpeace.withpeace.ui.theme.WithpeaceTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("woogi", "onCreate: ${GoogleLogin.googleIdOption}")
         setContent {
             WithpeaceTheme {
                 // A surface container using the 'background' color from the theme
