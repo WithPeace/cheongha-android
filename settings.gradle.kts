@@ -17,3 +17,4 @@ dependencyResolutionManagement {
 rootProject.name = "withpeace"
 include(":app")
 include(":google-login")
+include(":core:datastore")
