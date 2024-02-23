@@ -17,3 +17,6 @@ dependencyResolutionManagement {
 rootProject.name = "withpeace"
 include(":app")
 include(":google-login")
+include(":core:network")
+include(":core:data")
+include(":core:domain")
