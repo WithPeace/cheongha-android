@@ -23,7 +23,7 @@ object DataStoreModule {
     @Provides
     @Singleton
     @Named("auth")
-    fun providesAuthDataStore(
+    fun providesTokenDataStore(
         @ApplicationContext context: Context
     ): DataStore<Preferences> = context.authDataStore
 }

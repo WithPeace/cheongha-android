@@ -2,7 +2,7 @@ package com.withpeace.withpeace.core.datastore.dataStore
 
 import kotlinx.coroutines.flow.Flow
 
-interface AuthDataSource {
+interface TokenPreferenceDataSource {
 
     val accessToken: Flow<String?>
 

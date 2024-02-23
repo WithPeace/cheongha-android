@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Named
 
-class DefaultAuthDataSource @Inject constructor(
+class DefaultTokenPreferenceDataSource @Inject constructor(
     @Named("auth") private val dataStore: DataStore<Preferences>
-): AuthDataSource {
+): TokenPreferenceDataSource {
 
     override val accessToken: Flow<String?> = dataStore.data.map{ preferences ->
         preferences[ACCESS_TOKEN]
