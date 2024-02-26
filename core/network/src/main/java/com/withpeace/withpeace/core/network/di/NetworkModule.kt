@@ -7,6 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
+import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -39,20 +40,14 @@ object NetworkModule {
         }
     }
 
-//    @Provides
-//    @Singleton
-//    fun provideHeaderInterceptor(chain: Interceptor.Chain) {
-//        val requestBuilder = chain.request().newBuilder()
-//        var apiKey = BuildConfig.X_RIOT_TOKEN
-//        requestBuilder.addHeader("X-Riot-Token", apiKey)
-//        chain.proceed(requestBuilder.build())
-//    }
-
     @Singleton
     @Provides
-    fun provideOkhttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient {
+    fun provideOkhttpClient(
+        authInterceptor: Interceptor,
+        httpLoggingInterceptor: HttpLoggingInterceptor,
+    ): OkHttpClient {
         return OkHttpClient.Builder().apply {
-            //                addInterceptor(AccessTokenInterceptor) TODO("토큰 인터셉터 할당")
+            addInterceptor(authInterceptor)
             addInterceptor(httpLoggingInterceptor)
         }.build()
     }
@@ -66,7 +61,7 @@ object NetworkModule {
     ): Retrofit {
         return Retrofit.Builder()
             .client(okHttpClient)
-            .baseUrl("https://asia.api.riotgames.com/") // TODO("BaseUrl 수정")
+            .baseUrl("http://49.50.160.170:8080/")
             .addConverterFactory(converterFactory)
             .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
             .build()

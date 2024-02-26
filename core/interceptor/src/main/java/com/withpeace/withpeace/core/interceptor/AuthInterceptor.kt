@@ -1,55 +1,96 @@
 package com.withpeace.withpeace.core.interceptor
 
 import android.content.Context
+import android.util.Log
 import com.withpeace.withpeace.core.datastore.dataStore.TokenPreferenceDataSource
+import com.withpeace.withpeace.core.network.di.response.TokenResponse
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
+import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 
-class AuthInterceptor(private val context: Context) : Interceptor {
+class AuthInterceptor(context: Context) : Interceptor {
+
     private val tokenPreferenceDataSource = EntryPointAccessors
         .fromApplication<AuthInterceptorEntryPoint>(context)
         .getTokenPreferenceDataSource()
 
-    override fun intercept(chain: Interceptor.Chain): Response = runBlocking {
-        val accessToken = tokenPreferenceDataSource.accessToken.firstOrNull()
-        val tokenAddedRequest = chain.request().putAccessToken(accessToken)
-        val response = chain.proceed(tokenAddedRequest)
+    private val client = OkHttpClient.Builder().build()
 
-        if (response.isAccessTokenInvalid()) {
-            val refreshToken = tokenPreferenceDataSource.refreshToken.firstOrNull()
-            if (refreshToken == null /*|| 유효하지 않을 때*/) {
-                // 로그인 화면
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val accessToken = runBlocking { tokenPreferenceDataSource.accessToken.firstOrNull() }
+        val tokenAddedRequest = chain.request()
+            .newBuilder()
+            .addHeader(
+                ACCESS_TOKEN_HEADER,
+                TOKEN_FORMAT.format(accessToken),
+            ).build()
+        var response = chain.proceed(tokenAddedRequest)
+
+        if (response.code == 401) {
+            val refreshToken = runBlocking { tokenPreferenceDataSource.refreshToken.firstOrNull() }
+
+            if (refreshToken == null) {
+                navigateToLogin()
             } else {
-                // refresh API 호출
-                // API 실패시 로그인 화면 이동
-                // 성공시 토큰을 넣어준다.
+                runCatching {
+                    refreshAccessToken(refreshToken)
+                }.onSuccess { tokenResponse ->
+                    runBlocking {
+                        tokenPreferenceDataSource.updateAccessToken(tokenResponse.accessToken)
+                        tokenPreferenceDataSource.updateRefreshToken(tokenResponse.refreshToken)
+                    }
+                    response = chain.proceed(
+                        chain.request().newBuilder().addHeader(
+                            ACCESS_TOKEN_HEADER,
+                            TOKEN_FORMAT.format(tokenResponse.accessToken),
+                        ).build()
+                    )
+                }.onFailure {
+                    navigateToLogin()
+                }
             }
-            // refresh API 호출
         }
-        // 401시에
-        response
+        return response
     }
 
-    private fun Response.isAccessTokenInvalid(): Boolean = (code == 401)
-    private fun Request.putAccessToken(token: String?): Request =
-        putHeader(ACCESS_TOKEN_HEADER, ACCESS_TOKEN_FORMAT.format(token))
+    private fun refreshAccessToken(refreshToken: String): TokenResponse {
+        val response: Response = runBlocking {
+            withContext(Dispatchers.IO) {
+                client.newCall(createAccessTokenRefreshRequest(refreshToken)).execute()
+            }
+        }
+        if (response.isSuccessful) {
+            return response.toDto()
+        }
+        throw IllegalArgumentException()
+    }
 
-    private fun Request.putHeader(
-        key: String,
-        value: String,
-    ): Request = newBuilder().addHeader(key, value).build()
+
+    private fun createAccessTokenRefreshRequest(refreshToken: String): Request {
+        return Request.Builder()
+            .url(REFRESH_URL)
+            .addHeader(ACCESS_TOKEN_HEADER, TOKEN_FORMAT.format(refreshToken))
+            .build()
+    }
+
+    private inline fun <reified T> Response.toDto(): T {
+        body?.let {
+            return Json.decodeFromString<T>(it.string())
+        } ?: throw IllegalArgumentException()
+    }
 
     private fun navigateToLogin() {
-//        val loginStartIntent = Intent(context, LoginActivity::class.java)
-//            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-//        context.startActivity(loginStartIntent)
+        Log.e("woogi", "navigateToLogin: 로그인화면으로 이동" )
     }
 
     @EntryPoint
@@ -59,7 +100,9 @@ class AuthInterceptor(private val context: Context) : Interceptor {
     }
 
     companion object {
+        private const val REFRESH_URL = "http://49.50.160.170:8080/api/v1/auth/refresh"
+        private const val REFRESH_TOKEN_FORMAT = "ReAuthorization"
         private const val ACCESS_TOKEN_HEADER = "Authorization"
-        private const val ACCESS_TOKEN_FORMAT = "Bearer %s"
+        private const val TOKEN_FORMAT = "Bearer %s"
     }
 }

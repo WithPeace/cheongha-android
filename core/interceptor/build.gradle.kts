@@ -9,7 +9,9 @@ android {
 }
 
 dependencies {
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.retrofit.core)
     implementation(libs.okhttp.logging)
     implementation(project(":core:datastore"))
+    implementation(project(":core:network"))
 }

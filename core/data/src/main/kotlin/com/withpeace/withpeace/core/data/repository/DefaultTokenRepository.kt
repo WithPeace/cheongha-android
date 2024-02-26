@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.core.data.repository
 
+import android.util.Log
 import com.skydoves.sandwich.message
 import com.skydoves.sandwich.suspendMapSuccess
 import com.skydoves.sandwich.suspendOnError
@@ -43,6 +44,7 @@ class DefaultTokenRepository @Inject constructor(
                 updateAccessToken(data.accessToken)
                 updateRefreshToken(data.refreshToken)
             }.suspendOnError {
+                Log.d("woogi", "googleLogin: ${this.statusCode.code}")
                 onError(message())
             }
     }.flowOn(Dispatchers.IO)
