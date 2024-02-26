@@ -8,6 +8,7 @@ import com.withpeace.withpeace.core.data.mapper.toDomain
 import com.withpeace.withpeace.core.datastore.dataStore.TokenPreferenceDataSource
 import com.withpeace.withpeace.core.domain.model.Token
 import com.withpeace.withpeace.core.domain.repository.TokenRepository
+import com.withpeace.withpeace.core.network.di.request.SignUpRequest
 import com.withpeace.withpeace.core.network.di.service.AuthService
 import com.withpeace.withpeace.core.network.di.service.LoginService
 import kotlinx.coroutines.Dispatchers
@@ -37,6 +38,16 @@ class DefaultTokenRepository @Inject constructor(
 
     override suspend fun updateRefreshToken(refreshToken: String) {
         tokenPreferenceDataSource.updateRefreshToken(refreshToken)
+    }
+
+    override suspend fun signUp(email: String, nickname: String, deviceToken: String?) {
+        authService.signUp(
+            SignUpRequest(
+                email = email,
+                nickname = nickname,
+                deviceToken = deviceToken,
+            )
+        )
     }
 
     override fun googleLogin(

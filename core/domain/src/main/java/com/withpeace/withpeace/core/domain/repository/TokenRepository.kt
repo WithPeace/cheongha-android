@@ -13,5 +13,7 @@ interface TokenRepository {
 
     suspend fun updateRefreshToken(refreshToken: String)
 
+    suspend fun signUp(email: String, nickname: String, deviceToken: String?)
+
     fun googleLogin(idToken: String, onError: (message: String?) -> Unit): Flow<Token>
 }

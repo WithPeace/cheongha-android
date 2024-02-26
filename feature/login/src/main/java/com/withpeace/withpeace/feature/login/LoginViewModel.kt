@@ -10,16 +10,28 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val tokenRepository: TokenRepository
-): ViewModel() {
+    private val tokenRepository: TokenRepository,
+) : ViewModel() {
 
-    fun googleLogin(idToken: String){
+
+    fun googleLogin(idToken: String) {
         viewModelScope.launch {
-            tokenRepository.googleLogin(idToken){
-                Log.e("woogi", "googleLogin: 로그인 안됨", )
-            }.collect{
-                Log.d("woogi", "googleLogin: $it")
+            tokenRepository.googleLogin(idToken) {
+                Log.e("woogi", "googleLogin: 로그인 안됨")
+            }.collect { token ->
+                tokenRepository.updateAccessToken(token.accessToken)
+                tokenRepository.updateRefreshToken(token.refreshToken)
             }
+        }
+    }
+
+    fun signUp() {
+        viewModelScope.launch {
+            tokenRepository.signUp(
+                email = "email",
+                nickname = "asdas",
+                deviceToken = null,
+            )
         }
     }
 }
