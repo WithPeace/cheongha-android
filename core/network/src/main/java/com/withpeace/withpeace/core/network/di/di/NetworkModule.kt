@@ -1,4 +1,4 @@
-package com.withpeace.withpeace.core.network.di
+package com.withpeace.withpeace.core.network.di.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.skydoves.sandwich.adapters.ApiResponseCallAdapterFactory
@@ -13,6 +13,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -52,15 +53,32 @@ object NetworkModule {
         }.build()
     }
 
-
+    @Named("general")
     @Provides
     @Singleton
-    fun provideRetrofitClient(
+    fun provideTokenRetrofitClient(
         okHttpClient: OkHttpClient,
         converterFactory: Converter.Factory,
     ): Retrofit {
         return Retrofit.Builder()
             .client(okHttpClient)
+            .baseUrl("http://49.50.160.170:8080/")
+            .addConverterFactory(converterFactory)
+            .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
+            .build()
+    }
+
+
+    /**
+     * todo: 네이밍 수정
+     */
+    @Named("initial")
+    @Provides
+    @Singleton
+    fun provideRetrofitClient(
+        converterFactory: Converter.Factory,
+    ): Retrofit {
+        return Retrofit.Builder()
             .baseUrl("http://49.50.160.170:8080/")
             .addConverterFactory(converterFactory)
             .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())

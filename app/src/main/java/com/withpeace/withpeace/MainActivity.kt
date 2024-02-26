@@ -25,14 +25,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lifecycleScope.launch {
-            repository.googleLogin {
-                Log.e("woogi", "onCreate: hello", )
-            }.collect{
-                Log.d("woogi", "token: $it")
-            }
-        }
-
         setContent {
             WithpeaceTheme {
                 Surface(

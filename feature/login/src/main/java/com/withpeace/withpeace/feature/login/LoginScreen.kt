@@ -11,11 +11,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.withpeace.withpeace.googlelogin.GoogleLoginManager
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen() {
+    val viewModel: LoginViewModel = viewModel()
     val coroutineScope = rememberCoroutineScope()
     val googleLoginManager = GoogleLoginManager(LocalContext.current)
     Surface(modifier = Modifier.fillMaxSize()) {
@@ -24,7 +27,10 @@ fun LoginScreen() {
                 onClick = {
                     googleLoginManager.startLogin(
                         coroutineScope,
-                        onSuccessLogin = { Log.d("Wooseok", it) },
+                        onSuccessLogin = {
+                            Log.d("woogi", "idToken: $it")
+                            viewModel.googleLogin(it)
+                        },
                         onFailLogin = { Log.d("wooseok", it.toString()) },
                     )
                 },

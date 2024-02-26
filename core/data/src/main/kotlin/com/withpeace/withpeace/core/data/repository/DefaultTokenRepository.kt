@@ -9,6 +9,7 @@ import com.withpeace.withpeace.core.datastore.dataStore.TokenPreferenceDataSourc
 import com.withpeace.withpeace.core.domain.model.Token
 import com.withpeace.withpeace.core.domain.repository.TokenRepository
 import com.withpeace.withpeace.core.network.di.service.AuthService
+import com.withpeace.withpeace.core.network.di.service.LoginService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -18,6 +19,7 @@ import javax.inject.Inject
 
 class DefaultTokenRepository @Inject constructor(
     private val tokenPreferenceDataSource: TokenPreferenceDataSource,
+    private val loginService: LoginService,
     private val authService: AuthService,
 ) : TokenRepository {
 
@@ -37,15 +39,21 @@ class DefaultTokenRepository @Inject constructor(
         tokenPreferenceDataSource.updateRefreshToken(refreshToken)
     }
 
-    override fun googleLogin(onError: (String?) -> Unit): Flow<Token> = flow {
-        authService.googleLogin()
+    override fun googleLogin(
+        idToken: String,
+        onError: (String?) -> Unit,
+    ): Flow<Token> = flow {
+        loginService.googleLogin(AUTHORIZATION_FORMAT.format(idToken))
             .suspendMapSuccess {
                 emit(data.toDomain())
                 updateAccessToken(data.accessToken)
                 updateRefreshToken(data.refreshToken)
             }.suspendOnError {
-                Log.d("woogi", "googleLogin: ${this.statusCode.code}")
                 onError(message())
             }
     }.flowOn(Dispatchers.IO)
+
+    companion object {
+        private const val AUTHORIZATION_FORMAT = "Bearer %s"
+    }
 }
