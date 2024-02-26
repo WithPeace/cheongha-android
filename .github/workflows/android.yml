@@ -22,6 +22,17 @@ jobs:
       
     - name: Build with Gradle
       run: ./gradlew build
+
+    # Gradle 캐싱: 빌드 시간과 네트워크 통신을 줄이기 위해 의존성 패키지들을 캐싱하여 재사용
+    - name: Cache Gradle packages
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', '**/buildSrc/**/*.kt') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
       
     - name: Run test
       run: ./gradlew test
