@@ -62,7 +62,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofitClient(
         okHttpClient: OkHttpClient,
-        converterFactory: Converter.Factory
+        converterFactory: Converter.Factory,
     ): Retrofit {
         return Retrofit.Builder()
             .client(okHttpClient)

@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 class DefaultTokenRepository @Inject constructor(
     private val tokenPreferenceDataSource: TokenPreferenceDataSource,
-    private val authService: AuthService
+    private val authService: AuthService,
 ) : TokenRepository {
 
     override fun getAccessToken(): Flow<String?> {
