@@ -18,3 +18,6 @@ android {
     }
 }
 
+dependencies {
+    implementation(project(":feature:login"))
+}

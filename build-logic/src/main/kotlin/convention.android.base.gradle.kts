@@ -32,9 +32,12 @@ android {
             excludes += "/META-INF/*"
         }
     }
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
-dependencies{
+dependencies {
     "androidTestImplementation"(libs.findLibrary("androidx.test.ext").get())
     "androidTestImplementation"(libs.findLibrary("androidx-test-espresso-core").get())
     "androidTestImplementation"(libs.findLibrary("junit4").get())

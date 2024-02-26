@@ -55,6 +55,10 @@ material = "1.11.0"
 material3Android = "1.2.0"
 multidex = "2.0.1"
 
+google-login = "1.1.0"
+
+credential = "1.2.0"
+
 [libraries]
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }
@@ -79,6 +83,9 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-ui-testManifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxComposeNavigation" }
 androidx-compose-navigation-test = { group = "androidx.navigation", name = "navigation-testing", version.ref = "androidxComposeNavigation" }
+
+androidx-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "credential" }
+androidx-credentials-play-service = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credential" }
 
 hilt-core = { group = "com.google.dagger", name = "hilt-core", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
@@ -131,6 +138,8 @@ oss-licenses = { group = "com.google.android.gms", name = "play-services-oss-lic
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 
 multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
+
+google-login = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "google-login"}
 
 # verify
 verify-detektFormatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
