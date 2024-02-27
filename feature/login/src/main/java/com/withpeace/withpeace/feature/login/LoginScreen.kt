@@ -11,6 +11,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.googlelogin.GoogleLoginManager
 
 @Composable
@@ -28,7 +29,11 @@ fun LoginScreen() {
                     )
                 },
             ) {
-                Text(text = "Login")
+                Text(
+                    text = "Login",
+                    style = WithpeaceTheme.typography.body,
+                    color = WithpeaceTheme.colors.MainPink,
+                )
             }
         }
     }

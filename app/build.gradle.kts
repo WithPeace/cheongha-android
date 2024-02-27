@@ -20,4 +20,5 @@ android {
 
 dependencies {
     implementation(project(":feature:login"))
+    implementation(project(":core:designsystem"))
 }
