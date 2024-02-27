@@ -32,7 +32,7 @@ fun LoginScreen() {
                 Text(
                     text = "Login",
                     style = WithpeaceTheme.typography.body,
-                    color = WithpeaceTheme.colors.Scott
+                    color = WithpeaceTheme.colors.MainPink,
                 )
             }
         }
