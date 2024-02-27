@@ -9,29 +9,29 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(
-    private val tokenRepository: TokenRepository,
-) : ViewModel() {
+class LoginViewModel
+    @Inject
+    constructor(
+        private val tokenRepository: TokenRepository,
+    ) : ViewModel() {
+        fun googleLogin(idToken: String) {
+            viewModelScope.launch {
+                tokenRepository.googleLogin(idToken) {
+                    Log.e("woogi", "googleLogin: 로그인 안됨")
+                }.collect { token ->
+                    tokenRepository.updateAccessToken(token.accessToken)
+                    tokenRepository.updateRefreshToken(token.refreshToken)
+                }
+            }
+        }
 
-
-    fun googleLogin(idToken: String) {
-        viewModelScope.launch {
-            tokenRepository.googleLogin(idToken) {
-                Log.e("woogi", "googleLogin: 로그인 안됨")
-            }.collect { token ->
-                tokenRepository.updateAccessToken(token.accessToken)
-                tokenRepository.updateRefreshToken(token.refreshToken)
+        fun signUp() {
+            viewModelScope.launch {
+                tokenRepository.signUp(
+                    email = "wooseok",
+                    nickname = "haha",
+                    deviceToken = null,
+                )
             }
         }
     }
-
-    fun signUp() {
-        viewModelScope.launch {
-            tokenRepository.signUp(
-                email = "email",
-                nickname = "asdas",
-                deviceToken = null,
-            )
-        }
-    }
-}
