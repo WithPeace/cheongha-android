@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.feature.login.LoginScreen
-import com.withpeace.withpeace.ui.theme.WithpeaceTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
