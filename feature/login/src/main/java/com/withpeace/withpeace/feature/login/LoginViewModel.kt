@@ -17,7 +17,7 @@ class LoginViewModel
         fun googleLogin(idToken: String) {
             viewModelScope.launch {
                 tokenRepository.googleLogin(idToken) {
-                    Log.e("woogi", "googleLogin: 로그인 안됨")
+                    Log.e("woogi", it ?: "메시지 없음")
                 }.collect { token ->
                     tokenRepository.updateAccessToken(token.accessToken)
                     tokenRepository.updateRefreshToken(token.refreshToken)
