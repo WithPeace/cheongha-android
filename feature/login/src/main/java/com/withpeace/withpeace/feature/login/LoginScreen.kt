@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.feature.login
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -16,18 +17,51 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
-
+import com.withpeace.withpeace.googlelogin.GoogleLoginManager
+import kotlinx.coroutines.flow.collect
 
 @Composable
-fun LoginScreen() {
+fun LoginRoute(
+    viewModel: LoginViewModel = hiltViewModel(),
+) {
+    LoginScreen(
+        onGoogleLogin = viewModel::googleLogin,
+    )
+    LaunchedEffect(key1 = null) {
+        viewModel.loginUiEvent.collect { uiEvent ->
+            when (uiEvent) {
+                is LoginUiEvent.LoginSuccess -> {
+                    Log.d("woogi", "LoginRoute: 로그인 성공")
+                    viewModel.signUp()
+                }
+
+                is LoginUiEvent.LoginFail -> {
+                    Log.d("woogi", "LoginRoute: 로그인 실패")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun LoginScreen(
+    onGoogleLogin: (idToken: String) -> Unit = {},
+) {
+    val googleLoginManager = GoogleLoginManager(context = LocalContext.current)
+    val coroutineScope = rememberCoroutineScope()
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween,
@@ -54,7 +88,13 @@ fun LoginScreen() {
             )
         }
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {
+                googleLoginManager.startLogin(
+                    coroutineScope = coroutineScope,
+                    onSuccessLogin = onGoogleLogin,
+                    onFailLogin = { Log.e("woogi", "LoginScreen: 로그인 실패") },
+                )
+            },
             contentPadding = PaddingValues(0.dp),
             modifier = Modifier
                 .padding(
