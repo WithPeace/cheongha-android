@@ -13,7 +13,9 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun WithpeaceApp() {
+fun WithpeaceApp(
+    startDestination: String
+) {
     val snackBarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     fun showSnackBar(message: String) = coroutineScope.launch {
