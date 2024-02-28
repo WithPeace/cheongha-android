@@ -2,6 +2,7 @@ package com.withpeace.withpeace.core.designsystem.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -13,13 +14,13 @@ import com.withpeace.withpeace.core.designsystem.R
 val Typography =
     Typography(
         bodyLarge =
-            TextStyle(
-                fontFamily = FontFamily.Default,
-                fontWeight = FontWeight.Normal,
-                fontSize = 16.sp,
-                lineHeight = 24.sp,
-                letterSpacing = 0.5.sp,
-            ),
+        TextStyle(
+            fontFamily = FontFamily.Default,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            letterSpacing = 0.5.sp,
+        ),
         /* Other default text styles to override
     titleLarge = TextStyle(
         fontFamily = FontFamily.Default,
@@ -36,6 +37,14 @@ val Typography =
         letterSpacing = 0.5.sp
     )
          */
+    )
+
+val NotoSansFont =
+    FontFamily(
+        Font(
+            resId = R.font.notosans_kr_medium,
+            weight = FontWeight.Bold,
+        ),
     )
 
 val PretendardFont =
@@ -76,6 +85,13 @@ val PretendardFont =
 
 @Immutable
 data class WithPeaceTypography(
+    val notoSans: TextStyle =
+        TextStyle(
+            fontFamily = NotoSansFont,
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+            lineHeight = 23.17.sp,
+        ),
     val heading: TextStyle =
         TextStyle(
             fontFamily = PretendardFont,

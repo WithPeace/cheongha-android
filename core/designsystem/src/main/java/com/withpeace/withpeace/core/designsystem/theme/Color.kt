@@ -16,6 +16,7 @@ val subApricot = Color(0xFFFED9C9)
 val subBlue = Color(0xFFDFF2F9)
 
 val systemBlack = Color(0xFF212529)
+val systemWhite = Color.White
 val systemGray1 = Color(0xFF3D3D3D)
 val systemGray2 = Color(0xFFA7A7A7)
 val systemGray3 = Color(0xFFECECEF)
@@ -28,6 +29,7 @@ data class WithPeaceColor(
     val SubApricot: Color = subApricot,
     val SubBlue: Color = subBlue,
     val SystemBlack: Color = systemBlack,
+    val SystemWhite: Color = systemWhite,
     val SystemGray1: Color = systemGray1,
     val SystemGray2: Color = systemGray2,
     val SystemGray3: Color = systemGray3,
