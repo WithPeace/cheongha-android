@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,14 +24,19 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             tokenRepository.googleLogin(idToken) {
                 Log.e("woogi", it ?: "메시지 없음")
+                launch {
+                    _loginUiEvent.emit(LoginUiEvent.LoginFail(it ?: "메시지 없음"))
+                }
             }.collect { token ->
                 tokenRepository.updateAccessToken(token.accessToken)
                 tokenRepository.updateRefreshToken(token.refreshToken)
+                _loginUiEvent.emit(LoginUiEvent.LoginSuccess)
+                signUp()
             }
         }
     }
 
-    fun signUp() {
+    private fun signUp() {
         viewModelScope.launch {
             tokenRepository.signUp(
                 email = "wooseok",

@@ -15,5 +15,8 @@ interface TokenRepository {
 
     suspend fun signUp(email: String, nickname: String, deviceToken: String?)
 
-    fun googleLogin(idToken: String, onError: (message: String?) -> Unit): Flow<Token>
+    fun googleLogin(
+        idToken: String,
+        onError: (message: String?) -> Unit,
+    ): Flow<Token>
 }

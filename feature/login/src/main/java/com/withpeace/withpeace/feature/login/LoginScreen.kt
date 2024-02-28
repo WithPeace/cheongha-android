@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -30,11 +31,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.googlelogin.GoogleLoginManager
-import kotlinx.coroutines.flow.collect
 
 @Composable
 fun LoginRoute(
     viewModel: LoginViewModel = hiltViewModel(),
+    onShowSnackBar: (message: String) -> Unit,
 ) {
     LoginScreen(
         onGoogleLogin = viewModel::googleLogin,
@@ -44,7 +45,6 @@ fun LoginRoute(
             when (uiEvent) {
                 is LoginUiEvent.LoginSuccess -> {
                     Log.d("woogi", "LoginRoute: 로그인 성공")
-                    viewModel.signUp()
                 }
 
                 is LoginUiEvent.LoginFail -> {
@@ -63,6 +63,7 @@ fun LoginScreen(
     val coroutineScope = rememberCoroutineScope()
 
     Column(
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
