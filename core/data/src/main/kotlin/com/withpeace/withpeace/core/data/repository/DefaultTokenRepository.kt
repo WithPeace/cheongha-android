@@ -3,6 +3,7 @@ package com.withpeace.withpeace.core.data.repository
 import com.skydoves.sandwich.messageOrNull
 import com.skydoves.sandwich.suspendMapSuccess
 import com.skydoves.sandwich.suspendOnFailure
+import com.skydoves.sandwich.suspendOnSuccess
 import com.withpeace.withpeace.core.data.mapper.toDomain
 import com.withpeace.withpeace.core.datastore.dataStore.TokenPreferenceDataSource
 import com.withpeace.withpeace.core.domain.model.Token
@@ -40,18 +41,24 @@ constructor(
     }
 
     override suspend fun signUp(
+        onError: (String?) -> Unit,
         email: String,
         nickname: String,
         deviceToken: String?,
-    ) {
+    ): Flow<Token> = flow {
         authService.signUp(
             SignUpRequest(
                 email = email,
                 nickname = nickname,
                 deviceToken = deviceToken,
             ),
-        )
-    }
+        ).suspendMapSuccess {
+            emit(data.toDomain())
+        }.suspendOnFailure {
+            onError(messageOrNull)
+        }
+    }.flowOn(Dispatchers.IO)
+
 
     override fun googleLogin(
         idToken: String,

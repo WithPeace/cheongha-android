@@ -6,9 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.withpeace.withpeace.core.domain.repository.TokenRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,12 +24,11 @@ class LoginViewModel @Inject constructor(
             tokenRepository.googleLogin(idToken) {
                 Log.e("woogi", it ?: "메시지 없음")
                 launch {
-                    _loginUiEvent.emit(LoginUiEvent.LoginFail(it ?: "메시지 없음"))
+                    _loginUiEvent.emit(LoginUiEvent.SignUpFail(it ?: "메시지 없음"))
                 }
             }.collect { token ->
                 tokenRepository.updateAccessToken(token.accessToken)
                 tokenRepository.updateRefreshToken(token.refreshToken)
-                _loginUiEvent.emit(LoginUiEvent.LoginSuccess)
                 signUp()
             }
         }
@@ -39,10 +37,19 @@ class LoginViewModel @Inject constructor(
     private fun signUp() {
         viewModelScope.launch {
             tokenRepository.signUp(
-                email = "wooseok",
+                email = "abasdfasdf",
                 nickname = "haha",
                 deviceToken = null,
-            )
+                onError = {
+                    launch {
+                        _loginUiEvent.emit(LoginUiEvent.SignUpFail(it ?: "메시지 없음"))
+                    }
+                }
+            ).collect { token ->
+                tokenRepository.updateAccessToken(token.accessToken)
+                tokenRepository.updateRefreshToken(token.refreshToken)
+                _loginUiEvent.emit(LoginUiEvent.SignUpSuccess)
+            }
         }
     }
 }

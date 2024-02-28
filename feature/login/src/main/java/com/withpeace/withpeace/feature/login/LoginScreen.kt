@@ -43,12 +43,12 @@ fun LoginRoute(
     LaunchedEffect(key1 = null) {
         viewModel.loginUiEvent.collect { uiEvent ->
             when (uiEvent) {
-                is LoginUiEvent.LoginSuccess -> {
-                    Log.d("woogi", "LoginRoute: 로그인 성공")
+                is LoginUiEvent.SignUpSuccess -> {
+                    onShowSnackBar("LoginRoute: 로그인 성공")
                 }
 
-                is LoginUiEvent.LoginFail -> {
-                    Log.d("woogi", "LoginRoute: 로그인 실패")
+                is LoginUiEvent.SignUpFail -> {
+                    onShowSnackBar("LoginRoute: 로그인 실패")
                 }
             }
         }
