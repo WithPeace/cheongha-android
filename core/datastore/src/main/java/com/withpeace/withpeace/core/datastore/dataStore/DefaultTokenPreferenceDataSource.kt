@@ -10,31 +10,31 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class DefaultTokenPreferenceDataSource @Inject constructor(
-    @Named("auth") private val dataStore: DataStore<Preferences>
-): TokenPreferenceDataSource {
+    @Named("auth") private val dataStore: DataStore<Preferences>,
+) : TokenPreferenceDataSource {
 
-    override val accessToken: Flow<String?> = dataStore.data.map{ preferences ->
+    override val accessToken: Flow<String?> = dataStore.data.map { preferences ->
         preferences[ACCESS_TOKEN]
     }
 
-    override val refreshToken: Flow<String?> = dataStore.data.map{preferences ->
+    override val refreshToken: Flow<String?> = dataStore.data.map { preferences ->
         preferences[REFRESH_TOKEN]
     }
 
-    override suspend  fun updateAccessToken(accessToken: String) {
-        dataStore.edit{preferences->
+    override suspend fun updateAccessToken(accessToken: String) {
+        dataStore.edit { preferences ->
             preferences[ACCESS_TOKEN] = accessToken
         }
     }
 
     override suspend fun updateRefreshToken(refreshToken: String) {
-        dataStore.edit{preferences->
+        dataStore.edit { preferences ->
             preferences[REFRESH_TOKEN] = refreshToken
         }
     }
 
-    companion object{
-        private val ACCESS_TOKEN= stringPreferencesKey("ACCESS_TOKEN")
-        private val REFRESH_TOKEN= stringPreferencesKey("REFRESH_TOKEN")
+    companion object {
+        private val ACCESS_TOKEN = stringPreferencesKey("ACCESS_TOKEN")
+        private val REFRESH_TOKEN = stringPreferencesKey("REFRESH_TOKEN")
     }
 }

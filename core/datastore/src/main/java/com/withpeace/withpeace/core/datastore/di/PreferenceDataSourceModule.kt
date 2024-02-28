@@ -1,4 +1,4 @@
-package com.withpeace.withpeace.core.data.di
+package com.withpeace.withpeace.core.datastore.di
 
 import com.withpeace.withpeace.core.datastore.dataStore.DefaultTokenPreferenceDataSource
 import com.withpeace.withpeace.core.datastore.dataStore.TokenPreferenceDataSource
@@ -10,9 +10,11 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class DataSourceModule {
+interface PreferenceDataSourceModule {
 
     @Binds
     @Singleton
-    abstract fun bindsTokenDataSource(tokenPreferenceDataSource: DefaultTokenPreferenceDataSource): TokenPreferenceDataSource
+    fun bindsTokenPreferenceDataSource(
+        defaultTokenPreferenceDataSource: DefaultTokenPreferenceDataSource,
+    ): TokenPreferenceDataSource
 }

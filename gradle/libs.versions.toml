@@ -139,7 +139,7 @@ mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 
 multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
 
-google-login = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "google-login"}
+google-login = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "google-login" }
 
 # verify
 verify-detektFormatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
