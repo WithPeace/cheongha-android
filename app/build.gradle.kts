@@ -19,6 +19,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.core.splashscreen)
     implementation(project(":feature:login"))
     implementation(project(":core:interceptor"))
     implementation(project(":core:data"))
