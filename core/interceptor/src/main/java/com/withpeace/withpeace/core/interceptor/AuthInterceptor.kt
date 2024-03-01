@@ -1,12 +1,7 @@
 package com.withpeace.withpeace.core.interceptor
 
-import android.content.Context
 import com.withpeace.withpeace.core.datastore.dataStore.TokenPreferenceDataSource
 import com.withpeace.withpeace.core.network.di.response.TokenResponse
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
@@ -16,13 +11,11 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import javax.inject.Inject
 
-class AuthInterceptor(context: Context) : Interceptor {
-    private val tokenPreferenceDataSource =
-        EntryPointAccessors
-            .fromApplication<AuthInterceptorEntryPoint>(context)
-            .getTokenPreferenceDataSource()
-
+class AuthInterceptor @Inject constructor(
+    private val tokenPreferenceDataSource: TokenPreferenceDataSource,
+) : Interceptor {
     private val client = OkHttpClient.Builder().build()
 
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -83,12 +76,6 @@ class AuthInterceptor(context: Context) : Interceptor {
         body?.let {
             return Json.decodeFromString<T>(it.string())
         } ?: throw IllegalArgumentException()
-    }
-
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface AuthInterceptorEntryPoint {
-        fun getTokenPreferenceDataSource(): TokenPreferenceDataSource
     }
 
     companion object {

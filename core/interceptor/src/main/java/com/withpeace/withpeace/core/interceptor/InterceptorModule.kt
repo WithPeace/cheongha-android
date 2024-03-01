@@ -1,6 +1,7 @@
 package com.withpeace.withpeace.core.interceptor
 
 import android.content.Context
+import com.withpeace.withpeace.core.datastore.dataStore.TokenPreferenceDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,6 +16,10 @@ object InterceptorModule {
 
     @Provides
     @Singleton
-    fun provideHeaderInterceptor(@ApplicationContext context: Context): Interceptor =
-        AuthInterceptor(context)
+    fun provideHeaderInterceptor(
+        tokenPreferenceDataSource: TokenPreferenceDataSource,
+    ): Interceptor =
+        AuthInterceptor(tokenPreferenceDataSource)
+
+
 }
