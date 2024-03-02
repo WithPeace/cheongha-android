@@ -5,18 +5,18 @@ import com.withpeace.withpeace.core.network.di.request.SignUpRequest
 import com.withpeace.withpeace.core.network.di.response.BaseResponse
 import com.withpeace.withpeace.core.network.di.response.TokenResponse
 import retrofit2.http.Body
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface AuthService {
-    @POST("/api/v1/auth/google")
-    fun googleLogin(): ApiResponse<BaseResponse<TokenResponse>>
-
     @POST("/api/v1/auth/register")
-    fun signUp(@Body signUpRequest: SignUpRequest): ApiResponse<BaseResponse<TokenResponse>>
+    suspend fun signUp(
+        @Body signUpRequest: SignUpRequest,
+    ): ApiResponse<BaseResponse<TokenResponse>>
 
     @POST("/api/v1/auth/refresh")
-    fun refreshAccessToken(): ApiResponse<BaseResponse<TokenResponse>>
+    suspend fun refreshAccessToken(): ApiResponse<BaseResponse<TokenResponse>>
 
     @POST("/api/v1/auth/logout")
-    fun logout(): ApiResponse<BaseResponse<String>>
+    suspend fun logout(): ApiResponse<BaseResponse<String>>
 }

@@ -18,3 +18,13 @@ android {
     }
 }
 
+dependencies {
+    implementation(libs.androidx.core.splashscreen)
+    implementation(project(":feature:login"))
+    implementation(project(":core:interceptor"))
+    implementation(project(":core:data"))
+    implementation(project(":core:network"))
+    implementation(project(":core:datastore"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:designsystem"))
+}
