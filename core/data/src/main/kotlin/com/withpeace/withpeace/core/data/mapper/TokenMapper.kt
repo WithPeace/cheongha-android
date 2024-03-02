@@ -6,6 +6,6 @@ import com.withpeace.withpeace.core.network.di.response.TokenResponse
 fun TokenResponse.toDomain(): Token {
     return Token(
         accessToken = accessToken,
-        refreshToken = refreshToken
+        refreshToken = refreshToken,
     )
 }
