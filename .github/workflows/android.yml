@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
       - uses: actions/checkout@v3
 
@@ -43,4 +43,3 @@ jobs:
 
       - name: Run ktlint
         run: ./gradlew ktlintCheck
-
