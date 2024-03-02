@@ -14,6 +14,9 @@ jobs:
       - uses: actions/cache/restore@v3
         id: restore-cache
         with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
 
       - name: set up JDK 17
