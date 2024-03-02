@@ -1,8 +1,8 @@
 name: Android CI
 
 on:
-  pull_request:
-    branches: [ "main", "develop" ]
+  push:
+    branches: ["develop"]
 
 jobs:
   build:
@@ -38,9 +38,6 @@ jobs:
         run: |
           echo "GOOGLE_CLIENT_ID=\"$GOOGLE_CLIENT_ID\"" >> local.properties
 
-      - name: Run test
-        run: ./gradlew test --parallel
-
-      - name: Run ktlint
-        run: ./gradlew ktlintCheck
+      - name: Build with Gradle
+        run: ./gradlew build
 
