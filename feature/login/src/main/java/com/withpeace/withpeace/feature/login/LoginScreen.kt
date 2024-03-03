@@ -1,6 +1,5 @@
 package com.withpeace.withpeace.feature.login
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -40,16 +39,24 @@ fun LoginRoute(
 ) {
     LoginScreen(
         onGoogleLogin = viewModel::googleLogin,
+        onShowSnackBar = onShowSnackBar
     )
     LaunchedEffect(key1 = null) {
         viewModel.loginUiEvent.collect { uiEvent ->
             when (uiEvent) {
                 is LoginUiEvent.SignUpSuccess -> {
-                    onShowSnackBar("LoginRoute: 로그인 성공")
+                    onShowSnackBar("회원가입에 성공하였습니다!")
                 }
 
                 is LoginUiEvent.SignUpFail -> {
-                    onShowSnackBar("LoginRoute: 로그인 실패")
+                    onShowSnackBar("회원가입에 실패하였습니다!")
+                }
+
+                LoginUiEvent.LoginFail -> {
+                    onShowSnackBar("서버와의 로그인 인증에 실패하였습니다!")
+                }
+                LoginUiEvent.LoginSuccess -> {
+                    onShowSnackBar("로그인에 성공하였습니다!")
                 }
             }
         }
@@ -59,6 +66,7 @@ fun LoginRoute(
 @Composable
 fun LoginScreen(
     onGoogleLogin: (idToken: String) -> Unit = {},
+    onShowSnackBar: (message: String) -> Unit = {},
 ) {
     val googleLoginManager = GoogleLoginManager(context = LocalContext.current)
     val coroutineScope = rememberCoroutineScope()
@@ -94,7 +102,9 @@ fun LoginScreen(
                 coroutineScope.launch {
                     googleLoginManager.startLogin(
                         onSuccessLogin = onGoogleLogin,
-                        onFailLogin = { Log.e("woogi", "LoginScreen: 로그인 실패") },
+                        onFailLogin = {
+                            onShowSnackBar("로그인에 실패하였습니다")
+                        },
                     )
                 }
             },
