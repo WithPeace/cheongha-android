@@ -38,6 +38,9 @@ jobs:
         run: |
           echo "GOOGLE_CLIENT_ID=\"$GOOGLE_CLIENT_ID\"" >> local.properties
 
+      - name: Build with Gradle
+        run: ./gradlew build --parallel
+
       - name: Run test
         run: ./gradlew test --parallel
 
