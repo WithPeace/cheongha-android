@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 
-class DefaultTokenRepository @Inject constructor(
+class DefaultRepository @Inject constructor(
     private val tokenPreferenceDataSource: TokenPreferenceDataSource,
     private val authService: AuthService
 ) : TokenRepository {
