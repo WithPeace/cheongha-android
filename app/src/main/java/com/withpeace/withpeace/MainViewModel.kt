@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.withpeace.withpeace.core.domain.usecase.IsLoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -13,10 +13,10 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val isLoginUseCase: IsLoginUseCase,
 ) : ViewModel() {
-    private val _isLogin: MutableSharedFlow<Boolean> = MutableSharedFlow()
-    val isLogin = _isLogin.asSharedFlow()
+    private val _isLogin: Channel<Boolean> = Channel()
+    val isLogin = _isLogin.receiveAsFlow()
 
     init {
-        viewModelScope.launch { _isLogin.emit(isLoginUseCase()) }
+        viewModelScope.launch { _isLogin.send(isLoginUseCase()) }
     }
 }
