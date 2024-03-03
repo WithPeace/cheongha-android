@@ -1,13 +1,13 @@
 name: Android CI
 
 on:
-  pull_request:
-    branches: [ "main", "develop" ]
+  push:
+    branches: ["develop"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v3
 
@@ -38,8 +38,6 @@ jobs:
         run: |
           echo "GOOGLE_CLIENT_ID=\"$GOOGLE_CLIENT_ID\"" >> local.properties
 
-      - name: Run test
-        run: ./gradlew test --parallel
+      - name: Build with Gradle
+        run: ./gradlew build
 
-      - name: Run ktlint
-        run: ./gradlew ktlintCheck
