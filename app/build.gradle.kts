@@ -27,4 +27,6 @@ dependencies {
     implementation(project(":core:datastore"))
     implementation(project(":core:domain"))
     implementation(project(":core:designsystem"))
+
+    testImplementation(project(":core:testing"))
 }

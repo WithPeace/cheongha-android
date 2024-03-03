@@ -1,54 +1,56 @@
 package com.withpeace.withpeace.feature.login
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.withpeace.withpeace.core.domain.repository.TokenRepository
+import com.withpeace.withpeace.core.domain.model.Response
+import com.withpeace.withpeace.core.domain.usecase.GoogleLoginUseCase
+import com.withpeace.withpeace.core.domain.usecase.SignUpUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val tokenRepository: TokenRepository,
+    private val googleLoginUseCase: GoogleLoginUseCase,
+    private val signUpUseCase: SignUpUseCase,
 ) : ViewModel() {
 
-    private val _loginUiEvent: MutableSharedFlow<LoginUiEvent> = MutableSharedFlow()
-    val loginUiEvent = _loginUiEvent.asSharedFlow()
+    private val _loginUiEvent: Channel<LoginUiEvent> = Channel()
+    val loginUiEvent = _loginUiEvent.receiveAsFlow()
 
     fun googleLogin(idToken: String) {
         viewModelScope.launch {
-            tokenRepository.googleLogin(idToken) {
-                Log.e("woogi", it ?: "메시지 없음")
-                launch {
-                    _loginUiEvent.emit(LoginUiEvent.SignUpFail(it ?: "메시지 없음"))
+            googleLoginUseCase(
+                idToken = idToken,
+            ).collect { response ->
+                when (response) {
+                    is Response.Failure -> _loginUiEvent.send(LoginUiEvent.LoginFail)
+                    is Response.Success -> {
+                        _loginUiEvent.send(LoginUiEvent.LoginSuccess)
+                        signUp("abc", "abc")
+                    }
                 }
-            }.collect { token ->
-                tokenRepository.updateAccessToken(token.accessToken)
-                tokenRepository.updateRefreshToken(token.refreshToken)
-                signUp()
             }
         }
     }
 
-    private fun signUp() {
+    fun signUp(
+        email: String,
+        nickname: String,
+    ) {
         viewModelScope.launch {
-            tokenRepository.signUp(
-                email = "abasdfasdf",
-                nickname = "haha",
-                deviceToken = null,
-                onError = {
-                    launch {
-                        _loginUiEvent.emit(LoginUiEvent.SignUpFail(it ?: "메시지 없음"))
-                    }
+            signUpUseCase(
+                email = email,
+                nickname = nickname,
+            ).collect { response ->
+                when (response) {
+                    is Response.Failure ->
+                        _loginUiEvent.send(LoginUiEvent.SignUpFail(response.errorMessage))
+
+                    is Response.Success -> _loginUiEvent.send(LoginUiEvent.SignUpSuccess)
                 }
-            ).collect { token ->
-                tokenRepository.updateAccessToken(token.accessToken)
-                tokenRepository.updateRefreshToken(token.refreshToken)
-                _loginUiEvent.emit(LoginUiEvent.SignUpSuccess)
             }
         }
     }

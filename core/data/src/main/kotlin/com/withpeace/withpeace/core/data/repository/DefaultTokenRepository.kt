@@ -3,9 +3,9 @@ package com.withpeace.withpeace.core.data.repository
 import com.skydoves.sandwich.messageOrNull
 import com.skydoves.sandwich.suspendMapSuccess
 import com.skydoves.sandwich.suspendOnFailure
-import com.skydoves.sandwich.suspendOnSuccess
 import com.withpeace.withpeace.core.data.mapper.toDomain
 import com.withpeace.withpeace.core.datastore.dataStore.TokenPreferenceDataSource
+import com.withpeace.withpeace.core.domain.model.Response
 import com.withpeace.withpeace.core.domain.model.Token
 import com.withpeace.withpeace.core.domain.repository.TokenRepository
 import com.withpeace.withpeace.core.network.di.request.SignUpRequest
@@ -41,37 +41,33 @@ constructor(
     }
 
     override suspend fun signUp(
-        onError: (String?) -> Unit,
         email: String,
         nickname: String,
-        deviceToken: String?,
-    ): Flow<Token> = flow {
+    ): Flow<Response<Token>> = flow {
         authService.signUp(
             SignUpRequest(
                 email = email,
                 nickname = nickname,
-                deviceToken = deviceToken,
+                deviceToken = null,
             ),
         ).suspendMapSuccess {
-            emit(data.toDomain())
+            emit(Response.Success(data.toDomain()))
         }.suspendOnFailure {
-            onError(messageOrNull)
+            emit(Response.Failure<Token>(errorMessage = messageOrNull))
         }
     }.flowOn(Dispatchers.IO)
 
-
     override fun googleLogin(
         idToken: String,
-        onError: (String?) -> Unit,
-    ): Flow<Token> =
+    ): Flow<Response<Token>> =
         flow {
             loginService.googleLogin(AUTHORIZATION_FORMAT.format(idToken))
                 .suspendMapSuccess {
-                    emit(data.toDomain())
+                    emit(Response.Success(data.toDomain()))
                     updateAccessToken(data.accessToken)
                     updateRefreshToken(data.refreshToken)
                 }.suspendOnFailure {
-                    onError(messageOrNull)
+                    emit(Response.Failure<Token>(errorMessage = messageOrNull))
                 }
         }.flowOn(Dispatchers.IO)
 

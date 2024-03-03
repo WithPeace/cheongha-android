@@ -2,30 +2,21 @@ package com.withpeace.withpeace
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.withpeace.withpeace.core.domain.repository.TokenRepository
+import com.withpeace.withpeace.core.domain.usecase.IsLoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val tokenRepository: TokenRepository
+    private val isLoginUseCase: IsLoginUseCase,
 ) : ViewModel() {
-    private val _isLogin: MutableSharedFlow<Boolean> = MutableSharedFlow()
-    val isLogin = _isLogin.asSharedFlow()
+    private val _isLogin: Channel<Boolean> = Channel()
+    val isLogin = _isLogin.receiveAsFlow()
 
     init {
-        viewModelScope.launch {
-            val token = tokenRepository.getAccessToken().firstOrNull()
-            if(token==null) {
-                _isLogin.emit(false)
-            } else {
-                _isLogin.emit(true)
-            }
-        }
+        viewModelScope.launch { _isLogin.send(isLoginUseCase()) }
     }
 }
