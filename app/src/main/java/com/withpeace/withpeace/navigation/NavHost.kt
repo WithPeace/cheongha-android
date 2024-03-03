@@ -16,6 +16,7 @@ fun WithpeaceNavHost(
     startDestination: String = LOGIN_ROUTE,
     onShowSnackBar: (message: String) -> Unit,
 ) {
+    val item: String = "1"
     NavHost(
         modifier = modifier,
         navController = navController,
