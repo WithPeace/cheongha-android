@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.googlelogin.GoogleLoginManager
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginRoute(
@@ -90,11 +91,12 @@ fun LoginScreen(
         }
         Button(
             onClick = {
-                googleLoginManager.startLogin(
-                    coroutineScope = coroutineScope,
-                    onSuccessLogin = onGoogleLogin,
-                    onFailLogin = { Log.e("woogi", "LoginScreen: 로그인 실패") },
-                )
+                coroutineScope.launch {
+                    googleLoginManager.startLogin(
+                        onSuccessLogin = onGoogleLogin,
+                        onFailLogin = { Log.e("woogi", "LoginScreen: 로그인 실패") },
+                    )
+                }
             },
             contentPadding = PaddingValues(0.dp),
             modifier = Modifier

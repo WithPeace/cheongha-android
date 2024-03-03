@@ -8,8 +8,6 @@ import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 class GoogleLoginManager(val context: Context) {
     private val credentialManager = CredentialManager.create(context)
@@ -20,16 +18,13 @@ class GoogleLoginManager(val context: Context) {
 
     private val credentialRequest = GetCredentialRequest(listOf(googleIdOption))
 
-    fun startLogin(
-        coroutineScope: CoroutineScope,
+    suspend fun startLogin(
         onSuccessLogin: (String) -> Unit,
         onFailLogin: (String?) -> Unit,
     ) {
-        coroutineScope.launch {
-            runCatching {
-                val result = credentialManager.getCredential(context, credentialRequest)
-                handleSignIn(result, onSuccessLogin, onFailLogin)
-            }
+        runCatching {
+            val result = credentialManager.getCredential(context, credentialRequest)
+            handleSignIn(result, onSuccessLogin, onFailLogin)
         }
     }
 
