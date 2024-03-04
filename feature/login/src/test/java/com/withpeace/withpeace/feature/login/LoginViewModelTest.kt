@@ -2,13 +2,13 @@ package com.withpeace.withpeace.feature.login
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.withpeace.withpeace.core.domain.model.Response
-import com.withpeace.withpeace.core.domain.model.Token
+import com.withpeace.withpeace.core.domain.model.AuthToken
 import com.withpeace.withpeace.core.domain.usecase.GoogleLoginUseCase
 import com.withpeace.withpeace.core.domain.usecase.SignUpUseCase
 import com.withpeace.withpeace.core.testing.MainDispatcherRule
 import io.mockk.coEvery
 import io.mockk.mockk
+import io.mockk.slot
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -30,8 +30,15 @@ class LoginViewModelTest() {
     @Test
     fun `구글 로그인에 성공하면 로그인 성공 이벤트를 발생한다`() = runTest {
         // given
-        coEvery { googleLoginUseCase("test") } returns flow {
-            emit(Response.Success(Unit))
+        val onSuccessSlot = slot<() -> Unit>()
+        coEvery {
+            googleLoginUseCase(
+                "test",
+                onSuccess = capture(onSuccessSlot),
+                onError = any(),
+            )
+        } answers {
+            onSuccessSlot.captured()
         }
         viewModel = initialize()
 
@@ -46,11 +53,16 @@ class LoginViewModelTest() {
     @Test
     fun `구글 로그인에 실패하면 로그인 실패 이벤트를 발생한다`() = runTest {
         // given
-        coEvery { googleLoginUseCase("test") } returns flow {
-            emit(Response.Failure())
-        }
-        viewModel = initialize()
+        val onFailSlot = slot<(String) -> Unit>()
+        coEvery {
+            googleLoginUseCase(
+                "test",
+                onError = capture(onFailSlot),
+                onSuccess = any(),
+            )
+        } answers { onFailSlot.captured("test") }
 
+        viewModel = initialize()
         // when & then
         viewModel.loginUiEvent.test {
             viewModel.googleLogin("test")
@@ -60,38 +72,47 @@ class LoginViewModelTest() {
     }
 
     @Test
-    fun `회원가입 성공하면 회원가입 성공 이벤트를 발생한다`() = runTest {
+    fun `회원가입 실패하면 회원가입 실패 이벤트를 발생한다다`() = runTest {
         // given
-        coEvery { signUpUseCase(email = "abc", nickname = "abc") } returns flow {
-            emit(
-                Response.Success<Token>(
-                    data = Token("testAccessToken", "testRefreshToken"),
-                ),
+        val onErrorSlot = slot<(String) -> Unit>()
+        coEvery {
+            signUpUseCase(
+                email = "abc",
+                nickname = "abc",
+                onError = capture(onErrorSlot),
             )
+        } returns flow {
+            onErrorSlot.captured("message")
         }
         viewModel = initialize()
 
         // when & then
         viewModel.loginUiEvent.test {
-            viewModel.signUp("abc","abc")
+            viewModel.signUp("abc", "abc")
             val actual = awaitItem()
-            assertThat(actual).isEqualTo(LoginUiEvent.SignUpSuccess)
+            assertThat(actual).isEqualTo(LoginUiEvent.SignUpFail("message"))
         }
     }
 
     @Test
-    fun `회원가입 실패하면 회원가입 실패 이벤트를 발생한다`() = runTest {
+    fun `회원가입 성공하면 회원가입 성공 이벤트를 발생한다`() = runTest {
         // given
-        coEvery { signUpUseCase("abc","abc") } returns flow {
-            emit(Response.Failure(errorMessage = "error"))
+        coEvery {
+            signUpUseCase(
+                email = "abc",
+                nickname = "abc",
+                onError = any(),
+            )
+        } returns flow {
+            emit(AuthToken(accessToken = "dictas", refreshToken = "dolores"))
         }
         viewModel = initialize()
 
         // when & then
         viewModel.loginUiEvent.test {
-            viewModel.signUp("abc","abc")
+            viewModel.signUp("abc", "abc")
             val actual = awaitItem()
-            assertThat(actual).isEqualTo(LoginUiEvent.SignUpFail("error"))
+            assertThat(actual).isEqualTo(LoginUiEvent.SignUpSuccess)
         }
     }
 }

@@ -1,11 +1,10 @@
 package com.withpeace.withpeace.core.interceptor
 
-import android.content.Context
 import com.withpeace.withpeace.core.datastore.dataStore.TokenPreferenceDataSource
+import com.withpeace.withpeace.core.network.di.service.AuthService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import javax.inject.Singleton
@@ -18,8 +17,7 @@ object InterceptorModule {
     @Singleton
     fun provideHeaderInterceptor(
         tokenPreferenceDataSource: TokenPreferenceDataSource,
+        authService: AuthService,
     ): Interceptor =
-        AuthInterceptor(tokenPreferenceDataSource)
-
-
+        AuthInterceptor(tokenPreferenceDataSource, authService)
 }

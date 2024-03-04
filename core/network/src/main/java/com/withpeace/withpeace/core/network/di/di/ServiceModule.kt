@@ -1,7 +1,7 @@
 package com.withpeace.withpeace.core.network.di.di
 
+import com.withpeace.withpeace.core.network.di.service.UserService
 import com.withpeace.withpeace.core.network.di.service.AuthService
-import com.withpeace.withpeace.core.network.di.service.LoginService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,11 +16,11 @@ object ServiceModule {
 
     @Provides
     @Singleton
-    fun providesAuthService(@Named("general") retrofit: Retrofit): AuthService =
-        retrofit.create(AuthService::class.java)
+    fun providesAuthService(@Named("general") retrofit: Retrofit): UserService =
+        retrofit.create(UserService::class.java)
 
     @Provides
     @Singleton
-    fun providesLoginService(@Named("initial") retrofit: Retrofit): LoginService =
-        retrofit.create(LoginService::class.java)
+    fun providesLoginService(@Named("auth") retrofit: Retrofit): AuthService =
+        retrofit.create(AuthService::class.java)
 }

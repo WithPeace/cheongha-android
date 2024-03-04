@@ -1,13 +1,10 @@
 package com.withpeace.withpeace.core.domain.usecase
 
-import com.google.common.truth.Truth.assertThat
-import com.withpeace.withpeace.core.domain.model.Response
-import com.withpeace.withpeace.core.domain.model.Token
-import com.withpeace.withpeace.core.domain.repository.TokenRepository
+import com.withpeace.withpeace.core.domain.model.AuthToken
+import com.withpeace.withpeace.core.domain.repository.AuthTokenRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -15,35 +12,57 @@ import org.junit.Test
 class GoogleLoginUseCaseTest {
 
     private lateinit var googleLoginUseCase: GoogleLoginUseCase
-    private val tokenRepository: TokenRepository = mockk(relaxed = true)
+    private val authTokenRepository: AuthTokenRepository = mockk(relaxed = true)
 
-    private fun initialize() = GoogleLoginUseCase(tokenRepository)
+    private fun initialize() = GoogleLoginUseCase(authTokenRepository)
 
     @Test
-    fun `로그인에 실패하면, 실패응답을 반환한다`() = runTest {
+    fun `로그인에 실패하면, 실패 로직이 실행된다`() = runTest {
         // given
-        coEvery { tokenRepository.googleLogin("test") } returns flow {
-            emit(Response.Failure())
+        val mockOnError = mockk<(String) -> Unit>(relaxed = true)
+        coEvery {
+            authTokenRepository.getTokenByGoogle(
+                "test",
+                onError = mockOnError,
+            )
+        } returns flow {
+            mockOnError.invoke("test")
         }
         googleLoginUseCase = initialize()
         // when
-        val actual = googleLoginUseCase("test").first()
+        val mockOnSuccess = mockk<() -> Unit>(relaxed = true)
+        googleLoginUseCase(
+            idToken = "test",
+            onError = mockOnError,
+            onSuccess = mockOnSuccess,
+        )
         // then
-        assertThat(actual).isEqualTo(Response.Failure<Unit>())
+        coVerify { mockOnError.invoke("test") }
+        coVerify(exactly = 0) { mockOnSuccess() }
     }
 
     @Test
     fun `로그인에 성공하면, 성공응답을 반환한다`() = runTest {
         // given
-        coEvery { tokenRepository.googleLogin("test") } returns flow {
-            emit(Response.Success(Token(accessToken = "test", refreshToken = "test")))
+        coEvery {
+            authTokenRepository.getTokenByGoogle(
+                idToken = "test",
+                onError = any(),
+            )
+        } returns flow {
+            emit(AuthToken(accessToken = "test", refreshToken = "test"))
         }
         googleLoginUseCase = initialize()
         // when
-        val actual = googleLoginUseCase("test").first()
+        val onSuccess = mockk<() -> Unit>(relaxed = true)
+        googleLoginUseCase(
+            idToken = "test",
+            onError = {},
+            onSuccess = onSuccess,
+        )
         // then
-        assertThat(actual).isEqualTo(Response.Success(Unit))
-        coVerify { tokenRepository.updateAccessToken("test") }
-        coVerify { tokenRepository.updateRefreshToken("test") }
+        coVerify { onSuccess() }
+        coVerify { authTokenRepository.updateAccessToken("test") }
+        coVerify { authTokenRepository.updateRefreshToken("test") }
     }
 }

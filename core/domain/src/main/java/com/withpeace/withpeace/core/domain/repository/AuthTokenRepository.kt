@@ -1,10 +1,9 @@
 package com.withpeace.withpeace.core.domain.repository
 
-import com.withpeace.withpeace.core.domain.model.Response
-import com.withpeace.withpeace.core.domain.model.Token
+import com.withpeace.withpeace.core.domain.model.AuthToken
 import kotlinx.coroutines.flow.Flow
 
-interface TokenRepository {
+interface AuthTokenRepository {
 
     fun getAccessToken(): Flow<String?>
 
@@ -17,9 +16,11 @@ interface TokenRepository {
     suspend fun signUp(
         email: String,
         nickname: String,
-    ): Flow<Response<Token>>
+        onError: (String) -> Unit,
+    ): Flow<AuthToken>
 
-    fun googleLogin(
+    fun getTokenByGoogle(
         idToken: String,
-    ): Flow<Response<Token>>
+        onError: (String) -> Unit,
+    ): Flow<AuthToken>
 }

@@ -13,6 +13,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
+import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -41,15 +42,33 @@ object NetworkModule {
         }
     }
 
+    @Named("general_client")
     @Singleton
     @Provides
-    fun provideOkhttpClient(
+    fun provideGeneralOkhttpClient(
         authInterceptor: Interceptor,
         httpLoggingInterceptor: HttpLoggingInterceptor,
     ): OkHttpClient {
         return OkHttpClient.Builder().apply {
             addInterceptor(authInterceptor)
             addInterceptor(httpLoggingInterceptor)
+            connectTimeout(30, TimeUnit.SECONDS)
+            readTimeout(30, TimeUnit.SECONDS)
+            writeTimeout(30, TimeUnit.SECONDS)
+        }.build()
+    }
+
+    @Named("auth_client")
+    @Singleton
+    @Provides
+    fun provideAuthOkhttpClient(
+        httpLoggingInterceptor: HttpLoggingInterceptor,
+    ): OkHttpClient {
+        return OkHttpClient.Builder().apply {
+            addInterceptor(httpLoggingInterceptor)
+            connectTimeout(30, TimeUnit.SECONDS)
+            readTimeout(30, TimeUnit.SECONDS)
+            writeTimeout(30, TimeUnit.SECONDS)
         }.build()
     }
 
@@ -57,7 +76,7 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideTokenRetrofitClient(
-        okHttpClient: OkHttpClient,
+        @Named("general_client") okHttpClient: OkHttpClient,
         converterFactory: Converter.Factory,
     ): Retrofit {
         return Retrofit.Builder()
@@ -72,13 +91,15 @@ object NetworkModule {
     /**
      * todo: 네이밍 수정
      */
-    @Named("initial")
+    @Named("auth")
     @Provides
     @Singleton
     fun provideRetrofitClient(
         converterFactory: Converter.Factory,
+        @Named("auth_client") okHttpClient: OkHttpClient,
     ): Retrofit {
         return Retrofit.Builder()
+            .client(okHttpClient)
             .baseUrl("http://49.50.160.170:8080/")
             .addConverterFactory(converterFactory)
             .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
