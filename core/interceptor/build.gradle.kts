@@ -12,6 +12,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.retrofit.core)
     implementation(libs.okhttp.logging)
+    implementation(libs.skydoves.sandwich)
     implementation(project(":core:datastore"))
     implementation(project(":core:network"))
 }

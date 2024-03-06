@@ -1,27 +1,23 @@
 package com.withpeace.withpeace.core.domain.usecase
 
-import com.withpeace.withpeace.core.domain.model.Response
-import com.withpeace.withpeace.core.domain.repository.TokenRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import com.withpeace.withpeace.core.domain.repository.AuthTokenRepository
 import javax.inject.Inject
 
 class GoogleLoginUseCase @Inject constructor(
-    private val tokenRepository: TokenRepository,
+    private val authTokenRepository: AuthTokenRepository,
 ) {
     suspend operator fun invoke(
         idToken: String,
-    ): Flow<Response<Unit>> = flow {
-        tokenRepository.googleLogin(idToken)
-            .collect { result ->
-                when (result) {
-                    is Response.Failure -> emit(Response.Failure())
-                    is Response.Success -> {
-                        tokenRepository.updateAccessToken(result.data.accessToken)
-                        tokenRepository.updateRefreshToken(result.data.refreshToken)
-                        emit(Response.Success(Unit))
-                    }
-                }
-            }
+        onError: (String) -> Unit,
+        onSuccess: () -> Unit,
+    ) {
+        authTokenRepository.getTokenByGoogle(
+            idToken = idToken,
+            onError = onError,
+        ).collect { token ->
+            authTokenRepository.updateAccessToken(token.accessToken)
+            authTokenRepository.updateRefreshToken(token.refreshToken)
+            onSuccess()
+        }
     }
 }

@@ -1,87 +1,76 @@
 package com.withpeace.withpeace.core.interceptor
 
+import com.skydoves.sandwich.suspendMapSuccess
+import com.skydoves.sandwich.suspendOnError
 import com.withpeace.withpeace.core.datastore.dataStore.TokenPreferenceDataSource
 import com.withpeace.withpeace.core.network.di.response.TokenResponse
-import kotlinx.coroutines.Dispatchers
+import com.withpeace.withpeace.core.network.di.service.AuthService
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 import javax.inject.Inject
 
 class AuthInterceptor @Inject constructor(
     private val tokenPreferenceDataSource: TokenPreferenceDataSource,
+    private val authService: AuthService,
 ) : Interceptor {
-    private val client = OkHttpClient.Builder().build()
 
     override fun intercept(chain: Interceptor.Chain): Response {
+        // 일단 저장된 accessToken을 Header에 넣어준다
         val accessToken = runBlocking { tokenPreferenceDataSource.accessToken.firstOrNull() }
-        val tokenAddedRequest =
-            chain.request()
-                .newBuilder()
-                .addHeader(
-                    ACCESS_TOKEN_HEADER,
-                    TOKEN_FORMAT.format(accessToken),
-                ).build()
-        var response = chain.proceed(tokenAddedRequest)
+        var response = chain.getResponse(accessToken)
+        var count = 1
 
+        // Header에 넣어줬는데, 401이 뜬다면, RefreshToken 유무를 확인하고, accessToken을 재발급받아 다시 Header에 넣어준다.
         if (response.code == 401) {
             val refreshToken = runBlocking { tokenPreferenceDataSource.refreshToken.firstOrNull() }
             if (refreshToken != null) {
-                runCatching {
-                    refreshAccessToken(refreshToken)
-                }.onSuccess { tokenResponse ->
-                    runBlocking {
-                        tokenPreferenceDataSource.updateAccessToken(tokenResponse.accessToken)
-                        tokenPreferenceDataSource.updateRefreshToken(tokenResponse.refreshToken)
-                    }
-                    response =
-                        chain.proceed(
-                            chain.request().newBuilder().addHeader(
-                                ACCESS_TOKEN_HEADER,
-                                TOKEN_FORMAT.format(tokenResponse.accessToken),
-                            ).build(),
-                        )
+                while (count <= REQUEST_MAX_NUM) {
+                    requestRefreshToken(
+                        onSuccess = { data ->
+                            tokenPreferenceDataSource.updateAccessToken(data.accessToken)
+                            tokenPreferenceDataSource.updateRefreshToken(data.refreshToken)
+                            response = chain.getResponse(data.accessToken)
+                            count = 4
+                        },
+                        onFail = { count++ },
+                    )
                 }
             }
         }
         return response
     }
 
-    private fun refreshAccessToken(refreshToken: String): TokenResponse {
-        val response: Response =
-            runBlocking {
-                withContext(Dispatchers.IO) {
-                    client.newCall(createAccessTokenRefreshRequest(refreshToken)).execute()
+    private fun requestRefreshToken(
+        onSuccess: suspend (TokenResponse) -> Unit,
+        onFail: () -> Unit,
+    ) {
+        runBlocking {
+            authService.refreshAccessToken()
+                .suspendMapSuccess {
+                    onSuccess(data)
+                }.suspendOnError {
+                    onFail()
                 }
-            }
-        if (response.isSuccessful) {
-            return response.toDto()
         }
-        throw IllegalArgumentException()
     }
 
-    private fun createAccessTokenRefreshRequest(refreshToken: String): Request {
-        return Request.Builder()
-            .url(REFRESH_URL)
-            .addHeader(REFRESH_TOKEN_FORMAT, TOKEN_FORMAT.format(refreshToken))
-            .build()
-    }
-
-    private inline fun <reified T> Response.toDto(): T {
-        body?.let {
-            return Json.decodeFromString<T>(it.string())
-        } ?: throw IllegalArgumentException()
+    private fun Interceptor.Chain.getResponse(accessToken: String?): Response {
+        return this
+            .proceed(
+                request()
+                    .newBuilder()
+                    .addHeader(
+                        ACCESS_TOKEN_HEADER,
+                        TOKEN_FORMAT.format(accessToken),
+                    ).build(),
+            )
     }
 
     companion object {
-        private const val REFRESH_URL = "http://49.50.160.170:8080/api/v1/auth/refresh"
-        private const val REFRESH_TOKEN_FORMAT = "ReAuthorization"
         private const val ACCESS_TOKEN_HEADER = "Authorization"
         private const val TOKEN_FORMAT = "Bearer %s"
+        private const val REQUEST_MAX_NUM = 3
     }
 }

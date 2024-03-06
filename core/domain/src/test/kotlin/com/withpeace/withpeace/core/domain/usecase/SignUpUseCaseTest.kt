@@ -1,11 +1,12 @@
 package com.withpeace.withpeace.core.domain.usecase
 
 import com.google.common.truth.Truth.assertThat
-import com.withpeace.withpeace.core.domain.model.Response
-import com.withpeace.withpeace.core.domain.model.Token
-import com.withpeace.withpeace.core.domain.repository.TokenRepository
+import com.withpeace.withpeace.core.domain.model.AuthToken
+import com.withpeace.withpeace.core.domain.repository.AuthTokenRepository
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
@@ -13,26 +14,28 @@ import org.junit.Test
 
 class SignUpUseCaseTest {
     private lateinit var signUpUseCase: SignUpUseCase
-    private val tokenRepository: TokenRepository = mockk(relaxed = true)
+    private val authTokenRepository: AuthTokenRepository = mockk(relaxed = true)
 
-    private fun initialize() = SignUpUseCase(tokenRepository)
+    private fun initialize() = SignUpUseCase(authTokenRepository)
 
     @Test
     fun `회원가입에 성공하면, Token을 반환한다`() = runTest {
         // given
-        coEvery { tokenRepository.signUp("Email", "nickname") } returns flow {
-            emit(Response.Success(Token(accessToken = "test", refreshToken = "test")))
-        }
+        coEvery {
+            authTokenRepository.signUp(
+                "Email",
+                "nickname",
+                onError = any(),
+            )
+        } returns flow { emit(AuthToken(accessToken = "test", refreshToken = "test")) }
         signUpUseCase = initialize()
         // when
-        val actual = signUpUseCase("Email", "nickname").first()
+        val actual = signUpUseCase("Email", "nickname", onError = {}).first()
         // then
         assertThat(actual).isEqualTo(
-            Response.Success(
-                Token(
-                    accessToken = "test",
-                    refreshToken = "test",
-                ),
+            AuthToken(
+                accessToken = "test",
+                refreshToken = "test",
             ),
         )
     }
@@ -40,13 +43,18 @@ class SignUpUseCaseTest {
     @Test
     fun `회원가입에 실패하면, 메세지가 담긴 실패응답을 반환한다`() = runTest {
         // given
-        coEvery { tokenRepository.signUp("Email", "nickname") } returns flow {
-            emit(Response.Failure(errorMessage = "실패"))
-        }
+        val errorMock = mockk<(String) -> Unit>(relaxed = true)
+        coEvery {
+            authTokenRepository.signUp(
+                "Email",
+                "nickname",
+                onError = errorMock,
+            )
+        } returns flow { errorMock("test") }
         signUpUseCase = initialize()
         // when
-        val actual = signUpUseCase("Email", "nickname").first()
+        signUpUseCase("Email", "nickname", onError = errorMock).collect()
         // then
-        assertThat(actual).isEqualTo(Response.Failure<Token>(errorMessage = "실패"))
+        coVerify { errorMock("test") }
     }
 }
