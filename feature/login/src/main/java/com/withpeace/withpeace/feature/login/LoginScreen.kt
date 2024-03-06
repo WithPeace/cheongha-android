@@ -137,7 +137,7 @@ fun LoginScreen(
                     contentDescription = stringResource(R.string.image_google_logo),
                 )
                 Text(
-                    modifier = Modifier.align(Alignment.Center).padding(PaddingValues(vertical = 18.dp)),
+                    modifier = Modifier.align(Alignment.Center).padding(vertical = 18.dp),
                     color = WithpeaceTheme.colors.SystemBlack,
                     style = WithpeaceTheme.typography.notoSans.merge(
                         TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
