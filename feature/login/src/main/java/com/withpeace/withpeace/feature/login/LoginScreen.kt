@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,9 +25,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.googlelogin.GoogleLoginManager
@@ -81,6 +86,7 @@ fun LoginScreen(
         ) {
             Spacer(modifier = Modifier.height(152.dp))
             Image(
+                modifier = Modifier.size(150.dp),
                 painter = painterResource(id = R.drawable.app_logo),
                 contentDescription = stringResource(R.string.app_logo_content_description),
             )
@@ -92,6 +98,7 @@ fun LoginScreen(
             )
             Spacer(modifier = Modifier.height(24.dp))
             Text(
+                lineHeight = 19.sp,
                 style = WithpeaceTheme.typography.body,
                 text = stringResource(R.string.welcome_introduction),
                 textAlign = TextAlign.Center,
@@ -125,16 +132,18 @@ fun LoginScreen(
             ) {
                 Image(
                     modifier = Modifier
-                        .padding(16.dp)
+                        .padding(start = 16.dp)
                         .align(Alignment.CenterStart)
                         .size(24.dp),
                     painter = painterResource(id = R.drawable.img_google_logo),
                     contentDescription = stringResource(R.string.image_google_logo),
                 )
                 Text(
-                    modifier = Modifier.align(Alignment.Center),
+                    modifier = Modifier.align(Alignment.Center).padding(PaddingValues(vertical = 18.dp)),
                     color = WithpeaceTheme.colors.SystemBlack,
-                    style = WithpeaceTheme.typography.notoSans,
+                    style = WithpeaceTheme.typography.notoSans.merge(
+                        TextStyle(platformStyle = PlatformTextStyle(includeFontPadding = false))
+                    ),
                     text = stringResource(R.string.login_to_google),
                 )
             }
