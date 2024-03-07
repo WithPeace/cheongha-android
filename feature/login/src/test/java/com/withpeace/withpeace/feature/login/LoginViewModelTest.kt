@@ -2,7 +2,6 @@ package com.withpeace.withpeace.feature.login
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.withpeace.withpeace.core.domain.model.AuthToken
 import com.withpeace.withpeace.core.domain.usecase.GoogleLoginUseCase
 import com.withpeace.withpeace.core.domain.usecase.SignUpUseCase
 import com.withpeace.withpeace.core.testing.MainDispatcherRule
@@ -14,7 +13,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 
-class LoginViewModelTest() {
+class LoginViewModelTest {
 
     @get:Rule
     val dispatcherRule = MainDispatcherRule()
@@ -30,15 +29,13 @@ class LoginViewModelTest() {
     @Test
     fun `구글 로그인에 성공하면 로그인 성공 이벤트를 발생한다`() = runTest {
         // given
-        val onSuccessSlot = slot<() -> Unit>()
         coEvery {
             googleLoginUseCase(
                 "test",
-                onSuccess = capture(onSuccessSlot),
                 onError = any(),
             )
-        } answers {
-            onSuccessSlot.captured()
+        } returns flow {
+            emit(Unit)
         }
         viewModel = initialize()
 
@@ -58,9 +55,8 @@ class LoginViewModelTest() {
             googleLoginUseCase(
                 "test",
                 onError = capture(onFailSlot),
-                onSuccess = any(),
             )
-        } answers { onFailSlot.captured("test") }
+        } returns flow { onFailSlot.captured("test") }
 
         viewModel = initialize()
         // when & then
@@ -72,7 +68,7 @@ class LoginViewModelTest() {
     }
 
     @Test
-    fun `회원가입 실패하면 회원가입 실패 이벤트를 발생한다다`() = runTest {
+    fun `회원가입 실패하면 회원가입 실패 이벤트를 발생한다`() = runTest {
         // given
         val onErrorSlot = slot<(String) -> Unit>()
         coEvery {
@@ -104,7 +100,7 @@ class LoginViewModelTest() {
                 onError = any(),
             )
         } returns flow {
-            emit(AuthToken(accessToken = "dictas", refreshToken = "dolores"))
+            emit(Unit)
         }
         viewModel = initialize()
 

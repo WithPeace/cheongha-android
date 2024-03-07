@@ -1,10 +1,10 @@
 package com.withpeace.withpeace.core.domain.usecase
 
-import com.withpeace.withpeace.core.domain.model.AuthToken
-import com.withpeace.withpeace.core.domain.repository.AuthTokenRepository
+import com.withpeace.withpeace.core.domain.repository.TokenRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -12,57 +12,51 @@ import org.junit.Test
 class GoogleLoginUseCaseTest {
 
     private lateinit var googleLoginUseCase: GoogleLoginUseCase
-    private val authTokenRepository: AuthTokenRepository = mockk(relaxed = true)
+    private val tokenRepository: TokenRepository = mockk(relaxed = true)
 
-    private fun initialize() = GoogleLoginUseCase(authTokenRepository)
+    private fun initialize() = GoogleLoginUseCase(tokenRepository)
 
     @Test
     fun `로그인에 실패하면, 실패 로직이 실행된다`() = runTest {
         // given
-        val mockOnError = mockk<(String) -> Unit>(relaxed = true)
+        val onFailure = mockk<(String) -> Unit>(relaxed = true)
         coEvery {
-            authTokenRepository.getTokenByGoogle(
+            tokenRepository.getTokenByGoogle(
                 "test",
-                onError = mockOnError,
+                onError = onFailure,
             )
         } returns flow {
-            mockOnError.invoke("test")
+            onFailure.invoke("test")
         }
         googleLoginUseCase = initialize()
         // when
-        val mockOnSuccess = mockk<() -> Unit>(relaxed = true)
         googleLoginUseCase(
             idToken = "test",
-            onError = mockOnError,
-            onSuccess = mockOnSuccess,
-        )
+            onError = onFailure,
+        ).collect()
         // then
-        coVerify { mockOnError.invoke("test") }
-        coVerify(exactly = 0) { mockOnSuccess() }
+        coVerify { onFailure("test") }
     }
 
     @Test
     fun `로그인에 성공하면, 성공응답을 반환한다`() = runTest {
         // given
+        val onSuccess = mockk<() -> Unit>(relaxed = true)
         coEvery {
-            authTokenRepository.getTokenByGoogle(
+            tokenRepository.getTokenByGoogle(
                 idToken = "test",
                 onError = any(),
             )
         } returns flow {
-            emit(AuthToken(accessToken = "test", refreshToken = "test"))
+            onSuccess.invoke()
         }
         googleLoginUseCase = initialize()
         // when
-        val onSuccess = mockk<() -> Unit>(relaxed = true)
         googleLoginUseCase(
             idToken = "test",
             onError = {},
-            onSuccess = onSuccess,
-        )
+        ).collect()
         // then
         coVerify { onSuccess() }
-        coVerify { authTokenRepository.updateAccessToken("test") }
-        coVerify { authTokenRepository.updateRefreshToken("test") }
     }
 }
