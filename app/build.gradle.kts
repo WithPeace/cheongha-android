@@ -21,6 +21,7 @@ android {
 dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(project(":feature:login"))
+    implementation(project(":feature:registerpost"))
     implementation(project(":core:interceptor"))
     implementation(project(":core:data"))
     implementation(project(":core:network"))

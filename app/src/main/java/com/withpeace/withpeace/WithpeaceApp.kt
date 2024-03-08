@@ -1,6 +1,8 @@
 package com.withpeace.withpeace
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -25,10 +27,12 @@ fun WithpeaceApp(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackBarHostState) },
-    ) {
-        WithpeaceNavHost(
-            onShowSnackBar = ::showSnackBar,
-        )
-        it
+    ) { paddingValues ->
+        Box(modifier = Modifier.padding(paddingValues)) {
+            WithpeaceNavHost(
+                startDestination = startDestination,
+                onShowSnackBar = ::showSnackBar,
+            )
+        }
     }
 }

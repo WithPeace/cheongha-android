@@ -6,18 +6,22 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.withpeace.withpeace.feature.registerpost.RegisterPostRoute
 
-const val RegisterPostRoute = "register_post_route"
+const val REGISTER_POST_ROUTE = "register_post_route"
 
 fun NavController.navigateToRegisterPost(navOptions: NavOptions? = null) = navigate(
-    RegisterPostRoute, navOptions,
+    REGISTER_POST_ROUTE, navOptions,
 )
 
 fun NavGraphBuilder.registerPostNavGraph(
     onShowSnackBar: (String) -> Unit,
+    onClickBackButton: () -> Unit,
+    onCompleteRegisterPost: () -> Unit,
 ) {
-    composable(route = RegisterPostRoute) {
+    composable(route = REGISTER_POST_ROUTE) {
         RegisterPostRoute(
             onShowSnackBar = onShowSnackBar,
+            onClickedBackButton = onClickBackButton,
+            onCompleteRegisterPost = onCompleteRegisterPost,
         )
     }
 }

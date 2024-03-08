@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.withpeace.withpeace.feature.login.navigation.LOGIN_ROUTE
 import com.withpeace.withpeace.feature.login.navigation.loginNavGraph
-
+import com.withpeace.withpeace.feature.registerpost.navigation.registerPostNavGraph
 
 @Composable
 fun WithpeaceNavHost(
@@ -22,5 +22,10 @@ fun WithpeaceNavHost(
         startDestination = startDestination,
     ) {
         loginNavGraph(onShowSnackBar = onShowSnackBar)
+        registerPostNavGraph(
+            onShowSnackBar = onShowSnackBar,
+            onCompleteRegisterPost = {},
+            onClickBackButton = {},
+        )
     }
 }
