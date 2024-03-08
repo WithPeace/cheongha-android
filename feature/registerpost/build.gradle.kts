@@ -7,5 +7,6 @@ android {
 }
 
 dependencies{
-
+    implementation(libs.skydoves.landscapist.glide)
+    implementation(libs.skydoves.landscapist.bom)
 }
