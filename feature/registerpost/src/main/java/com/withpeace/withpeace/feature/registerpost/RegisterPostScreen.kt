@@ -1,7 +1,10 @@
 package com.withpeace.withpeace.feature.registerpost
 
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,9 +13,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
@@ -34,10 +39,16 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.VisualTransformation
@@ -53,9 +64,11 @@ import com.withpeace.withpeace.core.designsystem.ui.WithPeaceCompleteButton
 import com.withpeace.withpeace.core.domain.model.Post
 import com.withpeace.withpeace.core.domain.model.PostTopic
 import com.withpeace.withpeace.feature.registerpost.R.drawable
+import kotlinx.coroutines.launch
 
 @Composable
 fun KeyboardAware(
+    //키보드 패딩만큼 패딩을 적용하겠다.
     content: @Composable () -> Unit,
 ) {
     Box(modifier = Modifier.imePadding()) {
@@ -117,6 +130,7 @@ fun RegisterPostScreen(
     showBottomSheet: Boolean,
 ) {
     val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -125,32 +139,47 @@ fun RegisterPostScreen(
     ) {
         Column(
             modifier = Modifier
-                .weight(1f)
-                .verticalScroll(scrollState),
+                .fillMaxHeight()
+                .weight(1f),
         ) {
             RegisterPostTopAppBar(
                 onClickBackButton = onClickBackButton,
                 onCompleteRegisterPost = onCompleteRegisterPost,
             )
-            RegisterPostTopic(
-                topic = postUiState.topic,
-                onTopicChanged = onTopicChanged,
-                onShowBottomSheetChanged = onShowBottomSheetChanged,
-                showBottomSheet = showBottomSheet,
-            )
-            RegisterPostTitle(
-                title = postUiState.title, onTitleChanged = onTitleChanged,
-            )
-            RegisterPostContent(
-                content = postUiState.content,
-                onContentChanged = onContentChanged,
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .verticalScroll(scrollState),
+                verticalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Column(modifier = Modifier.fillMaxHeight()) {
+                    RegisterPostTopic(
+                        topic = postUiState.topic,
+                        onTopicChanged = onTopicChanged,
+                        onShowBottomSheetChanged = onShowBottomSheetChanged,
+                        showBottomSheet = showBottomSheet,
+                    )
+                    RegisterPostTitle(
+                        title = postUiState.title, onTitleChanged = onTitleChanged,
+                    )
+                    RegisterPostContent(
+                        modifier = Modifier.fillMaxHeight(),
+                        content = postUiState.content,
+                        onContentChanged = onContentChanged,
+                        scrollByKeyboardHeight = {
+                            if(scrollState.value !=0) { //스크롤이 이미 되있는 상태일 때만 스크롤
+                                scrollState.animateScrollBy(it, spring(dampingRatio = 5f))
+                            }
+                        },
+                    )
+                }
+                PostImageList(
+                    imageUrls = postUiState.imageUrls,
+                    onImageUrlDeleted = onImageUrlDeleted,
+                )
+            }
         }
         Column {
-            PostImageList(
-                imageUrls = postUiState.imageUrls,
-                onImageUrlDeleted = onImageUrlDeleted,
-            )
             RegisterPostCamera(
                 onImageUrlsChanged = onImageUrlsChanged,
             )
@@ -160,10 +189,12 @@ fun RegisterPostScreen(
 
 @Composable
 fun PostImageList(
+    modifier: Modifier = Modifier,
     imageUrls: List<String>,
     onImageUrlDeleted: (String) -> Unit,
 ) {
     LazyRow(
+        modifier = modifier,
         contentPadding = PaddingValues(start = WithpeaceTheme.padding.BasicHorizontalPadding),
     ) {
         items(
@@ -177,13 +208,13 @@ fun PostImageList(
                     imageModel = { imageUrl },
                     previewPlaceholder = drawable.ic_cate_free,
                 )
-                Icon(
+                Image(
                     modifier = Modifier
                         .clickable {
                             onImageUrlDeleted(imageUrl)
                         }
                         .align(Alignment.TopEnd),
-                    painter = painterResource(id = drawable.ic_cate_living),
+                    painter = painterResource(id = drawable.btn_picture_delete),
                     contentDescription = "ImageDelete",
                 )
             }
@@ -388,19 +419,28 @@ fun RegisterPostContent(
     modifier: Modifier = Modifier,
     content: String,
     onContentChanged: (String) -> Unit,
+    scrollByKeyboardHeight: suspend (Float) -> Unit,
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val keyboardHeight = WindowInsets.ime.getBottom(LocalDensity.current)
+    var isFocused by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = keyboardHeight) {
+        if (isFocused) coroutineScope.launch { scrollByKeyboardHeight(keyboardHeight.toFloat()) }
+    } // 키보드 영역만큼 스크롤해줌으로써 키보드 가림을 해결.
+
     val interactionSource = remember { MutableInteractionSource() }
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.SpaceBetween,
-    ) {
         BasicTextField(
-            modifier = Modifier
+            modifier = modifier
                 .padding(
                     vertical = 16.dp,
                     horizontal = WithpeaceTheme.padding.BasicHorizontalPadding,
                 )
-                .fillMaxWidth(),
+                .fillMaxSize()
+                .onFocusChanged {
+                    isFocused = if (it.isFocused) true
+                    else false
+                },
             value = content,
             onValueChange = onContentChanged,
             enabled = true,
@@ -432,7 +472,6 @@ fun RegisterPostContent(
                 ),
             )
         }
-    }
 }
 
 @Composable

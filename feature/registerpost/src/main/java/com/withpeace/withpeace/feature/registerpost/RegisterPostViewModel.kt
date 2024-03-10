@@ -23,7 +23,7 @@ class RegisterPostViewModel @Inject constructor(
             title = "",
             content = "",
             topic = null,
-            imageUrls = listOf(),
+            imageUrls = listOf("","","","",""),
         ),
     )
     val postUiState = _postUiState.asStateFlow()
