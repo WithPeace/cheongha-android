@@ -59,6 +59,9 @@ google-login = "1.1.0"
 
 credential = "1.2.0"
 
+paging = "3.2.1"
+pagingCompose = "3.2.1"
+
 [libraries]
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }
@@ -83,6 +86,9 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-ui-testManifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxComposeNavigation" }
 androidx-compose-navigation-test = { group = "androidx.navigation", name = "navigation-testing", version.ref = "androidxComposeNavigation" }
+androidx-paging = { module = "androidx.paging:paging-runtime", version.ref = "paging" }
+androidx-pagingCompose = { module = "androidx.paging:paging-compose", version.ref = "pagingCompose" }
+androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "paging" }
 
 androidx-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "credential" }
 androidx-credentials-play-service = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credential" }

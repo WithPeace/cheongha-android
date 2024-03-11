@@ -5,6 +5,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.withpeace.withpeace.feature.gallery.navigation.GALLERY_ROUTE
+import com.withpeace.withpeace.feature.gallery.navigation.galleryNavGraph
 import com.withpeace.withpeace.feature.login.navigation.LOGIN_ROUTE
 import com.withpeace.withpeace.feature.login.navigation.loginNavGraph
 import com.withpeace.withpeace.feature.registerpost.navigation.registerPostNavGraph
@@ -19,13 +21,17 @@ fun WithpeaceNavHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = startDestination,
+        startDestination = GALLERY_ROUTE,
     ) {
         loginNavGraph(onShowSnackBar = onShowSnackBar)
         registerPostNavGraph(
             onShowSnackBar = onShowSnackBar,
             onCompleteRegisterPost = {},
             onClickBackButton = {},
+        )
+        galleryNavGraph(
+            onClickBackButton = navController::popBackStack,
+            onCompleteRegisterImages = {},
         )
     }
 }

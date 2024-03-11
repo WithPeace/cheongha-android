@@ -1,7 +1,9 @@
 package com.withpeace.withpeace.core.data.di
 
+import com.withpeace.withpeace.core.data.repository.DefaultImageRepository
 import com.withpeace.withpeace.core.data.repository.DefaultTokenRepository
 import com.withpeace.withpeace.core.domain.repository.AuthTokenRepository
+import com.withpeace.withpeace.core.domain.repository.ImageRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -15,4 +17,8 @@ interface RepositoryModule {
     @Binds
     @Singleton
     fun bindsTokenRepository(defaultTokenRepository: DefaultTokenRepository): AuthTokenRepository
+
+    @Binds
+    @Singleton
+    fun bindsImageRepository(defaultImageRepository: DefaultImageRepository): ImageRepository
 }
