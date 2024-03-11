@@ -59,8 +59,9 @@ import com.withpeace.withpeace.core.designsystem.ui.KeyboardAware
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceCompleteButton
 import com.withpeace.withpeace.core.domain.model.LimitedImages
-import com.withpeace.withpeace.core.domain.model.Post
-import com.withpeace.withpeace.core.domain.model.PostTopic
+import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.post.RegisterPost
+import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.permission.ImagePermissionHelper
 import com.withpeace.withpeace.feature.registerpost.R.drawable
 import kotlinx.coroutines.launch
@@ -83,7 +84,7 @@ fun RegisterPostRoute(
 
     KeyboardAware {
     RegisterPostScreen(
-        postUiState = postUiState,
+        registerPostUiState = postUiState,
         onClickBackButton = onClickedBackButton,
         onTitleChanged = viewModel::onTitleChanged,
         onContentChanged = viewModel::onContentChanged,
@@ -103,6 +104,12 @@ fun RegisterPostRoute(
                     onCompleteRegisterPost()
                     onShowSnackBar("게시글 등록 가능")
                 }
+                is RegisterPostUiEvent.PostFail -> {
+                    when(val error = event.error){
+                        is WithPeaceError.GeneralError -> onShowSnackBar("${error.code}${error.message}")
+                        is WithPeaceError.UnAuthorized -> onShowSnackBar("인가 되지 않은 게정이에요")
+                    }
+                }
 
                 RegisterPostUiEvent.TitleBlank -> onShowSnackBar("제목을 입력해 주세요")
                 RegisterPostUiEvent.TopicBlank -> viewModel.onShowBottomSheetChanged(true)
@@ -113,7 +120,7 @@ fun RegisterPostRoute(
 
 @Composable
 fun RegisterPostScreen(
-    postUiState: Post,
+    registerPostUiState: RegisterPost,
     onClickBackButton: () -> Unit = {},
     onTitleChanged: (String) -> Unit = {},
     onContentChanged: (String) -> Unit = {},
@@ -149,17 +156,17 @@ fun RegisterPostScreen(
             ) {
                 Column(modifier = Modifier.fillMaxHeight()) {
                     RegisterPostTopic(
-                        topic = postUiState.topic,
+                        topic = registerPostUiState.topic,
                         onTopicChanged = onTopicChanged,
                         onShowBottomSheetChanged = onShowBottomSheetChanged,
                         showBottomSheet = showBottomSheet,
                     )
                     RegisterPostTitle(
-                        title = postUiState.title, onTitleChanged = onTitleChanged,
+                        title = registerPostUiState.title, onTitleChanged = onTitleChanged,
                     )
                     RegisterPostContent(
                         modifier = Modifier.fillMaxHeight(),
-                        content = postUiState.content,
+                        content = registerPostUiState.content,
                         onContentChanged = onContentChanged,
                         scrollByKeyboardHeight = {
                             if(scrollState.value !=0) { //스크롤이 이미 되있는 상태일 때만 스크롤
@@ -169,13 +176,13 @@ fun RegisterPostScreen(
                     )
                 }
                 PostImageList(
-                    imageUrls = postUiState.images.urls,
+                    imageUrls = registerPostUiState.images.urls,
                     onImageUrlDeleted = onImageUrlDeleted,
                 )
             }
         }
         Column {
-            RegisterPostCamera(onNavigateToGallery = { onNavigateToGallery(postUiState.images.additionalCount) })
+            RegisterPostCamera(onNavigateToGallery = { onNavigateToGallery(registerPostUiState.images.additionalCount) })
         }
     }
 }
@@ -519,7 +526,7 @@ fun RegisterPostCamera(
 fun RegisterPostScreenPreview() {
     WithpeaceTheme {
         RegisterPostScreen(
-            postUiState = Post("", "", PostTopic.INFORMATION, LimitedImages(listOf("", ""))),
+            registerPostUiState = RegisterPost("", "", PostTopic.INFORMATION, LimitedImages(listOf("", ""))),
             onCompleteRegisterPost = {},
             onImageUrlDeleted = {},
             onShowBottomSheetChanged = {},

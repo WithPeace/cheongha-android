@@ -11,7 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
-import com.withpeace.withpeace.feature.registerpost.navigation.REGISTER_POST_ROUTE
+import com.withpeace.withpeace.feature.login.navigation.LOGIN_ROUTE
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -32,9 +32,9 @@ class MainActivity : ComponentActivity() {
                 viewModel.isLogin.collect { isLogin ->
                     if(isLogin) {
                         Log.d("covy","Main 화면으로 이동")
-                        composeStart(REGISTER_POST_ROUTE)
+                        composeStart(LOGIN_ROUTE)
                     } else {
-                        composeStart(REGISTER_POST_ROUTE)
+                        composeStart(LOGIN_ROUTE)
                     }
                     delay(2000L)
                     splashScreen.setKeepOnScreenCondition { false }

@@ -5,7 +5,6 @@ data class LimitedImages(
     val maxCount: Int = DEFAULT_MAX_COUNT,
 ) {
     init {
-        println("wooseok"+urls.size.toString())
         check(urls.size <= maxCount) { "이미지의 최대 개수는 ${maxCount}장입니다" }
     }
 

@@ -3,8 +3,9 @@ package com.withpeace.withpeace.feature.registerpost
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.withpeace.withpeace.core.domain.model.LimitedImages
-import com.withpeace.withpeace.core.domain.model.Post
-import com.withpeace.withpeace.core.domain.model.PostTopic
+import com.withpeace.withpeace.core.domain.model.post.PostTopic
+import com.withpeace.withpeace.core.domain.model.post.RegisterPost
+import com.withpeace.withpeace.core.domain.usecase.RegisterPostUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,18 +17,18 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterPostViewModel @Inject constructor(
-
+    private val registerPostUseCase: RegisterPostUseCase,
 ) : ViewModel() {
 
-    private val _postUiState = MutableStateFlow(
-        Post(
+    private val _Register_postUiState = MutableStateFlow(
+        RegisterPost(
             title = "",
             content = "",
             topic = null,
             images = LimitedImages(emptyList()),
         ),
     )
-    val postUiState = _postUiState.asStateFlow()
+    val postUiState = _Register_postUiState.asStateFlow()
 
     private val _uiEvent = Channel<RegisterPostUiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -36,23 +37,23 @@ class RegisterPostViewModel @Inject constructor(
     val showBottomSheet = _showTopicBottomSheet.asStateFlow()
 
     fun onTitleChanged(inputTitle: String) {
-        _postUiState.update { it.copy(title = inputTitle) }
+        _Register_postUiState.update { it.copy(title = inputTitle) }
     }
 
     fun onContentChanged(inputContent: String) {
-        _postUiState.update { it.copy(content = inputContent) }
+        _Register_postUiState.update { it.copy(content = inputContent) }
     }
 
     fun onTopicChanged(inputTopic: PostTopic) {
-        _postUiState.update { it.copy(topic = inputTopic) }
+        _Register_postUiState.update { it.copy(topic = inputTopic) }
     }
 
     fun onImageUrlsAdded(imageUrls: List<String>) {
-        _postUiState.update { it.copy(images = it.images.addImages(imageUrls)) }
+        _Register_postUiState.update { it.copy(images = it.images.addImages(imageUrls)) }
     }
 
     fun onImageUrlDeleted(deletedImageUrl: String) {
-        _postUiState.update { it.copy(images = it.images.deleteImage(deletedImageUrl)) }
+        _Register_postUiState.update { it.copy(images = it.images.deleteImage(deletedImageUrl)) }
     }
 
     fun onShowBottomSheetChanged(input: Boolean) {
@@ -67,7 +68,11 @@ class RegisterPostViewModel @Inject constructor(
                 post.content.isBlank() -> _uiEvent.send(RegisterPostUiEvent.ContentBlank)
                 post.topic == null -> _uiEvent.send(RegisterPostUiEvent.TopicBlank)
                 else -> {
-                    _uiEvent.send(RegisterPostUiEvent.PostSuccess)
+                    registerPostUseCase(post) {
+                        _uiEvent.send(RegisterPostUiEvent.PostFail(it))
+                    }.collect {
+                        _uiEvent.send(RegisterPostUiEvent.PostSuccess)
+                    }
                 }
             }
         }

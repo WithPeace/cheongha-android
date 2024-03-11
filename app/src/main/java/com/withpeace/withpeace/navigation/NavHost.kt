@@ -10,7 +10,6 @@ import com.withpeace.withpeace.feature.gallery.navigation.navigateToGallery
 import com.withpeace.withpeace.feature.login.navigation.LOGIN_ROUTE
 import com.withpeace.withpeace.feature.login.navigation.loginNavGraph
 import com.withpeace.withpeace.feature.registerpost.navigation.IMAGE_LIST_ARGUMENT
-import com.withpeace.withpeace.feature.registerpost.navigation.REGISTER_POST_ROUTE
 import com.withpeace.withpeace.feature.registerpost.navigation.registerPostNavGraph
 
 @Composable
@@ -23,7 +22,7 @@ fun WithpeaceNavHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = REGISTER_POST_ROUTE,
+        startDestination = startDestination,
     ) {
         loginNavGraph(onShowSnackBar = onShowSnackBar)
         registerPostNavGraph(
