@@ -13,7 +13,8 @@ val Pink40 = Color(0xFF7D5260)
 val mainpink = Color(0xFFFEA0A1)
 val subPink = Color(0xFFF5D6DB)
 val subApricot = Color(0xFFFED9C9)
-val subBlue = Color(0xFFDFF2F9)
+val subBlue1 = Color(0xFFDFF2F9)
+val subBlue2 = Color(0xFF0575E6)
 
 val systemBlack = Color(0xFF212529)
 val systemWhite = Color.White
@@ -27,7 +28,8 @@ data class WithPeaceColor(
     val MainPink: Color = mainpink,
     val SubPink: Color = subPink,
     val SubApricot: Color = subApricot,
-    val SubBlue: Color = subBlue,
+    val SubBlue1: Color = subBlue1,
+    val SubBlue2:Color = subBlue2,
     val SystemBlack: Color = systemBlack,
     val SystemWhite: Color = systemWhite,
     val SystemGray1: Color = systemGray1,

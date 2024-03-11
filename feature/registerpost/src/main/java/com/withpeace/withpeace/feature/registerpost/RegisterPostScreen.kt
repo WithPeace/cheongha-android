@@ -38,8 +38,12 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -60,8 +64,8 @@ import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceCompleteButton
 import com.withpeace.withpeace.core.domain.model.LimitedImages
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
-import com.withpeace.withpeace.core.domain.model.post.RegisterPost
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
+import com.withpeace.withpeace.core.domain.model.post.RegisterPost
 import com.withpeace.withpeace.core.permission.ImagePermissionHelper
 import com.withpeace.withpeace.feature.registerpost.R.drawable
 import kotlinx.coroutines.launch
@@ -476,12 +480,17 @@ fun RegisterPostCamera(
     modifier: Modifier = Modifier,
     onNavigateToGallery: () -> Unit,
 ) {
+    var showDialog by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
     val imagePermissionHelper = remember { ImagePermissionHelper(context) }
     val launcher = imagePermissionHelper.getImageLauncher(
         onPermissionGranted = onNavigateToGallery,
-        onPermissionDenied = {},
+        onPermissionDenied = { showDialog = true },
     )
+
+    if (showDialog) {
+        imagePermissionHelper.ImagePermissionDialog { showDialog = false }
+    }
 
     Column(
         modifier = Modifier.padding(
@@ -519,7 +528,6 @@ fun RegisterPostCamera(
         }
     }
 }
-
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable

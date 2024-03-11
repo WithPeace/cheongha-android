@@ -7,3 +7,7 @@ plugins {
 android {
     namespace = "com.withpeace.withpeace.core.permission"
 }
+
+dependencies{
+    implementation(project(":core:designsystem"))
+}
