@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class GoogleLoginResponse(
+data class LoginResponse(
     @SerialName("jwtTokenDto")
     val tokenResponse: TokenResponse,
     val role: String,
