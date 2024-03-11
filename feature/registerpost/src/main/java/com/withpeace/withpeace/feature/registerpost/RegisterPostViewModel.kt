@@ -2,6 +2,7 @@ package com.withpeace.withpeace.feature.registerpost
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.withpeace.withpeace.core.domain.model.LimitedImages
 import com.withpeace.withpeace.core.domain.model.Post
 import com.withpeace.withpeace.core.domain.model.PostTopic
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +24,7 @@ class RegisterPostViewModel @Inject constructor(
             title = "",
             content = "",
             topic = null,
-            imageUrls = listOf("","","","",""),
+            images = LimitedImages(emptyList()),
         ),
     )
     val postUiState = _postUiState.asStateFlow()
@@ -46,13 +47,12 @@ class RegisterPostViewModel @Inject constructor(
         _postUiState.update { it.copy(topic = inputTopic) }
     }
 
-    fun onImageUrlsChanged(imageUrls: List<String>) {
-        _postUiState.update { it.copy(imageUrls = imageUrls) }
+    fun onImageUrlsAdded(imageUrls: List<String>) {
+        _postUiState.update { it.copy(images = it.images.addImages(imageUrls)) }
     }
 
     fun onImageUrlDeleted(deletedImageUrl: String) {
-        val newUrls = postUiState.value.imageUrls.filter { it != deletedImageUrl }
-        _postUiState.update { it.copy(imageUrls = newUrls) }
+        _postUiState.update { it.copy(images = it.images.deleteImage(deletedImageUrl)) }
     }
 
     fun onShowBottomSheetChanged(input: Boolean) {

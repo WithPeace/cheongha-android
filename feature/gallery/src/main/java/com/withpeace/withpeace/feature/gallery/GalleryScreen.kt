@@ -39,6 +39,7 @@ import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceCompleteButton
 import com.withpeace.withpeace.core.domain.model.ImageFolder
+import com.withpeace.withpeace.core.domain.model.LimitedImages
 import com.withpeace.withpeace.feature.gallery.R.drawable
 import kotlinx.coroutines.flow.flowOf
 import java.text.NumberFormat
@@ -55,7 +56,7 @@ fun GalleryRoute(
     val selectedImageList = viewModel.selectedImages.collectAsStateWithLifecycle().value
     val selectedFolder = viewModel.selectedFolder.collectAsStateWithLifecycle().value
 
-    BackHandler {
+    BackHandler { // 스마트폰 뒤로가기 제어
         if (selectedFolder == null) {
             onClickBackButton()
         } else {
@@ -69,7 +70,7 @@ fun GalleryRoute(
         onCompleteRegisterImages = onCompleteRegisterImages,
         onSelectFolder = viewModel::onSelectFolder,
         pagingImages = pagingImages,
-        selectedImageList = selectedImageList.urls,
+        selectedImageList = selectedImageList,
         selectedFolder = selectedFolder,
     )
 }
@@ -82,7 +83,7 @@ fun GalleryScreen(
     onSelectFolder: (ImageFolder?) -> Unit = {},
     onSelectImage: (String) -> Unit = {},
     pagingImages: LazyPagingItems<String>,
-    selectedImageList: List<String>,
+    selectedImageList: LimitedImages,
     selectedFolder: ImageFolder?,
 ) {
     Column(
@@ -103,7 +104,7 @@ fun GalleryScreen(
                     Text(text = "사진첩", style = WithpeaceTheme.typography.title1)
                 } else {
                     Text(
-                        text = "${selectedImageList.size}/5 선택됨",
+                        text = "${selectedImageList.urls.size}/${selectedImageList.maxCount} 선택됨",
                         style = WithpeaceTheme.typography.title1,
                     )
                 }
@@ -112,8 +113,8 @@ fun GalleryScreen(
                 if (selectedFolder != null) {
                     WithPeaceCompleteButton(
                         modifier = Modifier.padding(end = 23.dp),
-                        onClick = { onCompleteRegisterImages(selectedImageList) },
-                        enabled = selectedImageList.isNotEmpty(),
+                        onClick = { onCompleteRegisterImages(selectedImageList.urls) },
+                        enabled = selectedImageList.urls.isNotEmpty(),
                     )
                 }
             },
@@ -126,7 +127,7 @@ fun GalleryScreen(
         } else {
             ImageList(
                 pagingImages = pagingImages,
-                selectedImageList = selectedImageList,
+                selectedImageList = selectedImageList.urls,
                 onSelectImage = onSelectImage,
             )
         }
@@ -264,7 +265,7 @@ private fun GalleryScreenPreview() {
                     ),
                 ),
             ).collectAsLazyPagingItems(),
-            selectedImageList = listOf(""),
+            selectedImageList = LimitedImages(listOf("", "")),
             selectedFolder = ImageFolder(
                 folderName = "Phillip McClain",
                 representativeImageUri = "per",

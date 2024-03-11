@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.feature.gallery
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -8,6 +9,7 @@ import com.withpeace.withpeace.core.domain.model.ImageFolder
 import com.withpeace.withpeace.core.domain.model.LimitedImages
 import com.withpeace.withpeace.core.domain.usecase.GetAllFoldersUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetLocalImagesUseCase
+import com.withpeace.withpeace.feature.gallery.navigation.GALLERY_IMAGE_LIMIT_ARGUMENT
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,9 +23,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GalleryViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val getAllFoldersUseCase: GetAllFoldersUseCase,
     private val getLocalImagesUseCase: GetLocalImagesUseCase,
 ) : ViewModel() {
+
+    val maxSelectableCount =
+        savedStateHandle.get<Int>(GALLERY_IMAGE_LIMIT_ARGUMENT) ?: DEFAULT_MAX_SELECTABLE_COUNT
 
     private val _allFolders = MutableStateFlow<List<ImageFolder>>(emptyList())
     val allFolders = _allFolders.asStateFlow()
@@ -39,7 +45,7 @@ class GalleryViewModel @Inject constructor(
             ?: PagingData.empty()
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), PagingData.empty())
 
-    private val _selectedImages = MutableStateFlow(LimitedImages(emptyList(), 5))
+    private val _selectedImages = MutableStateFlow(LimitedImages(emptyList(), maxSelectableCount))
     val selectedImages = _selectedImages.asStateFlow()
 
     init {
@@ -58,5 +64,9 @@ class GalleryViewModel @Inject constructor(
         } else if (selectedImages.value.canAddImage()) {
             _selectedImages.update { it.addImage(uriString) }
         }
+    }
+
+    companion object {
+        private const val DEFAULT_MAX_SELECTABLE_COUNT = 5
     }
 }

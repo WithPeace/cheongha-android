@@ -9,6 +9,7 @@ import com.withpeace.withpeace.feature.gallery.navigation.galleryNavGraph
 import com.withpeace.withpeace.feature.gallery.navigation.navigateToGallery
 import com.withpeace.withpeace.feature.login.navigation.LOGIN_ROUTE
 import com.withpeace.withpeace.feature.login.navigation.loginNavGraph
+import com.withpeace.withpeace.feature.registerpost.navigation.IMAGE_LIST_ARGUMENT
 import com.withpeace.withpeace.feature.registerpost.navigation.REGISTER_POST_ROUTE
 import com.withpeace.withpeace.feature.registerpost.navigation.registerPostNavGraph
 
@@ -28,12 +29,17 @@ fun WithpeaceNavHost(
         registerPostNavGraph(
             onShowSnackBar = onShowSnackBar,
             onCompleteRegisterPost = {},
-            onClickBackButton = {},
-            onClickCameraButton = { navController.navigateToGallery(imageLimit = it) },
+            onClickBackButton = navController::popBackStack,
+            onNavigateToGallery = { navController.navigateToGallery(imageLimit = it) },
         )
         galleryNavGraph(
             onClickBackButton = navController::popBackStack,
-            onCompleteRegisterImages = {},
+            onCompleteRegisterImages = {
+                navController.previousBackStackEntry?.savedStateHandle?.set(
+                    IMAGE_LIST_ARGUMENT, it,
+                )
+                navController.popBackStack()
+            },
         )
     }
 }

@@ -38,14 +38,10 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -62,6 +58,7 @@ import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.KeyboardAware
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceCompleteButton
+import com.withpeace.withpeace.core.domain.model.LimitedImages
 import com.withpeace.withpeace.core.domain.model.Post
 import com.withpeace.withpeace.core.domain.model.PostTopic
 import com.withpeace.withpeace.core.permission.ImagePermissionHelper
@@ -74,8 +71,13 @@ fun RegisterPostRoute(
     onShowSnackBar: (String) -> Unit,
     onClickedBackButton: () -> Unit,
     onCompleteRegisterPost: () -> Unit,
-    onClickCameraButton: (imageLimit: Int) -> Unit,
+    onNavigateToGallery: (imageLimit: Int) -> Unit,
+    selectedImageUrls: List<String>,
 ) {
+    LaunchedEffect(key1 = selectedImageUrls) {
+        viewModel.onImageUrlsAdded(selectedImageUrls)
+    }
+
     val postUiState = viewModel.postUiState.collectAsStateWithLifecycle().value
     val showBottomSheet = viewModel.showBottomSheet.collectAsStateWithLifecycle().value
 
@@ -87,11 +89,10 @@ fun RegisterPostRoute(
         onContentChanged = viewModel::onContentChanged,
         onTopicChanged = viewModel::onTopicChanged,
         onCompleteRegisterPost = viewModel::onRegisterPostCompleted,
-        onImageUrlsChanged = viewModel::onImageUrlsChanged,
         onShowBottomSheetChanged = viewModel::onShowBottomSheetChanged,
         showBottomSheet = showBottomSheet,
         onImageUrlDeleted = viewModel::onImageUrlDeleted,
-        onClickCameraButton = onClickCameraButton,
+        onNavigateToGallery = onNavigateToGallery,
     )
     }
     LaunchedEffect(null) {
@@ -118,11 +119,10 @@ fun RegisterPostScreen(
     onContentChanged: (String) -> Unit = {},
     onTopicChanged: (PostTopic) -> Unit = {},
     onCompleteRegisterPost: () -> Unit,
-    onImageUrlsChanged: (images: List<String>) -> Unit,
     onImageUrlDeleted: (String) -> Unit,
     onShowBottomSheetChanged: (Boolean) -> Unit = {},
     showBottomSheet: Boolean,
-    onClickCameraButton: (imageLimit: Int) -> Unit,
+    onNavigateToGallery: (imageLimit: Int) -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
@@ -169,13 +169,13 @@ fun RegisterPostScreen(
                     )
                 }
                 PostImageList(
-                    imageUrls = postUiState.imageUrls,
+                    imageUrls = postUiState.images.urls,
                     onImageUrlDeleted = onImageUrlDeleted,
                 )
             }
         }
         Column {
-            RegisterPostCamera(onNavigateToGallery = {})
+            RegisterPostCamera(onNavigateToGallery = { onNavigateToGallery(postUiState.images.additionalCount) })
         }
     }
 }
@@ -416,11 +416,12 @@ fun RegisterPostContent(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val keyboardHeight = WindowInsets.ime.getBottom(LocalDensity.current)
-    var isFocused by remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = keyboardHeight) {
-        if (isFocused) coroutineScope.launch { scrollByKeyboardHeight(keyboardHeight.toFloat()) }
-    } // 키보드 영역만큼 스크롤해줌으로써 키보드 가림을 해결.
+    LaunchedEffect(key1 = keyboardHeight, key2 = content.lines().size) {
+        if (content.lines().size >= 5) {
+            coroutineScope.launch { scrollByKeyboardHeight(keyboardHeight.toFloat()) }
+        }
+    }  // 키보드기 올라가거나, Content의 라인이 변할때마다 키보드 영역으로 내려가지 않도록 키보드 영역만큼 스크롤해줌.
 
     val interactionSource = remember { MutableInteractionSource() }
         BasicTextField(
@@ -429,11 +430,7 @@ fun RegisterPostContent(
                     vertical = 16.dp,
                     horizontal = WithpeaceTheme.padding.BasicHorizontalPadding,
                 )
-                .fillMaxSize()
-                .onFocusChanged {
-                    isFocused = if (it.isFocused) true
-                    else false
-                },
+                .fillMaxSize(),
             value = content,
             onValueChange = onContentChanged,
             enabled = true,
@@ -470,12 +467,12 @@ fun RegisterPostContent(
 @Composable
 fun RegisterPostCamera(
     modifier: Modifier = Modifier,
-    onNavigateToGallery: (limit: Int) -> Unit,
+    onNavigateToGallery: () -> Unit,
 ) {
     val context = LocalContext.current
     val imagePermissionHelper = remember { ImagePermissionHelper(context) }
     val launcher = imagePermissionHelper.getImageLauncher(
-        onPermissionGranted = { onNavigateToGallery(3) },
+        onPermissionGranted = onNavigateToGallery,
         onPermissionDenied = {},
     )
 
@@ -501,9 +498,7 @@ fun RegisterPostCamera(
                 modifier = Modifier
                     .clickable {
                         imagePermissionHelper.onCheckSelfImagePermission(
-                            onPermissionGranted = {
-                                onNavigateToGallery(3)
-                            },
+                            onPermissionGranted = onNavigateToGallery,
                             onPermissionDenied = {
                                 imagePermissionHelper.requestPermissionDialog(launcher)
                             },
@@ -524,13 +519,12 @@ fun RegisterPostCamera(
 fun RegisterPostScreenPreview() {
     WithpeaceTheme {
         RegisterPostScreen(
-            postUiState = Post("", "", PostTopic.INFORMATION, listOf("", "", "")),
+            postUiState = Post("", "", PostTopic.INFORMATION, LimitedImages(listOf("", ""))),
             onCompleteRegisterPost = {},
-            onImageUrlsChanged = {},
             onImageUrlDeleted = {},
             onShowBottomSheetChanged = {},
             showBottomSheet = false,
-            onClickCameraButton = {},
+            onNavigateToGallery = {},
         )
     }
 }
