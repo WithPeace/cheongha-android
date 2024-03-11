@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -48,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -59,22 +59,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.landscapist.glide.GlideImage
 import com.withpeace.withpeace.core.designsystem.R
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
+import com.withpeace.withpeace.core.designsystem.ui.KeyboardAware
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceCompleteButton
 import com.withpeace.withpeace.core.domain.model.Post
 import com.withpeace.withpeace.core.domain.model.PostTopic
+import com.withpeace.withpeace.core.permission.ImagePermissionHelper
 import com.withpeace.withpeace.feature.registerpost.R.drawable
 import kotlinx.coroutines.launch
-
-@Composable
-fun KeyboardAware(
-    //키보드 패딩만큼 패딩을 적용하겠다.
-    content: @Composable () -> Unit,
-) {
-    Box(modifier = Modifier.imePadding()) {
-        content()
-    }
-}
 
 @Composable
 fun RegisterPostRoute(
@@ -82,6 +74,7 @@ fun RegisterPostRoute(
     onShowSnackBar: (String) -> Unit,
     onClickedBackButton: () -> Unit,
     onCompleteRegisterPost: () -> Unit,
+    onClickCameraButton: (imageLimit: Int) -> Unit,
 ) {
     val postUiState = viewModel.postUiState.collectAsStateWithLifecycle().value
     val showBottomSheet = viewModel.showBottomSheet.collectAsStateWithLifecycle().value
@@ -98,6 +91,7 @@ fun RegisterPostRoute(
         onShowBottomSheetChanged = viewModel::onShowBottomSheetChanged,
         showBottomSheet = showBottomSheet,
         onImageUrlDeleted = viewModel::onImageUrlDeleted,
+        onClickCameraButton = onClickCameraButton,
     )
     }
     LaunchedEffect(null) {
@@ -128,6 +122,7 @@ fun RegisterPostScreen(
     onImageUrlDeleted: (String) -> Unit,
     onShowBottomSheetChanged: (Boolean) -> Unit = {},
     showBottomSheet: Boolean,
+    onClickCameraButton: (imageLimit: Int) -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
@@ -180,9 +175,7 @@ fun RegisterPostScreen(
             }
         }
         Column {
-            RegisterPostCamera(
-                onImageUrlsChanged = onImageUrlsChanged,
-            )
+            RegisterPostCamera(onNavigateToGallery = {})
         }
     }
 }
@@ -477,8 +470,15 @@ fun RegisterPostContent(
 @Composable
 fun RegisterPostCamera(
     modifier: Modifier = Modifier,
-    onImageUrlsChanged: (List<String>) -> Unit,
+    onNavigateToGallery: (limit: Int) -> Unit,
 ) {
+    val context = LocalContext.current
+    val imagePermissionHelper = remember { ImagePermissionHelper(context) }
+    val launcher = imagePermissionHelper.getImageLauncher(
+        onPermissionGranted = { onNavigateToGallery(3) },
+        onPermissionDenied = {},
+    )
+
     Column(
         modifier = Modifier.padding(
             horizontal = WithpeaceTheme.padding.BasicHorizontalPadding,
@@ -499,7 +499,16 @@ fun RegisterPostCamera(
         ) {
             Icon(
                 modifier = Modifier
-                    .clickable { }
+                    .clickable {
+                        imagePermissionHelper.onCheckSelfImagePermission(
+                            onPermissionGranted = {
+                                onNavigateToGallery(3)
+                            },
+                            onPermissionDenied = {
+                                imagePermissionHelper.requestPermissionDialog(launcher)
+                            },
+                        )
+                    }
                     .padding(end = 8.dp),
                 painter = painterResource(id = drawable.ic_camera),
                 contentDescription = "CameraIcon",
@@ -515,12 +524,13 @@ fun RegisterPostCamera(
 fun RegisterPostScreenPreview() {
     WithpeaceTheme {
         RegisterPostScreen(
+            postUiState = Post("", "", PostTopic.INFORMATION, listOf("", "", "")),
             onCompleteRegisterPost = {},
             onImageUrlsChanged = {},
-            showBottomSheet = false,
             onImageUrlDeleted = {},
             onShowBottomSheetChanged = {},
-            postUiState = Post("", "", PostTopic.INFORMATION, listOf("", "", "")),
+            showBottomSheet = false,
+            onClickCameraButton = {},
         )
     }
 }

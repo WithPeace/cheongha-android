@@ -16,12 +16,14 @@ fun NavGraphBuilder.registerPostNavGraph(
     onShowSnackBar: (String) -> Unit,
     onClickBackButton: () -> Unit,
     onCompleteRegisterPost: () -> Unit,
+    onClickCameraButton: (imageLimit: Int) -> Unit,
 ) {
     composable(route = REGISTER_POST_ROUTE) {
         RegisterPostRoute(
             onShowSnackBar = onShowSnackBar,
             onClickedBackButton = onClickBackButton,
             onCompleteRegisterPost = onCompleteRegisterPost,
+            onClickCameraButton = onClickCameraButton
         )
     }
 }

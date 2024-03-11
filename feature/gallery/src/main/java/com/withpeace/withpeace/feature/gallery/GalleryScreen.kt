@@ -229,7 +229,7 @@ fun ImageList(
                     ) {
                         Image(
                             modifier = Modifier.align(Alignment.Center),
-                            painter = painterResource(id = drawable.ic_check),
+                            painter = painterResource(id = drawable.ic_picture_select),
                             contentDescription = null,
                         )
                     }
