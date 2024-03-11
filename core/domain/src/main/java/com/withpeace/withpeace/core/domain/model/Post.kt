@@ -4,7 +4,7 @@ data class Post(
     val title: String,
     val content: String,
     val topic: PostTopic?,
-    val imageUrls: List<String>,
+    val images: LimitedImages,
 )
 
 enum class PostTopic {
