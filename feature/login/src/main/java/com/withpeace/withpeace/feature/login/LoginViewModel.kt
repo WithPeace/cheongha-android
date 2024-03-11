@@ -24,8 +24,7 @@ class LoginViewModel @Inject constructor(
             googleLoginUseCase(
                 idToken = idToken,
                 onError = { launch { _loginUiEvent.send(LoginUiEvent.LoginFail) } },
-                onSuccess = { launch { _loginUiEvent.send(LoginUiEvent.LoginSuccess) } },
-            )
+            ).collect { launch { _loginUiEvent.send(LoginUiEvent.LoginSuccess) } }
         }
     }
 
