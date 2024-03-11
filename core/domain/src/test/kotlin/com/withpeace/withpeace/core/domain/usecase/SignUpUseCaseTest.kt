@@ -1,43 +1,36 @@
 package com.withpeace.withpeace.core.domain.usecase
 
-import com.google.common.truth.Truth.assertThat
-import com.withpeace.withpeace.core.domain.model.AuthToken
-import com.withpeace.withpeace.core.domain.repository.AuthTokenRepository
+import com.withpeace.withpeace.core.domain.repository.TokenRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class SignUpUseCaseTest {
     private lateinit var signUpUseCase: SignUpUseCase
-    private val authTokenRepository: AuthTokenRepository = mockk(relaxed = true)
+    private val tokenRepository: TokenRepository = mockk(relaxed = true)
 
-    private fun initialize() = SignUpUseCase(authTokenRepository)
+    private fun initialize() = SignUpUseCase(tokenRepository)
 
     @Test
-    fun `회원가입에 성공하면, Token을 반환한다`() = runTest {
+    fun `회원가입에 성공하면, 성공응답을 반환한다`() = runTest {
         // given
+        val onSuccess = mockk<() -> Unit>(relaxed = true)
         coEvery {
-            authTokenRepository.signUp(
+            tokenRepository.signUp(
                 "Email",
                 "nickname",
                 onError = any(),
             )
-        } returns flow { emit(AuthToken(accessToken = "test", refreshToken = "test")) }
+        } returns flow { onSuccess.invoke() }
         signUpUseCase = initialize()
         // when
-        val actual = signUpUseCase("Email", "nickname", onError = {}).first()
+        signUpUseCase("Email", "nickname", {}).collect()
         // then
-        assertThat(actual).isEqualTo(
-            AuthToken(
-                accessToken = "test",
-                refreshToken = "test",
-            ),
-        )
+        coVerify { onSuccess.invoke() }
     }
 
     @Test
@@ -45,7 +38,7 @@ class SignUpUseCaseTest {
         // given
         val errorMock = mockk<(String) -> Unit>(relaxed = true)
         coEvery {
-            authTokenRepository.signUp(
+            tokenRepository.signUp(
                 "Email",
                 "nickname",
                 onError = errorMock,

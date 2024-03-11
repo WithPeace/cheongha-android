@@ -1,14 +1,13 @@
 package com.withpeace.withpeace.core.domain.usecase
 
-import com.withpeace.withpeace.core.domain.repository.AuthTokenRepository
-import kotlinx.coroutines.flow.firstOrNull
+import com.withpeace.withpeace.core.domain.repository.TokenRepository
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class IsLoginUseCase @Inject constructor(
-    private val authTokenRepository: AuthTokenRepository,
+    private val tokenRepository: TokenRepository,
 ) {
     suspend operator fun invoke(): Boolean {
-        val token = authTokenRepository.getAccessToken().firstOrNull()
-        return token != null
+        return tokenRepository.isLogin()
     }
 }
