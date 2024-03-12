@@ -68,6 +68,7 @@ import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.domain.model.post.RegisterPost
 import com.withpeace.withpeace.core.permission.ImagePermissionHelper
 import com.withpeace.withpeace.feature.registerpost.R.drawable
+import com.withpeace.withpeace.feature.registerpost.R.string
 import kotlinx.coroutines.launch
 
 @Composable
@@ -79,7 +80,9 @@ fun RegisterPostRoute(
     onNavigateToGallery: (imageLimit: Int) -> Unit,
     selectedImageUrls: List<String>,
 ) {
-    LaunchedEffect(key1 = selectedImageUrls) {
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = selectedImageUrls) {// Navigation을 통해 받아온 이미지가 다를때만 실행
         viewModel.onImageUrlsAdded(selectedImageUrls)
     }
 
@@ -103,7 +106,7 @@ fun RegisterPostRoute(
     LaunchedEffect(null) {
         viewModel.uiEvent.collect { event ->
             when (event) {
-                RegisterPostUiEvent.ContentBlank -> onShowSnackBar("내용을 입력해 주세요")
+                RegisterPostUiEvent.ContentBlank -> onShowSnackBar(context.getString(string.content_blank_error_message))
                 RegisterPostUiEvent.PostSuccess -> {
                     onCompleteRegisterPost()
                     onShowSnackBar("게시글 등록 가능")
@@ -115,7 +118,7 @@ fun RegisterPostRoute(
                     }
                 }
 
-                RegisterPostUiEvent.TitleBlank -> onShowSnackBar("제목을 입력해 주세요")
+                RegisterPostUiEvent.TitleBlank -> onShowSnackBar(context.getString(string.title_blank_error_message))
                 RegisterPostUiEvent.TopicBlank -> viewModel.onShowBottomSheetChanged(true)
             }
         }
@@ -173,9 +176,7 @@ fun RegisterPostScreen(
                         content = registerPostUiState.content,
                         onContentChanged = onContentChanged,
                         scrollByKeyboardHeight = {
-                            if(scrollState.value !=0) { //스크롤이 이미 되있는 상태일 때만 스크롤
-                                scrollState.animateScrollBy(it, spring(dampingRatio = 5f))
-                            }
+                            scrollState.animateScrollBy(it, spring(dampingRatio = 5f))
                         },
                     )
                 }
@@ -237,7 +238,10 @@ fun RegisterPostTopAppBar(
             modifier = modifier.padding(end = 24.dp),
             onClickBackButton = onClickBackButton,
             title = {
-                Text(text = "글 쓰기", style = WithpeaceTheme.typography.title1)
+                Text(
+                    text = stringResource(string.register_post_topbar_title),
+                    style = WithpeaceTheme.typography.title1,
+                )
             },
             actions = {
                 WithPeaceCompleteButton(
@@ -275,7 +279,7 @@ fun RegisterPostTopic(
         ) {
             Text(
                 text = if (topic == null) {
-                    "게시글의 주제를 선택해주세요"
+                   stringResource(id = string.topic_hint)
                 } else {
                     stringResource(
                         id = PosterTopicUiState.create(
@@ -331,7 +335,7 @@ fun TopicBottomSheetContent(
     Column {
         Text(
             modifier = Modifier.padding(start = 24.dp, top = 24.dp),
-            text = "게시글의 주제를 선택해주세요",
+            text = stringResource(string.topic_hint),
             style = WithpeaceTheme.typography.title1,
         )
         LazyVerticalGrid(
@@ -391,7 +395,7 @@ fun RegisterPostTitle(
                 visualTransformation = VisualTransformation.None,
                 placeholder = {
                     Text(
-                        text = "제목을 입력해주세요",
+                        text = stringResource(string.title_hint),
                         style = WithpeaceTheme.typography.title2,
                         color = WithpeaceTheme.colors.SystemGray2,
                     )
@@ -429,10 +433,10 @@ fun RegisterPostContent(
     val keyboardHeight = WindowInsets.ime.getBottom(LocalDensity.current)
 
     LaunchedEffect(key1 = keyboardHeight, key2 = content.lines().size) {
-        if (content.lines().size >= 5) {
+        if (content.lines().size >= SCROLL_THRESHOLD_LINE) {
             coroutineScope.launch { scrollByKeyboardHeight(keyboardHeight.toFloat()) }
         }
-    }  // 키보드기 올라가거나, Content의 라인이 변할때마다 키보드 영역으로 내려가지 않도록 키보드 영역만큼 스크롤해줌.
+    }  // 키보드기 올라가거나, Content의 라인이 변할때마다 내용이 키보드 영역에 가려지지 않도록 키보드 영역만큼 스크롤해줌.
 
     val interactionSource = remember { MutableInteractionSource() }
         BasicTextField(
@@ -456,7 +460,7 @@ fun RegisterPostContent(
                 visualTransformation = VisualTransformation.None,
                 placeholder = {
                     Text(
-                        text = "내용을 입력해주세요",
+                        text = stringResource(string.content_hint),
                         style = WithpeaceTheme.typography.body,
                         color = WithpeaceTheme.colors.SystemGray2,
                     )
@@ -524,10 +528,12 @@ fun RegisterPostCamera(
                 painter = painterResource(id = drawable.ic_camera),
                 contentDescription = "CameraIcon",
             )
-            Text(text = "사진", style = WithpeaceTheme.typography.caption)
+            Text(text = stringResource(string.picture), style = WithpeaceTheme.typography.caption)
         }
     }
 }
+
+private const val SCROLL_THRESHOLD_LINE = 5
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable

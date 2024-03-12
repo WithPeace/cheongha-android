@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gallery_folder_topbar_title">사진첩</string>
+    <string name="selected_images_count">%1$s/%2$s 선택됨</string>
+</resources>

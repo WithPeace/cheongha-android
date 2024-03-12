@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
@@ -100,7 +101,7 @@ class ImagePermissionHelper(
     ) {
         Dialog(onDismissRequest = onDismissRequest) {
             Column(
-                modifier = androidx.compose.ui.Modifier
+                modifier = Modifier
                     .background(
                         WithpeaceTheme.colors.SystemWhite,
                         RoundedCornerShape(10.dp),
@@ -109,9 +110,7 @@ class ImagePermissionHelper(
             ) {
                 Text(
                     modifier = Modifier.padding(24.dp),
-                    text = "저장공간 권한이 꺼져있습니다.\n" +
-                        "사진 업로드를 위해서는 [권한] 설정에서\n" +
-                        "저장공간 권한을 허용해야합니다.",
+                    text = stringResource(R.string.image_permission_dialog_text),
                     style = WithpeaceTheme.typography.caption,
                 )
                 Row(modifier = Modifier.align(Alignment.End)) {
@@ -121,7 +120,7 @@ class ImagePermissionHelper(
                                 onDismissRequest()
                             }
                             .padding(end = 16.dp, bottom = 16.dp),
-                        text = "취소",
+                        text = stringResource(R.string.cancel),
                         style = WithpeaceTheme.typography.caption,
                         color = WithpeaceTheme.colors.SubBlue2,
                     )
@@ -134,7 +133,7 @@ class ImagePermissionHelper(
                                 onDismissRequest()
                             }
                             .padding(start = 16.dp, end = 30.dp, bottom = 16.dp),
-                        text = "설정으로 가기",
+                        text = stringResource(R.string.go_to_setting),
                         style = WithpeaceTheme.typography.caption,
                         color = WithpeaceTheme.colors.SubBlue2,
                     )

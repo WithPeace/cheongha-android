@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -101,10 +102,14 @@ fun GalleryScreen(
             },
             title = {
                 if (selectedFolder == null) {
-                    Text(text = "사진첩", style = WithpeaceTheme.typography.title1)
+                    Text(text = stringResource(com.withpeace.withpeace.feature.gallery.R.string.gallery_folder_topbar_title), style = WithpeaceTheme.typography.title1)
                 } else {
                     Text(
-                        text = "${selectedImageList.urls.size}/${selectedImageList.maxCount} 선택됨",
+                        text = stringResource(
+                            com.withpeace.withpeace.feature.gallery.R.string.selected_images_count,
+                            selectedImageList.urls.size,
+                            selectedImageList.maxCount,
+                        ),
                         style = WithpeaceTheme.typography.title1,
                     )
                 }
