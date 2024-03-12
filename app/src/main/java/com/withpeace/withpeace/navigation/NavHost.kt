@@ -29,10 +29,20 @@ fun WithpeaceNavHost(
             onShowSnackBar = onShowSnackBar,
             onCompleteRegisterPost = {},
             onClickBackButton = navController::popBackStack,
-            onNavigateToGallery = { navController.navigateToGallery(imageLimit = it) },
+            onNavigateToGallery = { imageLimit, imageCount ->
+                navController.navigateToGallery(
+                    imageLimit = imageLimit,
+                    currentImageCount = imageCount,
+                )
+            },
         )
         galleryNavGraph(
-            onClickBackButton = navController::popBackStack,
+            onClickBackButton = {
+                navController.previousBackStackEntry?.savedStateHandle?.set(
+                    IMAGE_LIST_ARGUMENT, emptyList<String>(),
+                )
+                navController.popBackStack()
+            },
             onCompleteRegisterImages = {
                 navController.previousBackStackEntry?.savedStateHandle?.set(
                     IMAGE_LIST_ARGUMENT, it,

@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.feature.registerpost
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.withpeace.withpeace.core.domain.model.LimitedImages
@@ -49,11 +50,12 @@ class RegisterPostViewModel @Inject constructor(
     }
 
     fun onImageUrlsAdded(imageUrls: List<String>) {
+        Log.d("wooseok", imageUrls.size.toString())
         _Register_postUiState.update { it.copy(images = it.images.addImages(imageUrls)) }
     }
 
-    fun onImageUrlDeleted(deletedImageUrl: String) {
-        _Register_postUiState.update { it.copy(images = it.images.deleteImage(deletedImageUrl)) }
+    fun onImageUrlDeleted(index: Int) {
+        _Register_postUiState.update { it.copy(images = it.images.deleteImage(index)) }
     }
 
     fun onShowBottomSheetChanged(input: Boolean) {

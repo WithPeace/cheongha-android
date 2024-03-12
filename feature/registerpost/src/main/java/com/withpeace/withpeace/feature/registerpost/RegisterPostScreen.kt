@@ -1,6 +1,7 @@
 package com.withpeace.withpeace.feature.registerpost
 
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,7 +26,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
@@ -77,7 +78,7 @@ fun RegisterPostRoute(
     onShowSnackBar: (String) -> Unit,
     onClickedBackButton: () -> Unit,
     onCompleteRegisterPost: () -> Unit,
-    onNavigateToGallery: (imageLimit: Int) -> Unit,
+    onNavigateToGallery: (imageLimit: Int, imageCount: Int) -> Unit,
     selectedImageUrls: List<String>,
 ) {
     val context = LocalContext.current
@@ -133,10 +134,10 @@ fun RegisterPostScreen(
     onContentChanged: (String) -> Unit = {},
     onTopicChanged: (PostTopic) -> Unit = {},
     onCompleteRegisterPost: () -> Unit,
-    onImageUrlDeleted: (String) -> Unit,
+    onImageUrlDeleted: (Int) -> Unit,
     onShowBottomSheetChanged: (Boolean) -> Unit = {},
     showBottomSheet: Boolean,
-    onNavigateToGallery: (imageLimit: Int) -> Unit,
+    onNavigateToGallery: (imageLimit: Int, imageCount: Int) -> Unit = { _, _ -> },
 ) {
     val scrollState = rememberScrollState()
 
@@ -187,25 +188,37 @@ fun RegisterPostScreen(
             }
         }
         Column {
-            RegisterPostCamera(onNavigateToGallery = { onNavigateToGallery(registerPostUiState.images.additionalCount) })
+            RegisterPostCamera(
+                onNavigateToGallery = {
+                    onNavigateToGallery(
+                        registerPostUiState.images.maxCount,
+                        registerPostUiState.images.currentCount,
+                    )
+                },
+            )
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostImageList(
     modifier: Modifier = Modifier,
     imageUrls: List<String>,
-    onImageUrlDeleted: (String) -> Unit,
+    onImageUrlDeleted: (Int) -> Unit,
 ) {
     LazyRow(
         modifier = modifier,
         contentPadding = PaddingValues(start = WithpeaceTheme.padding.BasicHorizontalPadding),
     ) {
-        items(
+        itemsIndexed(
             items = imageUrls,
-        ) { imageUrl ->
-            Box(modifier = Modifier.size(122.dp)) {
+        ) { index, imageUrl ->
+            Box(
+                modifier = Modifier
+                    .size(122.dp)
+                    .animateItemPlacement(),
+            ) {
                 GlideImage(
                     modifier = Modifier
                         .size(110.dp)
@@ -216,7 +229,7 @@ fun PostImageList(
                 Image(
                     modifier = Modifier
                         .clickable {
-                            onImageUrlDeleted(imageUrl)
+                            onImageUrlDeleted(index)
                         }
                         .align(Alignment.TopEnd),
                     painter = painterResource(id = drawable.btn_picture_delete),
@@ -545,7 +558,6 @@ fun RegisterPostScreenPreview() {
             onImageUrlDeleted = {},
             onShowBottomSheetChanged = {},
             showBottomSheet = false,
-            onNavigateToGallery = {},
         )
     }
 }

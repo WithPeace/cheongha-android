@@ -17,11 +17,11 @@ fun NavGraphBuilder.registerPostNavGraph(
     onShowSnackBar: (String) -> Unit,
     onClickBackButton: () -> Unit,
     onCompleteRegisterPost: () -> Unit,
-    onNavigateToGallery: (imageLimit: Int) -> Unit,
+    onNavigateToGallery: (imageLimit: Int, imageCount: Int) -> Unit,
 ) {
     composable(route = REGISTER_POST_ROUTE) { entry ->
         val selectedImageUrls =
-            entry.savedStateHandle.get<List<String>>(IMAGE_LIST_ARGUMENT) ?: emptyList()
+            entry.savedStateHandle.get<List<String>>(IMAGE_LIST_ARGUMENT)?: emptyList()
         RegisterPostRoute(
             onShowSnackBar = onShowSnackBar,
             onClickedBackButton = onClickBackButton,

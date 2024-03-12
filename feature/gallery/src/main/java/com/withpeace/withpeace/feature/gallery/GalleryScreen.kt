@@ -107,7 +107,7 @@ fun GalleryScreen(
                     Text(
                         text = stringResource(
                             com.withpeace.withpeace.feature.gallery.R.string.selected_images_count,
-                            selectedImageList.urls.size,
+                            selectedImageList.currentCount,
                             selectedImageList.maxCount,
                         ),
                         style = WithpeaceTheme.typography.title1,

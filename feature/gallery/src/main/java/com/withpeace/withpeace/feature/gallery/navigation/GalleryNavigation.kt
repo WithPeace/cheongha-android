@@ -9,15 +9,17 @@ import androidx.navigation.navArgument
 import com.withpeace.withpeace.feature.gallery.GalleryRoute
 
 const val GALLERY_ROUTE = "gallery_route"
-const val GALLERY_IMAGE_LIMIT_ARGUMENT = "image_count"
+const val GALLERY_IMAGE_LIMIT_ARGUMENT = "image_limit"
+const val GALLERY_IMAGE_COUNT_ARGUMENT = "image_count"
 const val GALLERY_ROUTE_WITH_ARGUMENT =
-    "$GALLERY_ROUTE/{$GALLERY_IMAGE_LIMIT_ARGUMENT}"
+    "$GALLERY_ROUTE/{$GALLERY_IMAGE_LIMIT_ARGUMENT}/{$GALLERY_IMAGE_COUNT_ARGUMENT}"
 
 fun NavController.navigateToGallery(
     navOptions: NavOptions? = null,
-    imageLimit: Int,
+    imageLimit: Int = 5,
+    currentImageCount: Int = 0,
 ) =
-    navigate("$GALLERY_ROUTE/$imageLimit", navOptions)
+    navigate("$GALLERY_ROUTE/$imageLimit/$currentImageCount", navOptions)
 
 fun NavGraphBuilder.galleryNavGraph(
     onClickBackButton: () -> Unit,
@@ -25,7 +27,10 @@ fun NavGraphBuilder.galleryNavGraph(
 ) {
     composable(
         route = GALLERY_ROUTE_WITH_ARGUMENT,
-        arguments = listOf(navArgument(GALLERY_IMAGE_LIMIT_ARGUMENT) { type = NavType.IntType }),
+        arguments = listOf(
+            navArgument(GALLERY_IMAGE_LIMIT_ARGUMENT) { type = NavType.IntType },
+            navArgument(GALLERY_IMAGE_COUNT_ARGUMENT) { type = NavType.IntType },
+        ),
     ) {
         GalleryRoute(
             onClickBackButton = onClickBackButton,
