@@ -46,8 +46,8 @@ class DefaultTokenRepository @Inject constructor(
     ): Flow<Unit> = flow {
         authService.googleLogin(AUTHORIZATION_FORMAT.format(idToken)).suspendMapSuccess {
             val data = this.data
-            tokenPreferenceDataSource.updateAccessToken(data.accessToken)
-            tokenPreferenceDataSource.updateRefreshToken(data.refreshToken)
+            tokenPreferenceDataSource.updateAccessToken(data.tokenResponse.accessToken)
+            tokenPreferenceDataSource.updateRefreshToken(data.tokenResponse.refreshToken)
             emit(Unit)
         }.suspendOnFailure { onError(message()) }
     }.flowOn(Dispatchers.IO)
