@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -42,6 +43,8 @@ import com.withpeace.withpeace.core.designsystem.ui.WithPeaceCompleteButton
 import com.withpeace.withpeace.core.domain.model.ImageFolder
 import com.withpeace.withpeace.core.domain.model.LimitedImages
 import com.withpeace.withpeace.feature.gallery.R.drawable
+import com.withpeace.withpeace.feature.gallery.R.string
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOf
 import java.text.NumberFormat
 import java.util.Locale
@@ -49,9 +52,11 @@ import java.util.Locale
 @Composable
 fun GalleryRoute(
     viewModel: GalleryViewModel = hiltViewModel(),
+    onShowSnackBar: (String) -> Unit,
     onClickBackButton: () -> Unit,
     onCompleteRegisterImages: (List<String>) -> Unit,
 ) {
+    val noMoreImageMessage = stringResource(id = string.no_more_image_select)
     val allFolders = viewModel.allFolders.collectAsStateWithLifecycle().value
     val pagingImages = viewModel.images.collectAsLazyPagingItems()
     val selectedImageList = viewModel.selectedImages.collectAsStateWithLifecycle().value
@@ -74,6 +79,14 @@ fun GalleryRoute(
         selectedImageList = selectedImageList,
         selectedFolder = selectedFolder,
     )
+
+    LaunchedEffect(key1 = null) {
+        viewModel.sideEffect.collectLatest {
+            when (it) {
+                GallerySideEffect.SelectImageFail -> onShowSnackBar(noMoreImageMessage)
+            }
+        }
+    }
 }
 
 @Composable
@@ -102,11 +115,14 @@ fun GalleryScreen(
             },
             title = {
                 if (selectedFolder == null) {
-                    Text(text = stringResource(com.withpeace.withpeace.feature.gallery.R.string.gallery_folder_topbar_title), style = WithpeaceTheme.typography.title1)
+                    Text(
+                        text = stringResource(string.gallery_folder_topbar_title),
+                        style = WithpeaceTheme.typography.title1,
+                    )
                 } else {
                     Text(
                         text = stringResource(
-                            com.withpeace.withpeace.feature.gallery.R.string.selected_images_count,
+                            string.selected_images_count,
                             selectedImageList.currentCount,
                             selectedImageList.maxCount,
                         ),
@@ -132,7 +148,7 @@ fun GalleryScreen(
         } else {
             ImageList(
                 pagingImages = pagingImages,
-                selectedImageList = selectedImageList.urls,
+                selectedImageList = selectedImageList,
                 onSelectImage = onSelectImage,
             )
         }
@@ -202,7 +218,7 @@ fun FolderList(
 fun ImageList(
     modifier: Modifier = Modifier,
     pagingImages: LazyPagingItems<String>,
-    selectedImageList: List<String>,
+    selectedImageList: LimitedImages,
     onSelectImage: (String) -> Unit,
 ) {
     LazyVerticalGrid(
@@ -219,7 +235,9 @@ fun ImageList(
             Box(
                 modifier = Modifier
                     .aspectRatio(1f)
-                    .clickable { onSelectImage(uriString) },
+                    .clickable {
+                        onSelectImage(uriString)
+                    },
             ) {
                 GlideImage(
                     modifier = Modifier.align(Alignment.Center),

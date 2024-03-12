@@ -49,6 +49,7 @@ fun WithpeaceNavHost(
                 )
                 navController.popBackStack()
             },
+            onShowSnackBar = onShowSnackBar,
         )
     }
 }

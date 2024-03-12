@@ -24,6 +24,7 @@ fun NavController.navigateToGallery(
 fun NavGraphBuilder.galleryNavGraph(
     onClickBackButton: () -> Unit,
     onCompleteRegisterImages: (List<String>) -> Unit,
+    onShowSnackBar: (String) -> Unit,
 ) {
     composable(
         route = GALLERY_ROUTE_WITH_ARGUMENT,
@@ -35,6 +36,7 @@ fun NavGraphBuilder.galleryNavGraph(
         GalleryRoute(
             onClickBackButton = onClickBackButton,
             onCompleteRegisterImages = onCompleteRegisterImages,
+            onShowSnackBar = onShowSnackBar
         )
     }
 }
