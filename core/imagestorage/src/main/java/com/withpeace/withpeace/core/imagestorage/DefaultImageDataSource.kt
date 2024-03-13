@@ -30,8 +30,8 @@ class DefaultImageDataSource(
         folder: String?,
     ): List<Uri> {
         val imageUris = mutableListOf<Uri>()
-        val imageCursor = context.getImageCursor((page - 1) * loadSize, loadSize, folder)
-        imageCursor.use { cursor ->
+        val pagingImagesQuery = context.getPagingImagesQuery((page - 1) * loadSize, loadSize, folder)
+        pagingImagesQuery.use { cursor ->
             val idColumn = cursor.getColumnIndexOrThrow(Images.Media._ID)
             while (cursor.moveToNext()) {
                 val uri = ContentUris.withAppendedId(uriExternal, cursor.getLong(idColumn))
@@ -44,8 +44,8 @@ class DefaultImageDataSource(
 
     override suspend fun getFolders(): List<ImageFolderEntity> {
         val folderList = mutableListOf<ImageFolderEntity>()
-        val folderCursor = context.getFolderCursor()
-        folderCursor.use { cursor ->
+        val folderQuery = context.getFolderQuery()
+        folderQuery.use { cursor ->
             val idColumn = cursor.getColumnIndexOrThrow(Images.Media._ID)
             val bucketNameColumn = cursor.getColumnIndexOrThrow(Images.Media.BUCKET_DISPLAY_NAME)
             while (cursor.moveToNext()) {
@@ -64,7 +64,7 @@ class DefaultImageDataSource(
         return folderList
     }
 
-    private fun Context.getImageCursor(
+    private fun Context.getPagingImagesQuery(
         offset: Int?,
         limit: Int?,
         folder: String?,
@@ -97,7 +97,7 @@ class DefaultImageDataSource(
         }
     }
 
-    private fun Context.getFolderCursor(): Cursor {
+    private fun Context.getFolderQuery(): Cursor {
         val projection = arrayOf(
             Images.Media._ID,
             Images.Media.BUCKET_DISPLAY_NAME,
