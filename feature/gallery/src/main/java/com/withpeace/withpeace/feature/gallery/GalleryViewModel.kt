@@ -8,7 +8,7 @@ import androidx.paging.cachedIn
 import com.withpeace.withpeace.core.domain.model.ImageFolder
 import com.withpeace.withpeace.core.domain.model.LimitedImages
 import com.withpeace.withpeace.core.domain.usecase.GetAllFoldersUseCase
-import com.withpeace.withpeace.core.domain.usecase.GetLocalImagesUseCase
+import com.withpeace.withpeace.core.domain.usecase.GetAlbumImagesUseCase
 import com.withpeace.withpeace.feature.gallery.navigation.GALLERY_IMAGE_COUNT_ARGUMENT
 import com.withpeace.withpeace.feature.gallery.navigation.GALLERY_IMAGE_LIMIT_ARGUMENT
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,7 +28,7 @@ import javax.inject.Inject
 class GalleryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getAllFoldersUseCase: GetAllFoldersUseCase,
-    private val getLocalImagesUseCase: GetLocalImagesUseCase,
+    private val getAlbumImagesUseCase: GetAlbumImagesUseCase,
 ) : ViewModel() {
 
     private val _selectedImages =
@@ -53,7 +53,7 @@ class GalleryViewModel @Inject constructor(
         if (imageFolder == null) {
             PagingData.empty()
         } else {
-            getLocalImagesUseCase(imageFolder.folderName)
+            getAlbumImagesUseCase(imageFolder.folderName)
             .cachedIn(viewModelScope) // Paging 정보를 화면 회전에도 날라가지 않게 하기 위함
                 .firstOrNull() ?: PagingData.empty()
         }

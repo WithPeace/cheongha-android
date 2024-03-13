@@ -8,7 +8,7 @@ import com.withpeace.withpeace.core.domain.repository.ImageRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetLocalImagesUseCase @Inject constructor(
+class GetAlbumImagesUseCase @Inject constructor(
     private val imageRepository: ImageRepository,
 ) {
     operator fun invoke(selectedFolderName: String): Flow<PagingData<String>> {
