@@ -28,6 +28,7 @@ fun WithpeaceApp(
     ) {
         WithpeaceNavHost(
             onShowSnackBar = ::showSnackBar,
+            startDestination = startDestination
         )
         it
     }

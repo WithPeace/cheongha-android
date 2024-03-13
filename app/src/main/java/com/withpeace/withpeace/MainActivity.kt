@@ -26,9 +26,9 @@ class MainActivity : ComponentActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.isLogin.collect { isLogin ->
                     if(isLogin) {
-                        Log.d("covy","Main 화면으로 이동")
+                        composeStart(MAIN_ROUTE)
                     } else {
-                        composeStart(LOGIN_ROUTE)
+                        composeStart(MAIN_ROUTE)
                     }
                     delay(2000L)
                     splashScreen.setKeepOnScreenCondition { false }

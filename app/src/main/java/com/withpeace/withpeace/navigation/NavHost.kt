@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.withpeace.withpeace.feature.login.navigation.LOGIN_ROUTE
 import com.withpeace.withpeace.feature.login.navigation.loginNavGraph
+import com.withpeace.withpeace.mainNavGraph
 
 
 @Composable
@@ -22,5 +23,9 @@ fun WithpeaceNavHost(
         startDestination = startDestination,
     ) {
         loginNavGraph(onShowSnackBar = onShowSnackBar)
+        mainNavGraph(
+            onShowSnackBar = onShowSnackBar,
+            navController = navController,
+        )
     }
 }
