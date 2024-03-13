@@ -19,6 +19,8 @@ import com.withpeace.withpeace.feature.mypage.navigation.myPageNavGraph
 import com.withpeace.withpeace.feature.postlist.navigation.postListGraph
 import com.withpeace.withpeace.feature.registerpost.navigation.IMAGE_LIST_ARGUMENT
 import com.withpeace.withpeace.feature.registerpost.navigation.registerPostNavGraph
+import com.withpeace.withpeace.feature.signup.navigation.signUpNavGraph
+
 
 @Composable
 fun WithpeaceNavHost(
@@ -33,6 +35,7 @@ fun WithpeaceNavHost(
         startDestination = startDestination,
     ) {
         loginNavGraph(onShowSnackBar = onShowSnackBar)
+        signUpNavGraph(onShowSnackBar = onShowSnackBar)
         registerPostNavGraph(
             onShowSnackBar = onShowSnackBar,
             onCompleteRegisterPost = {},
