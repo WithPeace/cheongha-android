@@ -10,17 +10,15 @@ import com.withpeace.withpeace.core.domain.model.ImageFolder
 import com.withpeace.withpeace.core.domain.model.LimitedImages
 import com.withpeace.withpeace.core.domain.usecase.GetAlbumImagesUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetAllFoldersUseCase
-import com.withpeace.withpeace.feature.gallery.navigation.GALLERY_IMAGE_COUNT_ARGUMENT
+import com.withpeace.withpeace.feature.gallery.navigation.GALLERY_ALREADY_IMAGE_COUNT_ARGUMENT
 import com.withpeace.withpeace.feature.gallery.navigation.GALLERY_IMAGE_LIMIT_ARGUMENT
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -38,7 +36,7 @@ class GalleryViewModel @Inject constructor(
                 urls = emptyList(),
                 maxCount = savedStateHandle.get<Int>(GALLERY_IMAGE_LIMIT_ARGUMENT)
                     ?: DEFAULT_MAX_SELECTABLE_COUNT,
-                alreadyExistCount = savedStateHandle.get<Int>(GALLERY_IMAGE_COUNT_ARGUMENT)
+                alreadyExistCount = savedStateHandle.get<Int>(GALLERY_ALREADY_IMAGE_COUNT_ARGUMENT)
                     ?: DEFAULT__CURRENT_IMAGE_COUNT,
             ),
         )
@@ -51,12 +49,8 @@ class GalleryViewModel @Inject constructor(
     val selectedFolder = _selectedFolder.asStateFlow()
 
     val images = selectedFolder.map { imageFolder ->
-        if (imageFolder == null) {
-            PagingData.empty()
-        } else {
-            getImagePagingData(imageFolder.folderName)
-        }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), PagingData.empty())
+        getImagePagingData(imageFolder?.folderName ?: "")
+    }
 
     private val _sideEffect = Channel<GallerySideEffect>()
     val sideEffect = _sideEffect.receiveAsFlow()
