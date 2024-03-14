@@ -73,7 +73,7 @@ class DefaultPostRepository @Inject constructor(
     companion object {
         const val TITLE_COLUMN = "title"
         const val CONTENT_COLUMN = "content"
-        const val TYPE_COLUMN = "TYPE"
+        const val TYPE_COLUMN = "type"
         const val IMAGES_COLUMN = "images"
     }
 }
