@@ -79,13 +79,8 @@ fun RegisterPostRoute(
     onClickedBackButton: () -> Unit,
     onCompleteRegisterPost: () -> Unit,
     onNavigateToGallery: (imageLimit: Int, imageCount: Int) -> Unit,
-    selectedImageUrls: List<String>,
 ) {
     val context = LocalContext.current
-
-    LaunchedEffect(key1 = selectedImageUrls) {// Navigation을 통해 받아온 이미지가 다를때만 실행
-        viewModel.onImageUrlsAdded(selectedImageUrls)
-    }
 
     val postUiState = viewModel.postUiState.collectAsStateWithLifecycle().value
     val showBottomSheet = viewModel.showBottomSheet.collectAsStateWithLifecycle().value

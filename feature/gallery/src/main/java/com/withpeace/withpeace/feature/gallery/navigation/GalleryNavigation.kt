@@ -10,9 +10,9 @@ import com.withpeace.withpeace.feature.gallery.GalleryRoute
 
 const val GALLERY_ROUTE = "gallery_route"
 const val GALLERY_IMAGE_LIMIT_ARGUMENT = "image_limit"
-const val GALLERY_IMAGE_COUNT_ARGUMENT = "image_count"
+const val GALLERY_ALREADY_IMAGE_COUNT_ARGUMENT = "image_count"
 const val GALLERY_ROUTE_WITH_ARGUMENT =
-    "$GALLERY_ROUTE/{$GALLERY_IMAGE_LIMIT_ARGUMENT}/{$GALLERY_IMAGE_COUNT_ARGUMENT}"
+    "$GALLERY_ROUTE/{$GALLERY_IMAGE_LIMIT_ARGUMENT}/{$GALLERY_ALREADY_IMAGE_COUNT_ARGUMENT}"
 
 fun NavController.navigateToGallery(
     navOptions: NavOptions? = null,
@@ -30,7 +30,7 @@ fun NavGraphBuilder.galleryNavGraph(
         route = GALLERY_ROUTE_WITH_ARGUMENT,
         arguments = listOf(
             navArgument(GALLERY_IMAGE_LIMIT_ARGUMENT) { type = NavType.IntType },
-            navArgument(GALLERY_IMAGE_COUNT_ARGUMENT) { type = NavType.IntType },
+            navArgument(GALLERY_ALREADY_IMAGE_COUNT_ARGUMENT) { type = NavType.IntType },
         ),
     ) {
         GalleryRoute(

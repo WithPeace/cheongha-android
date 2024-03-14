@@ -1,6 +1,5 @@
 package com.withpeace.withpeace.feature.registerpost
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.withpeace.withpeace.core.domain.model.LimitedImages
@@ -21,7 +20,7 @@ class RegisterPostViewModel @Inject constructor(
     private val registerPostUseCase: RegisterPostUseCase,
 ) : ViewModel() {
 
-    private val _Register_postUiState = MutableStateFlow(
+    private val _postUiState = MutableStateFlow(
         RegisterPost(
             title = "",
             content = "",
@@ -29,7 +28,7 @@ class RegisterPostViewModel @Inject constructor(
             images = LimitedImages(emptyList()),
         ),
     )
-    val postUiState = _Register_postUiState.asStateFlow()
+    val postUiState = _postUiState.asStateFlow()
 
     private val _uiEvent = Channel<RegisterPostUiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -38,24 +37,23 @@ class RegisterPostViewModel @Inject constructor(
     val showBottomSheet = _showTopicBottomSheet.asStateFlow()
 
     fun onTitleChanged(inputTitle: String) {
-        _Register_postUiState.update { it.copy(title = inputTitle) }
+        _postUiState.update { it.copy(title = inputTitle) }
     }
 
     fun onContentChanged(inputContent: String) {
-        _Register_postUiState.update { it.copy(content = inputContent) }
+        _postUiState.update { it.copy(content = inputContent) }
     }
 
     fun onTopicChanged(inputTopic: PostTopic) {
-        _Register_postUiState.update { it.copy(topic = inputTopic) }
+        _postUiState.update { it.copy(topic = inputTopic) }
     }
 
     fun onImageUrlsAdded(imageUrls: List<String>) {
-        Log.d("wooseok", imageUrls.size.toString())
-        _Register_postUiState.update { it.copy(images = it.images.addImages(imageUrls)) }
+        _postUiState.update { it.copy(images = it.images.addImages(imageUrls)) }
     }
 
     fun onImageUrlDeleted(index: Int) {
-        _Register_postUiState.update { it.copy(images = it.images.deleteImage(index)) }
+        _postUiState.update { it.copy(images = it.images.deleteImage(index)) }
     }
 
     fun onShowBottomSheetChanged(input: Boolean) {
