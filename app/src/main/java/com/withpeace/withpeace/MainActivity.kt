@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
+import com.withpeace.withpeace.feature.home.navigation.HOME_ROUTE
 import com.withpeace.withpeace.feature.login.navigation.LOGIN_ROUTE
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -26,9 +27,9 @@ class MainActivity : ComponentActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.isLogin.collect { isLogin ->
                     if(isLogin) {
-                        composeStart(MAIN_ROUTE)
+                        composeStart(HOME_ROUTE)
                     } else {
-                        composeStart(MAIN_ROUTE)
+                        composeStart(HOME_ROUTE)
                     }
                     delay(2000L)
                     splashScreen.setKeepOnScreenCondition { false }
