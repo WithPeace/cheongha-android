@@ -4,7 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.withpeace.withpeace.core.domain.repository.ImageRepository
 
-class DefaultImagePagingSource(
+data class ImagePagingSource(
     private val imageRepository: ImageRepository,
     private val folderName: String?,
 ) : PagingSource<Int, String>() {

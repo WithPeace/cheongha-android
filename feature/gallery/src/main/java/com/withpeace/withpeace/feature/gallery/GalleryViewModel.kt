@@ -3,12 +3,13 @@ package com.withpeace.withpeace.feature.gallery
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.withpeace.withpeace.core.domain.model.ImageFolder
 import com.withpeace.withpeace.core.domain.model.LimitedImages
-import com.withpeace.withpeace.core.domain.usecase.GetAllFoldersUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetAlbumImagesUseCase
+import com.withpeace.withpeace.core.domain.usecase.GetAllFoldersUseCase
 import com.withpeace.withpeace.feature.gallery.navigation.GALLERY_IMAGE_COUNT_ARGUMENT
 import com.withpeace.withpeace.feature.gallery.navigation.GALLERY_IMAGE_LIMIT_ARGUMENT
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -53,9 +54,7 @@ class GalleryViewModel @Inject constructor(
         if (imageFolder == null) {
             PagingData.empty()
         } else {
-            getAlbumImagesUseCase(imageFolder.folderName)
-            .cachedIn(viewModelScope) // Paging 정보를 화면 회전에도 날라가지 않게 하기 위함
-                .firstOrNull() ?: PagingData.empty()
+            getImagePagingData(imageFolder.folderName)
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), PagingData.empty())
 
@@ -66,6 +65,16 @@ class GalleryViewModel @Inject constructor(
         viewModelScope.launch {
             _allFolders.update { getAllFoldersUseCase() }
         }
+    }
+
+    private suspend fun getImagePagingData(folderName:String):PagingData<String>{
+        val imagePagingInfo = getAlbumImagesUseCase(folderName)
+        return Pager(
+            config = imagePagingInfo.pagingConfig,
+            pagingSourceFactory = { imagePagingInfo.pagingSource },
+        ).flow
+            .cachedIn(viewModelScope) // Paging 정보를 화면 회전에도 날라가지 않게 하기 위함
+            .firstOrNull() ?: PagingData.empty()
     }
 
     fun onSelectFolder(imageFolder: ImageFolder?) {
