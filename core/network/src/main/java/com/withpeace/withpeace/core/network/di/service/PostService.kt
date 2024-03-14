@@ -14,7 +14,7 @@ interface PostService {
 
     @Multipart
     @POST("/api/v1/posts/register")
-    fun registerPost(
+    suspend fun registerPost(
         @PartMap postRequest: HashMap<String, @JvmSuppressWildcards RequestBody>,
         @Part images: List<MultipartBody.Part>,
     ): ApiResponse<BaseResponse<PostIdResponse>>
