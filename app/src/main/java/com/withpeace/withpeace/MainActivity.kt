@@ -11,7 +11,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
-import com.withpeace.withpeace.feature.login.navigation.LOGIN_ROUTE
 import com.withpeace.withpeace.feature.registerpost.navigation.REGISTER_POST_ROUTE
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -35,7 +34,7 @@ class MainActivity : ComponentActivity() {
                 viewModel.isLogin.collect { isLogin ->
                     when (isLogin) {
                         true -> composeStart(REGISTER_POST_ROUTE)
-                        false -> composeStart(LOGIN_ROUTE)
+                        false -> composeStart(REGISTER_POST_ROUTE)
                         else -> {} // StateFlow의 상태를 Null로 설정함으로서, 로그인 상태가 업데이트 된 이후로 화면을 보여주도록 하기위함
                     }
                   splashScreen.setKeepOnScreenCondition { false }
