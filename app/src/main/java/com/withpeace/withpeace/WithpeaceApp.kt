@@ -1,6 +1,7 @@
 package com.withpeace.withpeace
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -10,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -33,10 +35,15 @@ fun WithpeaceApp(
 
     Scaffold(
         bottomBar = {
-            MainBottomBar(
-                currentDestination = currentDestination ?: return@Scaffold,
-                navController = navController,
-            )
+            currentDestination?.let {
+                if (BottomTab.contains(it.route ?: "")) {
+                    MainBottomBar(
+                        modifier = Modifier.height(56.dp),
+                        currentDestination = currentDestination ?: return@Scaffold,
+                        navController = navController,
+                    )
+                }
+            }
         },
         modifier = Modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackBarHostState) },

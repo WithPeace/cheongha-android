@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     if(isLogin) {
                         composeStart(HOME_ROUTE)
                     } else {
-                        composeStart(HOME_ROUTE)
+                        composeStart(LOGIN_ROUTE)
                     }
                     delay(2000L)
                     splashScreen.setKeepOnScreenCondition { false }
