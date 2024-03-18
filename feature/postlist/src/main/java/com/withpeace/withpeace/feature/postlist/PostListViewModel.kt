@@ -31,9 +31,9 @@ class PostListViewModel @Inject constructor() : ViewModel() {
     // API 나오기 전까지 임시로 이렇게 하겠습니다!
     private fun getPost(postTopic: PostTopic) = List(10) {
         Post(
-            postId = 1746,
+            postId = it.toLong(),
             title = postTopic.toString(),
-            content = postTopic.toString(),
+            content = postTopic.toString()+"\n${postTopic.toString()}",
             postTopic = postTopic,
             createDate = LocalDateTime.of(LocalDate.of(2024, 3, 18), LocalTime.of(12, 0, 0)),
             postImageUrl = "http://withpeace.s3-website.kr.object.ncloudstorage.com/userProfile/1",

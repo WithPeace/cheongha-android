@@ -6,4 +6,9 @@
     <string name="life">"생활"</string>
     <string name="hobby">"취미"</string>
     <string name="economy">"경제"</string>
+    <string name="second_format">%1$d초 전</string>
+    <string name="minute_format">%1$d분 전</string>
+    <string name="hour_format">%1$d시간 전</string>
+    <string name="day_format">%1$d일 전</string>
+
 </resources>
