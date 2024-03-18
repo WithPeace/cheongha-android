@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.feature.postlist
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Icon
@@ -9,7 +10,6 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -20,18 +20,20 @@ import com.withpeace.withpeace.core.ui.PostTopicUiState
 
 @Composable
 fun TopicTabs(
-    currentTopic: PostTopic = PostTopic.FREEDOM,
+    currentTopic: PostTopic,
+    tabPosition: Int,
     onClick: (PostTopic) -> Unit,
 ) {
-    val index = rememberSaveable { PostTopic.findIndex(currentTopic) }
     TabRow(
         modifier = Modifier.wrapContentSize(),
-        selectedTabIndex = index,
+        selectedTabIndex = tabPosition,
         containerColor = WithpeaceTheme.colors.SystemWhite,
         indicator = { tabPositions ->
-            TabRowDefaults.PrimaryIndicator(
-                modifier = Modifier.tabIndicatorOffset(tabPositions[index]),
-                color = WithpeaceTheme.colors.MainPink
+            TabRowDefaults.SecondaryIndicator(
+                modifier = Modifier
+                    .tabIndicatorOffset(tabPositions[tabPosition])
+                    .padding(horizontal = 16.dp),
+                color = WithpeaceTheme.colors.MainPink,
             )
         },
     ) {
@@ -59,3 +61,4 @@ fun TopicTabs(
         }
     }
 }
+
