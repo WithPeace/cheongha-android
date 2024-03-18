@@ -1,6 +1,5 @@
 package com.withpeace.withpeace
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.navigation.WithpeaceNavHost
 import kotlinx.coroutines.launch
 
@@ -46,8 +46,11 @@ fun WithpeaceApp(
                 }
             }
         },
-        modifier = Modifier.fillMaxSize().safeDrawingPadding(),
+        modifier = Modifier
+            .fillMaxSize()
+            .safeDrawingPadding(),
         snackbarHost = { SnackbarHost(snackBarHostState) },
+        containerColor = WithpeaceTheme.colors.SystemWhite,
     ) { innerPadding ->
         WithpeaceNavHost(
             modifier = Modifier.padding(innerPadding),
