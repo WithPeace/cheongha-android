@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="content_blank_error_message">내용을 입력해 주세요</string>
+    <string name="title_blank_error_message">제목을 입력해 주세요</string>
+    <string name="topic_hint">게시글의 주제를 선택해주세요</string>
+    <string name="register_post_topbar_title">글 쓰기</string>
+    <string name="title_hint">제목을 입력해주세요</string>
+    <string name="content_hint">내용을 입력해주세요</string>
+    <string name="picture">사진</string>
+</resources>

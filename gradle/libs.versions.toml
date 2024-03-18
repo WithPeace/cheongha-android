@@ -59,12 +59,18 @@ google-login = "1.1.0"
 
 credential = "1.2.0"
 
+paging = "3.3.0-alpha02"
+coreTesting = "2.2.0"
+
+dependencyGraph = "0.8.0"
+
 [libraries]
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 hilt-gradlePlugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt" }
 
+androidx-core-testing = {module = "androidx.arch.core:core-testing", version.ref="coreTesting"}
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppCompat" }
@@ -83,6 +89,10 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-ui-testManifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxComposeNavigation" }
 androidx-compose-navigation-test = { group = "androidx.navigation", name = "navigation-testing", version.ref = "androidxComposeNavigation" }
+androidx-paging = { module = "androidx.paging:paging-runtime", version.ref = "paging" }
+androidx-pagingCompose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
+androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "paging" }
+androidx-paging-testing= {module="androidx.paging:paging-testing",version.ref = "paging"}
 
 androidx-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "credential" }
 androidx-credentials-play-service = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credential" }
@@ -159,6 +169,7 @@ androidx-material3-android = { group = "androidx.compose.material3", name = "mat
 [bundles]
 
 [plugins]
+dependency-graph = { id = "com.vanniktech.dependency.graph.generator", version.ref = "dependencyGraph" }
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

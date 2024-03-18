@@ -8,6 +8,9 @@ plugins {
 
 android {
     namespace = "com.withpeace.withpeace.core.network"
+    defaultConfig {
+        consumerProguardFiles("consumer-rules.pro")
+    }
 }
 
 dependencies {
