@@ -1,5 +1,7 @@
 plugins {
     id("convention.application")
+    alias(libs.plugins.firebase.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -50,4 +52,9 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:designsystem"))
     testImplementation(project(":core:testing"))
+
+    //firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
 }
