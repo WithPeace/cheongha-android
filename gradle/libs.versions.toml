@@ -70,8 +70,6 @@ firebasePlugin = "4.3.15"
 firebaseBom = "32.7.4"
 firebaseCrashlytics = "2.9.9"
 
-dependencyGraph = "0.8.0"
-
 [libraries]
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }
