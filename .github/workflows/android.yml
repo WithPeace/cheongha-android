@@ -38,6 +38,11 @@ jobs:
         run: |
           echo "GOOGLE_CLIENT_ID=\"$GOOGLE_CLIENT_ID\"" >> local.properties
 
+      - name: Create google-servies.json
+        id: createGoogleService
+        run: |
+          echo '${{ secrets.GOOGLE_SERVICE_JSON }}' > google-services.json
+
       - name: Build with Gradle
         run: ./gradlew build --parallel
 
