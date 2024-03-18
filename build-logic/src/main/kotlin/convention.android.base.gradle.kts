@@ -18,20 +18,6 @@ android {
             jvmTarget = JavaVersion.VERSION_17.toString()
         }
     }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
-            )
-        }
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/*"
-        }
-    }
     buildFeatures {
         buildConfig = true
     }

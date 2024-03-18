@@ -16,6 +16,23 @@ android {
             useSupportLibrary = true
         }
     }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            merges += "META-INF/LICENSE.md"
+            merges += "META-INF/LICENSE-notice.md"
+        }
+    }
+    buildTypes {
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("debug")
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+        }
+    }
 }
 
 dependencies {
@@ -24,6 +41,8 @@ dependencies {
     implementation(project(":feature:home"))
     implementation(project(":feature:post"))
     implementation(project(":feature:mypage"))
+    implementation(project(":feature:registerpost"))
+    implementation(project(":feature:gallery"))
     implementation(project(":core:interceptor"))
     implementation(project(":core:data"))
     implementation(project(":core:network"))

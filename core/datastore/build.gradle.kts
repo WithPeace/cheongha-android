@@ -6,6 +6,9 @@ plugins {
 
 android {
     namespace = "com.withpeace.withpeace.core.datastore"
+    defaultConfig {
+        consumerProguardFiles("consumer-rules.pro")
+    }
 }
 
 dependencies {

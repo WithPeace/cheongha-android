@@ -1,6 +1,10 @@
 package com.withpeace.withpeace.core.data.di
 
+import com.withpeace.withpeace.core.data.repository.DefaultImageRepository
+import com.withpeace.withpeace.core.data.repository.DefaultPostRepository
 import com.withpeace.withpeace.core.data.repository.DefaultTokenRepository
+import com.withpeace.withpeace.core.domain.repository.ImageRepository
+import com.withpeace.withpeace.core.domain.repository.PostRepository
 import com.withpeace.withpeace.core.domain.repository.TokenRepository
 import dagger.Binds
 import dagger.Module
@@ -15,4 +19,12 @@ interface RepositoryModule {
     @Binds
     @Singleton
     fun bindsTokenRepository(defaultTokenRepository: DefaultTokenRepository): TokenRepository
+
+    @Binds
+    @Singleton
+    fun bindsImageRepository(defaultImageRepository: DefaultImageRepository): ImageRepository
+
+    @Binds
+    @Singleton
+    fun bindsPostRepository(defaultPostRepository: DefaultPostRepository): PostRepository
 }
