@@ -53,7 +53,7 @@ fun WithpeaceApp(
         containerColor = WithpeaceTheme.colors.SystemWhite,
     ) { innerPadding ->
         WithpeaceNavHost(
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
             onShowSnackBar = ::showSnackBar,
             startDestination = startDestination,
             navController = navController,
