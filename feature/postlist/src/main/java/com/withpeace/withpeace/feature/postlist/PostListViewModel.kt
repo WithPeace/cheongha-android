@@ -2,6 +2,7 @@ package com.withpeace.withpeace.feature.postlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.withpeace.withpeace.core.domain.model.date.Date
 import com.withpeace.withpeace.core.domain.model.post.Post
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +36,7 @@ class PostListViewModel @Inject constructor() : ViewModel() {
             title = postTopic.toString(),
             content = postTopic.toString()+"\n${postTopic.toString()}",
             postTopic = postTopic,
-            createDate = LocalDateTime.of(LocalDate.of(2024, 3, 18), LocalTime.of(12, 0, 0)),
+            createDate = Date(LocalDateTime.now()),
             postImageUrl = "http://withpeace.s3-website.kr.object.ncloudstorage.com/userProfile/1",
         )
     }
