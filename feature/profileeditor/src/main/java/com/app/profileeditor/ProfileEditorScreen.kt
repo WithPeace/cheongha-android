@@ -3,6 +3,7 @@ package com.app.profileeditor
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -26,35 +28,55 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.landscapist.glide.GlideImage
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
+import com.withpeace.withpeace.core.domain.model.profile.ProfileInfo
+import com.withpeace.withpeace.core.permission.ImagePermissionHelper
 import com.withpeace.withpeace.feature.profileeditor.R
 
 @Composable
 fun ProfileEditorRoute(
     onShowSnackBar: (message: String) -> Unit,
     onClickBackButton: () -> Unit,
+    onNavigateToGallery: () -> Unit,
+    viewModel: ProfileEditorViewModel,
 ) {
     ProfileEditorScreen(
+        profileInfo = viewModel.profileInfo.collectAsStateWithLifecycle().value,
         onClickBackButton = onClickBackButton,
+        onNavigateToGallery = onNavigateToGallery,
+        onEditCompleted = {},
+        onNickNameChanged = viewModel::onNickNameChanged,
     )
+
 }
 
 @Composable
 fun ProfileEditorScreen(
+    profileInfo: ProfileInfo,
     modifier: Modifier = Modifier,
     onClickBackButton: () -> Unit,
+    onNavigateToGallery: () -> Unit,
+    onEditCompleted: () -> Unit,
+    onNickNameChanged: (String) -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -78,38 +100,11 @@ fun ProfileEditorScreen(
                 },
             )
             Spacer(modifier = modifier.height(16.dp))
-            val imageModifier = modifier
-                .size(120.dp)
-                .border(
-                    BorderStroke(0.dp, Color.Transparent),
-                    shape = CircleShape,
-                )
-            Row(
-                modifier = modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                Box(
-                ) {
-                    GlideImage(
-                        modifier = imageModifier,
-                        imageModel = { "" },
-                        failure = {
-                            Image(
-                                painterResource(id = R.drawable.ic_default_profile),
-                                modifier = imageModifier,
-                                contentDescription = "",
-                            )
-                        },
-                    )
-                    Image(
-                        modifier = modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(bottom = 6.dp, end = 6.dp),
-                        painter = painterResource(id = R.drawable.ic_editor_pencil),
-                        contentDescription = "프로필 수정",
-                    )
-                }
-            }
+            ProfileImage(
+                profileImage = profileInfo.profileImageUrl,
+                modifier = modifier,
+                onNavigateToGallery = onNavigateToGallery,
+            )
             Spacer(modifier = modifier.height(24.dp))
             Text(
                 text = stringResource(R.string.nickname_policy),
@@ -117,10 +112,68 @@ fun ProfileEditorScreen(
                 color = WithpeaceTheme.colors.SystemGray1,
             )
             Spacer(modifier = modifier.height(16.dp))
-            NickNameTextField(nickname = "", onNickNameChanged = { })
+            NickNameTextField(
+                nickname = profileInfo.nickname,
+                onNickNameChanged = {
+                    onNickNameChanged(it)
+                },
+            )
 
         }
-        EditCompletedButton(onClick = { /*TODO*/ })
+        EditCompletedButton(onClick = { onEditCompleted() })
+    }
+}
+
+@Composable
+private fun ProfileImage(
+    profileImage: String?,
+    modifier: Modifier,
+    onNavigateToGallery: () -> Unit,
+) {
+    var showDialog by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
+    val imagePermissionHelper = remember { ImagePermissionHelper(context) }
+    val launcher = imagePermissionHelper.getImageLauncher(
+        onPermissionGranted = onNavigateToGallery,
+        onPermissionDenied = { showDialog = true },
+    )
+    if (showDialog) {
+        imagePermissionHelper.ImagePermissionDialog { showDialog = false }
+    }
+    val imageModifier = modifier.size(120.dp).clip(CircleShape)
+    Row(
+        modifier = modifier.wrapContentSize(Alignment.Center),
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        Box(
+            modifier.clickable {
+                imagePermissionHelper.onCheckSelfImagePermission(
+                    onPermissionGranted = onNavigateToGallery,
+                    onPermissionDenied = {
+                        imagePermissionHelper.requestPermissionDialog(launcher)
+                    },
+                )
+            },
+        ) {
+            GlideImage(
+                modifier = imageModifier,
+                imageModel = { profileImage },
+                failure = {
+                    Image(
+                        painterResource(id = R.drawable.ic_default_profile),
+                        modifier = imageModifier,
+                        contentDescription = "",
+                    )
+                },
+            )
+            Image(
+                modifier = modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(bottom = 6.dp, end = 6.dp),
+                painter = painterResource(id = R.drawable.ic_editor_pencil),
+                contentDescription = "프로필 수정",
+            )
+        }
     }
 }
 
@@ -184,16 +237,6 @@ private fun NickNameTextField(
 
 
 @Composable
-@Preview
-fun ProfileEditorPreview() {
-    WithpeaceTheme {
-        ProfileEditorScreen {
-
-        }
-    }
-}
-
-@Composable
 private fun EditCompletedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -222,4 +265,16 @@ private fun EditCompletedButton(
     }
 }
 
-// 화면짜고 갤러리 이동 추가
+@Composable
+@Preview
+fun ProfileEditorPreview() {
+    WithpeaceTheme {
+        ProfileEditorScreen(
+            profileInfo = ProfileInfo("nickname", null),
+            onClickBackButton = {},
+            onNavigateToGallery = {},
+            onEditCompleted = {},
+            onNickNameChanged = {},
+        )
+    }
+}

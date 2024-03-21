@@ -70,6 +70,9 @@ fun WithpeaceNavHost(
             onClickBackButton = {
                 navController.popBackStack()
             },
+            onNavigateToGallery = {
+                navController.navigateToGallery(imageLimit = 1)
+            },
         )
     }
 }
