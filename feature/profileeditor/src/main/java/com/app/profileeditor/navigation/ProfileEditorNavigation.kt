@@ -14,10 +14,12 @@ fun NavController.navigateProfileEditor(navOptions: NavOptions? = null) {
 
 fun NavGraphBuilder.profileEditorNavGraph(
     onShowSnackBar: (message: String) -> Unit,
+    onClickBackButton: () -> Unit,
 ) {
     composable(route = PROFILE_EDITOR_ROUTE) {
         ProfileEditorRoute(
             onShowSnackBar = onShowSnackBar,
+            onClickBackButton = onClickBackButton
         )
     }
 }

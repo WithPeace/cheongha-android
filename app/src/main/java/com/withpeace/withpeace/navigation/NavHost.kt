@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.app.profileeditor.navigation.navigateProfileEditor
+import com.app.profileeditor.navigation.profileEditorNavGraph
 import com.withpeace.withpeace.feature.gallery.navigation.galleryNavGraph
 import com.withpeace.withpeace.feature.gallery.navigation.navigateToGallery
 import com.withpeace.withpeace.feature.home.navigation.homeNavGraph
@@ -57,9 +59,17 @@ fun WithpeaceNavHost(
         postNavGraph(onShowSnackBar)
         myPageNavGraph(
             onShowSnackBar = onShowSnackBar,
-            onEditProfile = {},
+            onEditProfile = {
+                navController.navigateProfileEditor()
+            },
             onLogoutClick = {},
             onWithdrawClick = {},
+        )
+        profileEditorNavGraph(
+            onShowSnackBar = onShowSnackBar,
+            onClickBackButton = {
+                navController.popBackStack()
+            },
         )
     }
 }

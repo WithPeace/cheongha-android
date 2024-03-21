@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile">프로필 편집</string>
+    <string name="nickname_policy">닉네임은 2~10자의 한글, 영문만 가능합니다.</string>
+</resources>
