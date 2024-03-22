@@ -6,10 +6,12 @@ import com.skydoves.sandwich.messageOrNull
 import com.skydoves.sandwich.suspendMapSuccess
 import com.skydoves.sandwich.suspendOnError
 import com.skydoves.sandwich.suspendOnException
+import com.withpeace.withpeace.core.data.mapper.toDomain
 import com.withpeace.withpeace.core.data.util.convertToFile
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
 import com.withpeace.withpeace.core.domain.model.WithPeaceError.GeneralError
 import com.withpeace.withpeace.core.domain.model.WithPeaceError.UnAuthorized
+import com.withpeace.withpeace.core.domain.model.post.PostDetail
 import com.withpeace.withpeace.core.domain.model.post.RegisterPost
 import com.withpeace.withpeace.core.domain.repository.PostRepository
 import com.withpeace.withpeace.core.network.di.service.PostService
@@ -44,6 +46,22 @@ class DefaultPostRepository @Inject constructor(
                     onError(GeneralError(message = messageOrNull))
                 }
         }
+
+    override fun getPostDetail(
+        postId: Long,
+        onError: suspend (WithPeaceError) -> Unit,
+    ): Flow<PostDetail> = flow {
+        postService.getPost(postId)
+            .suspendMapSuccess {
+                emit(data.toDomain())
+            }.suspendOnError {
+                if (statusCode.code == 401) onError(UnAuthorized())
+                else onError(GeneralError(statusCode.code, messageOrNull))
+            }.suspendOnException {
+                onError(GeneralError(message = messageOrNull))
+            }
+    }
+
 
     private fun getImageRequestBodies(
         imageUris: List<String>,
