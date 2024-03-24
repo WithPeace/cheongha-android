@@ -6,16 +6,21 @@ import com.skydoves.sandwich.messageOrNull
 import com.skydoves.sandwich.suspendMapSuccess
 import com.skydoves.sandwich.suspendOnError
 import com.skydoves.sandwich.suspendOnException
+import com.withpeace.withpeace.core.data.mapper.toDomain
 import com.withpeace.withpeace.core.data.util.convertToFile
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
 import com.withpeace.withpeace.core.domain.model.WithPeaceError.GeneralError
 import com.withpeace.withpeace.core.domain.model.WithPeaceError.UnAuthorized
+import com.withpeace.withpeace.core.domain.model.post.Post
+import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.domain.model.post.RegisterPost
 import com.withpeace.withpeace.core.domain.repository.PostRepository
 import com.withpeace.withpeace.core.network.di.service.PostService
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -27,6 +32,27 @@ class DefaultPostRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val postService: PostService,
 ) : PostRepository {
+
+    override fun getPosts(
+        postTopic: PostTopic,
+        pageIndex: Int,
+        pageSize: Int,
+        onError: suspend (WithPeaceError) -> Unit,
+    ): Flow<List<Post>> =
+        flow {
+            postService.getPosts(
+                postTopic = postTopic.name,
+                pageIndex = pageIndex,
+                pageSize = pageSize,
+            ).suspendMapSuccess {
+                emit(data.map { it.toDomain() })
+            }.suspendOnError {
+                onError(GeneralError(statusCode.code, messageOrNull))
+            }.suspendOnException {
+                onError(GeneralError(message = messageOrNull))
+            }
+        }.flowOn(Dispatchers.IO)
+
     override fun registerPost(
         post: RegisterPost,
         onError: suspend (WithPeaceError) -> Unit,
@@ -43,7 +69,7 @@ class DefaultPostRepository @Inject constructor(
                 }.suspendOnException {
                     onError(GeneralError(message = messageOrNull))
                 }
-        }
+        }.flowOn(Dispatchers.IO)
 
     private fun getImageRequestBodies(
         imageUris: List<String>,

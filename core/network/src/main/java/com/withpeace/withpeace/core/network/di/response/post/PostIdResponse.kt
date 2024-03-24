@@ -1,4 +1,4 @@
-package com.withpeace.withpeace.core.network.di.response
+package com.withpeace.withpeace.core.network.di.response.post
 
 import kotlinx.serialization.Serializable
 
