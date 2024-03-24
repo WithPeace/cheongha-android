@@ -62,6 +62,7 @@ fun PostDetailRoute(
     val postUiState = viewModel.postUiState.collectAsStateWithLifecycle().value
     PostDetailScreen(
         postUiState = postUiState,
+        onClickBackButton = onClickBackButton,
     )
 }
 
