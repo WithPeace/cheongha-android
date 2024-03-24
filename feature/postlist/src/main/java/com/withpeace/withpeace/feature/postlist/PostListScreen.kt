@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -114,18 +115,19 @@ fun PostListScreen(
                                 fontSize = 12.sp
                             )
                         }
-                        GlideImage(
-                            modifier = Modifier
-                                .constrainAs(image) {
-                                    top.linkTo(column.top)
-                                    bottom.linkTo(column.bottom)
-                                    end.linkTo(parent.end)
-                                    height = Dimension.fillToConstraints
-                                    width = Dimension.ratio("1:1")
-                                },
-                            imageModel = { post.postImageUrl },
-                            previewPlaceholder = R.drawable.ic_freedom,
-                        )
+                        post.postImageUrl?.let {
+                            GlideImage(
+                                modifier = Modifier
+                                    .size(72.dp)
+                                    .constrainAs(image) {
+                                        top.linkTo(parent.top)
+                                        bottom.linkTo(parent.bottom)
+                                        end.linkTo(parent.end)
+                                    },
+                                imageModel = { it },
+                                previewPlaceholder = R.drawable.ic_freedom,
+                            )
+                        }
                     }
                 }
             }

@@ -8,5 +8,5 @@ data class Post(
     val content: String,
     val postTopic: PostTopic,
     val createDate: Date,
-    val postImageUrl: String,
+    val postImageUrl: String?,
 )

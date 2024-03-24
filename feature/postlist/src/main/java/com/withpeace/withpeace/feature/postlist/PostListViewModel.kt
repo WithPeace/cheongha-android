@@ -34,10 +34,10 @@ class PostListViewModel @Inject constructor() : ViewModel() {
         Post(
             postId = it.toLong(),
             title = postTopic.toString(),
-            content = postTopic.toString()+"\n${postTopic.toString()}",
+            content = postTopic.toString()+"아아아아아아아아아아아아아아아아아아아아아아아아아아아아아아아",
             postTopic = postTopic,
             createDate = Date(LocalDateTime.now()),
-            postImageUrl = "http://withpeace.s3-website.kr.object.ncloudstorage.com/userProfile/1",
+            postImageUrl = null,
         )
     }
 }

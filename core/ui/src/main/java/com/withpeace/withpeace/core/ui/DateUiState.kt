@@ -14,21 +14,18 @@ fun Date.toRelativeString(context: Context): String {
             )
         }
 
-        is DurationFromNow.OneHourToOneDay -> context.getString(
-            R.string.hour_format,
+        is DurationFromNow.OneMinuteToOneHour -> context.getString(
+            R.string.minute_format,
             durationFromNow.minutes,
         )
-
-        is DurationFromNow.OneDayToSevenDay -> context.getString(
-            R.string.second_format,
-            durationFromNow.days,
+        is DurationFromNow.OneHourToOneDay -> context.getString(
+            R.string.hour_format,
+            durationFromNow.hours,
         )
-
-        is DurationFromNow.OneMinuteToOneHour -> context.getString(
+        is DurationFromNow.OneDayToSevenDay -> context.getString(
             R.string.day_format,
             durationFromNow.days,
         )
-
         is DurationFromNow.SevenDayToOneYear -> date.format(DateTimeFormatter.ofPattern(DATE_FORMAT))
         is DurationFromNow.OverOneYear -> context.getString(
             R.string.years_format,
