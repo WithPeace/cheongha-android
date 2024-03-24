@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.navigation.WithpeaceNavHost
 import kotlinx.coroutines.launch
 
@@ -48,9 +49,10 @@ fun WithpeaceApp(
         },
         modifier = Modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackBarHostState) },
+        containerColor = WithpeaceTheme.colors.SystemWhite
     ) { innerPadding ->
         WithpeaceNavHost(
-            modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
+            modifier = Modifier.padding(innerPadding),
             onShowSnackBar = ::showSnackBar,
             startDestination = startDestination,
             navController = navController,

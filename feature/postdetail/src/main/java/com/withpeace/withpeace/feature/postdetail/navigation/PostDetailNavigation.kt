@@ -14,7 +14,7 @@ const val POST_DETAIL_ROUTE_WITH_ARGUMENT =
     "$POST_DETAIL_ROUTE/{$POST_DETAIL_ID_ARGUMENT}/"
 
 fun NavController.navigateToPostDetail(
-    postId: Int,
+    postId: Long,
     navOptions: NavOptions? = null,
 ) = navigate(route = "$POST_DETAIL_ROUTE/$postId", navOptions)
 
