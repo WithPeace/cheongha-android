@@ -2,7 +2,6 @@ package com.withpeace.withpeace.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navigation
@@ -12,6 +11,7 @@ import com.withpeace.withpeace.feature.home.navigation.homeNavGraph
 import com.withpeace.withpeace.feature.login.navigation.LOGIN_ROUTE
 import com.withpeace.withpeace.feature.login.navigation.loginNavGraph
 import com.withpeace.withpeace.feature.mypage.navigation.myPageNavGraph
+import com.withpeace.withpeace.feature.postdetail.navigation.navigateToPostDetail
 import com.withpeace.withpeace.feature.postdetail.navigation.postDetailGraph
 import com.withpeace.withpeace.feature.postlist.navigation.POST_LIST_ROUTE
 import com.withpeace.withpeace.feature.postlist.navigation.postListGraph
@@ -59,10 +59,13 @@ fun WithpeaceNavHost(
         )
         homeNavGraph(onShowSnackBar)
         navigation(startDestination = POST_LIST_ROUTE, POST_NESTED_ROUTE) {
-            postListGraph(onShowSnackBar)
             postDetailGraph(
                 onShowSnackBar = onShowSnackBar,
                 onClickBackButton = navController::popBackStack,
+            )
+            postListGraph(
+                onShowSnackBar = onShowSnackBar,
+                navigateToPostDetail = navController::navigateToPostDetail,
             )
         }
         myPageNavGraph(onShowSnackBar)

@@ -24,6 +24,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -71,54 +75,59 @@ fun PostDetailScreen(
         PostDetailUiState.Fail -> Text(text = "불러오지 못함")
         PostDetailUiState.Loading -> CircularProgressIndicator()
         is PostDetailUiState.Success -> {
-            LazyColumn(state = lazyListState) {
-                item {
-                    WithPeaceBackButtonTopAppBar(
-                        onClickBackButton = onClickBackButton,
-                        title = {},
-                        actions = {
-                            Icon(
-                                modifier = Modifier
-                                    .clickable {
-
-                                    }
-                                    .padding(21.dp)
-                                    .size(24.dp),
-                                imageVector = Icons.Rounded.MoreVert,
-                                contentDescription = "option",
-                            )
-                        },
-                    )
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .height(1.dp)
-                            .fillMaxWidth()
-                            .padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
-                        color = WithpeaceTheme.colors.SystemGray3,
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    PostTopic(postTopic = postUiState.postDetail.postTopic)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    UserProfile(
-                        modifier = Modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
-                        user = postUiState.postDetail.user,
-                        createDate = postUiState.postDetail.createDate,
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    PostTitle(
-                        modifier = Modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
-                        title = postUiState.postDetail.title.value,
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    PostContent(
-                        modifier = Modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
-                        content = postUiState.postDetail.content.value,
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-                PostImages(
-                    imageUrls = postUiState.postDetail.imageUrls,
+            var showBottomSheet by rememberSaveable {
+                mutableStateOf(false)
+            }
+            Column {
+                WithPeaceBackButtonTopAppBar(
+                    onClickBackButton = onClickBackButton,
+                    title = {},
+                    actions = {
+                        Icon(
+                            modifier = Modifier
+                                .clickable {
+                                    showBottomSheet = true
+                                }
+                                .padding(21.dp)
+                                .size(24.dp),
+                            imageVector = Icons.Rounded.MoreVert,
+                            contentDescription = "option",
+                        )
+                    },
                 )
+                LazyColumn(state = lazyListState) {
+                    item {
+                        HorizontalDivider(
+                            modifier = Modifier
+                                .height(1.dp)
+                                .fillMaxWidth()
+                                .padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
+                            color = WithpeaceTheme.colors.SystemGray3,
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        PostTopic(postTopic = postUiState.postDetail.postTopic)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        UserProfile(
+                            modifier = Modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
+                            user = postUiState.postDetail.user,
+                            createDate = postUiState.postDetail.createDate,
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        PostTitle(
+                            modifier = Modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
+                            title = postUiState.postDetail.title.value,
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        PostContent(
+                            modifier = Modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
+                            content = postUiState.postDetail.content.value,
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                    PostImages(
+                        imageUrls = postUiState.postDetail.imageUrls,
+                    )
+                }
             }
         }
     }

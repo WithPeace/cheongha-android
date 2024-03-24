@@ -11,7 +11,7 @@ import com.withpeace.withpeace.feature.postdetail.PostDetailRoute
 const val POST_DETAIL_ROUTE = "post_detail_route"
 const val POST_DETAIL_ID_ARGUMENT = "post_id_argument"
 const val POST_DETAIL_ROUTE_WITH_ARGUMENT =
-    "$POST_DETAIL_ROUTE/{$POST_DETAIL_ID_ARGUMENT}/"
+    "$POST_DETAIL_ROUTE/{$POST_DETAIL_ID_ARGUMENT}"
 
 fun NavController.navigateToPostDetail(
     postId: Long,
