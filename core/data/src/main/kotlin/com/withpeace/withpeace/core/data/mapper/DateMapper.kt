@@ -8,4 +8,4 @@ fun String.toLocalDateTime(): LocalDateTime = LocalDateTime.parse(
     DateTimeFormatter.ofPattern(SERVER_DATE_FORMAT),
 )
 
-private const val SERVER_DATE_FORMAT = "yyyy/MM/dd  HH:mm:SS"
+private const val SERVER_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss"

@@ -35,13 +35,10 @@ data class PostPagingSource(
     }
 
     override fun getRefreshKey(state: PagingState<Int, Post>): Int? {
-        return state.anchorPosition?.let { achorPosition ->
-            state.closestPageToPosition(achorPosition)?.prevKey?.plus(1)
-                ?: state.closestPageToPosition(achorPosition)?.nextKey?.minus(1)
-        }
+        return state.anchorPosition
     }
 
     companion object {
-        const val STARTING_PAGE_INDEX = 1
+        const val STARTING_PAGE_INDEX = 0
     }
 }

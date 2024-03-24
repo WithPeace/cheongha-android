@@ -1,6 +1,7 @@
 package com.withpeace.withpeace.feature.postlist
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -12,8 +13,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -25,6 +29,11 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.LoadStates
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.skydoves.landscapist.glide.GlideImage
 import com.withpeace.withpeace.core.designsystem.theme.PretendardFont
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
@@ -34,6 +43,8 @@ import com.withpeace.withpeace.core.domain.model.post.Post
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.ui.R
 import com.withpeace.withpeace.core.ui.toRelativeString
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flowOf
 import java.time.LocalDateTime
 
 @Composable
@@ -41,11 +52,11 @@ fun PostListRoute(
     viewModel: PostListViewModel = hiltViewModel(),
     onShowSnackBar: (String) -> Unit,
 ) {
-    val postList = viewModel.postList.collectAsStateWithLifecycle().value
+    val postListPagingData = viewModel.postListPagingFlow.collectAsLazyPagingItems()
     val currentTopic = viewModel.currentTopic.collectAsStateWithLifecycle().value
     PostListScreen(
         currentTopic = currentTopic,
-        postList,
+        postListPagingData = postListPagingData,
         onTopicChanged = viewModel::onTopicChanged,
     )
 }
@@ -53,10 +64,9 @@ fun PostListRoute(
 @Composable
 fun PostListScreen(
     currentTopic: PostTopic,
-    postList: List<Post>,
+    postListPagingData: LazyPagingItems<Post>,
     onTopicChanged: (PostTopic) -> Unit = {},
 ) {
-    val context = LocalContext.current
     Column(modifier = Modifier.fillMaxSize()) {
         Spacer(modifier = Modifier.height(8.dp))
         TopicTabs(
@@ -64,70 +74,102 @@ fun PostListScreen(
             onClick = onTopicChanged,
             tabPosition = PostTopic.findIndex(currentTopic),
         )
-        LazyColumn(
-            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            items(
-                items = postList,
-                key = {it.postId}
-            ) { post ->
-                WithpeaceCard(
-                    modifier = Modifier.fillMaxWidth(),
+        when (postListPagingData.loadState.refresh) {
+            is LoadState.Loading -> {
+                Box(Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        color = WithpeaceTheme.colors.MainPink,
+                    )
+                }
+            }
+
+            is LoadState.Error -> {
+                Box(Modifier.fillMaxSize()) {
+                    Text(
+                        text = "네트워크 상태를 확인해주세요.",
+                        modifier = Modifier.align(Alignment.Center),
+                    )
+                }
+            }
+
+            is LoadState.NotLoading -> {
+                PostListItems(
+                    postList = postListPagingData.itemSnapshotList.items,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PostListItems(
+    postList: List<Post>,
+) {
+    val context = LocalContext.current
+    LazyColumn(
+        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        items(
+            items = postList,
+            key = { it.postId },
+        ) { post ->
+            WithpeaceCard(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                ConstraintLayout(
+                    modifier = Modifier
+                        .padding(vertical = 15.dp, horizontal = 16.dp)
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
                 ) {
-                    ConstraintLayout(
+                    val (column, image) = createRefs()
+                    Column(
                         modifier = Modifier
-                            .padding(vertical = 15.dp, horizontal = 16.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
+                            .padding(end = 8.dp)
+                            .constrainAs(column) {
+                                top.linkTo(parent.top)
+                                start.linkTo(parent.start)
+                                end.linkTo(image.start)
+                                width = Dimension.fillToConstraints
+                            },
                     ) {
-                        val (column, image) = createRefs()
-                        Column(
+                        Text(
+                            text = post.title,
+                            fontFamily = PretendardFont,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                        )
+                        Text(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            text = post.content,
+                            style = WithpeaceTheme.typography.caption,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Text(
+                            text = post.createDate.toRelativeString(context),
+                            fontFamily = PretendardFont,
+                            fontWeight = FontWeight.Normal,
+                            color = WithpeaceTheme.colors.SystemGray2,
+                            fontSize = 12.sp,
+                        )
+                    }
+                    post.postImageUrl?.let {
+                        GlideImage(
                             modifier = Modifier
-                                .padding(end = 8.dp)
-                                .constrainAs(column) {
+                                .size(72.dp)
+                                .constrainAs(image) {
                                     top.linkTo(parent.top)
-                                    start.linkTo(parent.start)
-                                    end.linkTo(image.start)
-                                    width = Dimension.fillToConstraints
+                                    bottom.linkTo(parent.bottom)
+                                    end.linkTo(parent.end)
                                 },
-                        ) {
-                            Text(
-                                text = post.title,
-                                fontFamily = PretendardFont,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp,
-                                overflow = TextOverflow.Ellipsis,
-                                maxLines = 1,
-                            )
-                            Text(
-                                modifier = Modifier.padding(vertical = 8.dp),
-                                text = post.content,
-                                style = WithpeaceTheme.typography.caption,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                            Text(
-                                text = post.createDate.toRelativeString(context),
-                                fontFamily = PretendardFont,
-                                fontWeight = FontWeight.Normal,
-                                color = WithpeaceTheme.colors.SystemGray2,
-                                fontSize = 12.sp
-                            )
-                        }
-                        post.postImageUrl?.let {
-                            GlideImage(
-                                modifier = Modifier
-                                    .size(72.dp)
-                                    .constrainAs(image) {
-                                        top.linkTo(parent.top)
-                                        bottom.linkTo(parent.bottom)
-                                        end.linkTo(parent.end)
-                                    },
-                                imageModel = { it },
-                                previewPlaceholder = R.drawable.ic_freedom,
-                            )
-                        }
+                            imageModel = { it },
+                            previewPlaceholder = R.drawable.ic_freedom,
+                        )
                     }
                 }
             }
@@ -141,16 +183,27 @@ private fun PostListScreenPreview() {
     WithpeaceTheme {
         PostListScreen(
             currentTopic = PostTopic.FREEDOM,
-            postList = List(10) {
-                Post(
-                    postId = 2049,
-                    title = "periculis",
-                    content = "pellentesq\nuehaha",
-                    postTopic = PostTopic.INFORMATION,
-                    createDate = Date(LocalDateTime.now()),
-                    postImageUrl = "https://duckduckgo.com/?q=verterem",
-                )
-            },
+            postListPagingData =
+                flowOf(
+                    PagingData.from(
+                        List(10) {
+                            Post(
+                                postId = 6724,
+                                title = "fugit",
+                                content = "varius",
+                                postTopic = PostTopic.INFORMATION,
+                                createDate = Date(date = LocalDateTime.now()),
+                                postImageUrl = null,
+                            )
+                        },
+                        sourceLoadStates =
+                        LoadStates(
+                            refresh = LoadState.NotLoading(false),
+                            append = LoadState.NotLoading(false),
+                            prepend = LoadState.NotLoading(false),
+                        ),
+                    ),
+                ).collectAsLazyPagingItems(),
         )
     }
 }
