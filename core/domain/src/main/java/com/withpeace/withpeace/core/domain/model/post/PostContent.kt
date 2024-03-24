@@ -1,6 +1,7 @@
 package com.withpeace.withpeace.core.domain.model.post
 
-data class PostContent(
+@JvmInline
+value class PostContent(
     val value: String,
 ) {
     init {
