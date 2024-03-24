@@ -89,7 +89,7 @@ enum class BottomTab(
         iconUnSelectedResId = R.drawable.ic_bottom_post,
         iconSelectedResId = R.drawable.ic_bottom_post_select,
         contentDescription = R.string.post,
-        POST_LIST_ROUTE,
+        POST_NESTED_ROUTE,
     ),
     MY_PAGE(
         iconUnSelectedResId = R.drawable.ic_bottom_my_page,
