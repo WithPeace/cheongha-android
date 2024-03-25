@@ -14,7 +14,7 @@ fun NavController.navigateMyPage(navOptions: NavOptions? = null) {
 
 fun NavGraphBuilder.myPageNavGraph(
     onShowSnackBar: (message: String) -> Unit,
-    onEditProfile: () -> Unit,
+    onEditProfile: (nickname: String, profileImageUrl: String) -> Unit,
     onLogoutClick: () -> Unit,
     onWithdrawClick: () -> Unit,
 ) {

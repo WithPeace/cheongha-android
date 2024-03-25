@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.feature.mypage
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -17,6 +18,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,7 +38,7 @@ import com.withpeace.withpeace.core.domain.model.profile.ProfileInfo
 fun MyPageRoute(
     viewModel: MyPageViewModel = hiltViewModel(),
     onShowSnackBar: (message: String) -> Unit = {},
-    onEditProfile: () -> Unit,
+    onEditProfile: (nickname: String, profileImageUrl: String) -> Unit,
     onLogoutClick: () -> Unit,
     onWithdrawClick: () -> Unit,
 ) {
@@ -48,22 +50,25 @@ fun MyPageRoute(
             onShowSnackBar(stringResource(R.string.network_failure_message))
         }
     }
+    val profileInfo = (mypageUiState as? MyPageUiState.Success)?.profileInfo ?: ProfileInfo(
+        "",
+        "",
+        "",
+    ) // TODO("없을 시 로컬에서 가지고 온다.")
     MyPageScreen(
-        onEditProfile = onEditProfile,
+        onEditProfile = {
+            onEditProfile(it.nickname, it.profileImageUrl ?: "")
+        },
         onLogoutClick = onLogoutClick,
         onWithdrawClick = onWithdrawClick,
-        profileInfo = (mypageUiState as? MyPageUiState.Success)?.profileInfo ?: ProfileInfo(
-            "",
-            "",
-            "",
-        ), // TODO("없을 시 로컬에서 가지고 온다.")
+        profileInfo = profileInfo,
     )
 }
 
 @Composable
 fun MyPageScreen(
     modifier: Modifier = Modifier,
-    onEditProfile: () -> Unit,
+    onEditProfile: (ProfileInfo) -> Unit,
     onLogoutClick: () -> Unit,
     onWithdrawClick: () -> Unit,
     profileInfo: ProfileInfo,
@@ -103,7 +108,7 @@ fun MyPageScreen(
                     )
                 }
                 TextButton(
-                    onClick = { onEditProfile() },
+                    onClick = { onEditProfile(profileInfo) },
                 ) {
                     Text(
                         color = WithpeaceTheme.colors.MainPink,

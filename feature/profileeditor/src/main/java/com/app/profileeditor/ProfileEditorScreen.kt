@@ -139,7 +139,9 @@ private fun ProfileImage(
     if (showDialog) {
         imagePermissionHelper.ImagePermissionDialog { showDialog = false }
     }
-    val imageModifier = modifier.size(120.dp).clip(CircleShape)
+    val imageModifier = modifier
+        .size(120.dp)
+        .clip(CircleShape)
     Row(
         modifier = modifier.wrapContentSize(Alignment.Center),
         horizontalArrangement = Arrangement.Center,
@@ -252,12 +254,12 @@ private fun EditCompletedButton(
                 start = WithpeaceTheme.padding.BasicHorizontalPadding,
             )
             .fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(containerColor = WithpeaceTheme.colors.SystemGray2),
+        colors = ButtonDefaults.buttonColors(containerColor = WithpeaceTheme.colors.MainPink),
         shape = RoundedCornerShape(9.dp),
     ) {
         Text(
             style = WithpeaceTheme.typography.body,
-            text = "변경 완료",
+            text = stringResource(R.string.edit_completed),
             modifier = Modifier.padding(vertical = 18.dp),
             color = WithpeaceTheme.colors.SystemWhite,
         )

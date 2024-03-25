@@ -59,8 +59,8 @@ fun WithpeaceNavHost(
         postNavGraph(onShowSnackBar)
         myPageNavGraph(
             onShowSnackBar = onShowSnackBar,
-            onEditProfile = {
-                navController.navigateProfileEditor()
+            onEditProfile = { nickname, profileImageUrl ->
+                navController.navigateProfileEditor(nickname = nickname, profileImageUrl = profileImageUrl)
             },
             onLogoutClick = {},
             onWithdrawClick = {},
