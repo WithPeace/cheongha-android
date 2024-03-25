@@ -19,10 +19,10 @@ const val PROFILE_EDITOR_ROUTE_WITH_ARGUMENT =
 
 fun NavController.navigateProfileEditor(
     navOptions: NavOptions? = null,
-    nickname: String,
-    profileImageUrl: String,
+    nickname: String?,
+    profileImageUrl: String?,
 ) {
-    navigate("$PROFILE_EDITOR_ROUTE/$nickname/$profileImageUrl", navOptions)
+    navigate("$PROFILE_EDITOR_ROUTE/${nickname ?: ""}/${profileImageUrl ?: ""}", navOptions)
 }
 
 fun NavGraphBuilder.profileEditorNavGraph(
@@ -40,7 +40,7 @@ fun NavGraphBuilder.profileEditorNavGraph(
         val selectedImageUri =
             entry.savedStateHandle.get<List<String>>(IMAGE_LIST_ARGUMENT) ?: emptyList()
         val viewModel: ProfileEditorViewModel = hiltViewModel()
-        viewModel.onImageUriAdded(imageUri = selectedImageUri.firstOrNull() ?: "")
+        viewModel.onImageChanged(imageUri = selectedImageUri.firstOrNull() ?: "default.png")
         ProfileEditorRoute(
             onShowSnackBar = onShowSnackBar,
             onClickBackButton = onClickBackButton,

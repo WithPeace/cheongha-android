@@ -1,8 +1,6 @@
 package com.app.profileeditor
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +23,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -44,11 +43,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.landscapist.glide.GlideImage
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
-import com.withpeace.withpeace.core.domain.model.profile.ProfileInfo
+import com.withpeace.withpeace.core.domain.model.profile.ChangingProfileInfo
 import com.withpeace.withpeace.core.permission.ImagePermissionHelper
 import com.withpeace.withpeace.feature.profileeditor.R
 
@@ -59,18 +59,45 @@ fun ProfileEditorRoute(
     onNavigateToGallery: () -> Unit,
     viewModel: ProfileEditorViewModel,
 ) {
+    var showAlertDialog by remember { mutableStateOf(false) }
+    val profileUiState: ProfileEditUiState by viewModel.profileEditUiState.collectAsStateWithLifecycle()
+    val profileInfo = when (profileUiState) {
+        is ProfileEditUiState.Editing -> {
+            val editing = profileUiState as ProfileEditUiState.Editing
+            ChangingProfileInfo(nickname = editing.nickname, profileImage = editing.profileImage)
+        }
+
+        is ProfileEditUiState.NoChanges -> {
+            ChangingProfileInfo(
+                viewModel.baseProfileInfo.nickname,
+                viewModel.baseProfileInfo.profileImage,
+            )
+        }
+    }
+    if (showAlertDialog) {
+        ModifySaveDialog {
+            showAlertDialog = false
+        }
+    }
     ProfileEditorScreen(
-        profileInfo = viewModel.profileInfo.collectAsStateWithLifecycle().value,
-        onClickBackButton = onClickBackButton,
+        profileInfo = ChangingProfileInfo(profileInfo.nickname, profileInfo.profileImage),
+        onClickBackButton = {
+            if (profileUiState is ProfileEditUiState.Editing) {
+                showAlertDialog = true
+            } else {
+                onClickBackButton()
+            }
+        },
         onNavigateToGallery = onNavigateToGallery,
         onEditCompleted = {},
         onNickNameChanged = viewModel::onNickNameChanged,
     )
+
 }
 
 @Composable
 fun ProfileEditorScreen(
-    profileInfo: ProfileInfo,
+    profileInfo: ChangingProfileInfo,
     modifier: Modifier = Modifier,
     onClickBackButton: () -> Unit,
     onNavigateToGallery: () -> Unit,
@@ -100,7 +127,7 @@ fun ProfileEditorScreen(
             )
             Spacer(modifier = modifier.height(16.dp))
             ProfileImage(
-                profileImage = profileInfo.profileImageUrl,
+                profileImage = profileInfo.profileImage,
                 modifier = modifier,
                 onNavigateToGallery = onNavigateToGallery,
             )
@@ -266,12 +293,34 @@ private fun EditCompletedButton(
     }
 }
 
+//TODO("common-ui로 이동")
+@Composable
+fun ModifySaveDialog(
+    modifier: Modifier = Modifier,
+    onModifyDismissRequest: () -> Unit,
+) {
+    Dialog(onDismissRequest = { onModifyDismissRequest() }) {
+        Surface(modifier = modifier.width(327.dp)) {
+            ModifySaveDialogContent(modifier)
+        }
+    }
+}
+
+@Composable
+fun ModifySaveDialogContent(modifier: Modifier) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Spacer(modifier = modifier.height(24.dp))
+        Text(text = stringResource(R.string.modify_save_request))
+
+    }
+}
+
 @Composable
 @Preview
 fun ProfileEditorPreview() {
     WithpeaceTheme {
         ProfileEditorScreen(
-            profileInfo = ProfileInfo("nickname", null,""),
+            profileInfo = ChangingProfileInfo("nickname", ""),
             onClickBackButton = {},
             onNavigateToGallery = {},
             onEditCompleted = {},

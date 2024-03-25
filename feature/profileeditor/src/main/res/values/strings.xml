@@ -3,4 +3,5 @@
     <string name="edit_profile">프로필 편집</string>
     <string name="nickname_policy">닉네임은 2~10자의 한글, 영문만 가능합니다.</string>
     <string name="edit_completed">수정 완료</string>
+    <string name="modify_save_request">수정사항이 있습니다.\n저장하시겠습니까?</string>
 </resources>

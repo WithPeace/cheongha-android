@@ -1,6 +1,5 @@
 package com.withpeace.withpeace.feature.mypage
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -18,7 +17,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,7 +40,7 @@ fun MyPageRoute(
     onLogoutClick: () -> Unit,
     onWithdrawClick: () -> Unit,
 ) {
-    val mypageUiState by viewModel.postUiState.collectAsStateWithLifecycle()
+    val mypageUiState by viewModel.myPageUiState.collectAsStateWithLifecycle()
     when (mypageUiState) {
         MyPageUiState.Loading -> {}
         is MyPageUiState.Success -> {}
@@ -51,13 +49,13 @@ fun MyPageRoute(
         }
     }
     val profileInfo = (mypageUiState as? MyPageUiState.Success)?.profileInfo ?: ProfileInfo(
-        "",
-        "",
+        "nickname",
+        "profile",
         "",
     ) // TODO("없을 시 로컬에서 가지고 온다.")
     MyPageScreen(
         onEditProfile = {
-            onEditProfile(it.nickname, it.profileImageUrl ?: "")
+            onEditProfile(it.nickname, it.profileImageUrl)
         },
         onLogoutClick = onLogoutClick,
         onWithdrawClick = onWithdrawClick,
@@ -129,6 +127,7 @@ fun MyPageScreen(
             modifier = modifier,
             onLogoutClick = onLogoutClick,
             onWithdrawClick = onWithdrawClick,
+            email = profileInfo.email,
         )
     }
 }
@@ -138,9 +137,10 @@ fun MyPageSections(
     modifier: Modifier,
     onLogoutClick: () -> Unit,
     onWithdrawClick: () -> Unit,
+    email: String,
 ) {
     Column(modifier = modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding)) {
-        AccountSection(modifier)
+        AccountSection(modifier, email = email)
         Divider(
             modifier = modifier
                 .fillMaxWidth()
@@ -152,7 +152,7 @@ fun MyPageSections(
 }
 
 @Composable
-private fun AccountSection(modifier: Modifier) {
+private fun AccountSection(modifier: Modifier, email: String) {
     Section(title = stringResource(R.string.account)) {
         Spacer(modifier = modifier.height(16.dp))
         Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -162,7 +162,7 @@ private fun AccountSection(modifier: Modifier) {
                 color = WithpeaceTheme.colors.SystemBlack,
             )
             Text(
-                text = "abc@gmail.com",
+                text = email,
                 style = WithpeaceTheme.typography.caption,
                 color = WithpeaceTheme.colors.SystemGray2,
             )
