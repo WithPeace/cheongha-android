@@ -56,6 +56,7 @@ class ProfileEditorViewModel @Inject constructor(
             }
             updateData
         }
+        // verify
     }
 
     fun updateProfile() {

@@ -1,6 +1,8 @@
 package com.app.profileeditor
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +27,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -75,9 +78,18 @@ fun ProfileEditorRoute(
         }
     }
     if (showAlertDialog) {
-        ModifySaveDialog {
-            showAlertDialog = false
-        }
+        ModifySaveDialog(
+            onClickSave = {
+                showAlertDialog = false
+            },
+            onClickExit = {
+                showAlertDialog = false
+                onClickBackButton()
+            },
+            onModifyDismissRequest = {
+                showAlertDialog = false
+            },
+        )
     }
     ProfileEditorScreen(
         profileInfo = ChangingProfileInfo(profileInfo.nickname, profileInfo.profileImage),
@@ -199,7 +211,7 @@ private fun ProfileImage(
                     .align(Alignment.BottomEnd)
                     .padding(bottom = 6.dp, end = 6.dp),
                 painter = painterResource(id = R.drawable.ic_editor_pencil),
-                contentDescription = "프로필 수정",
+                contentDescription = stringResource(id = R.string.edit_profile),
             )
         }
     }
@@ -236,7 +248,7 @@ private fun NickNameTextField(
                     Text(
                         modifier = modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
-                        text = "닉네임을 입력하세요",
+                        text = stringResource(R.string.enter_nickname),
                         style = WithpeaceTheme.typography.body,
                         color = WithpeaceTheme.colors.SystemGray2,
                     )
@@ -293,25 +305,81 @@ private fun EditCompletedButton(
     }
 }
 
-//TODO("common-ui로 이동")
 @Composable
 fun ModifySaveDialog(
     modifier: Modifier = Modifier,
     onModifyDismissRequest: () -> Unit,
+    onClickExit: () -> Unit,
+    onClickSave: () -> Unit,
 ) {
     Dialog(onDismissRequest = { onModifyDismissRequest() }) {
-        Surface(modifier = modifier.width(327.dp)) {
-            ModifySaveDialogContent(modifier)
+        Surface(
+            modifier = modifier
+                .width(327.dp)
+                .clip(RoundedCornerShape(10.dp)),
+        ) {
+            ModifySaveDialogContent(
+                modifier = modifier,
+                onClickExit = onClickExit,
+                onClickSave = onClickSave,
+            )
         }
     }
 }
 
 @Composable
-fun ModifySaveDialogContent(modifier: Modifier) {
+fun ModifySaveDialogContent(
+    modifier: Modifier,
+    onClickExit: () -> Unit,
+    onClickSave: () -> Unit,
+) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(modifier = modifier.height(24.dp))
-        Text(text = stringResource(R.string.modify_save_request))
-
+        Text(
+            text = stringResource(R.string.modify_save_request),
+            style = WithpeaceTheme.typography.body,
+            color = WithpeaceTheme.colors.SystemGray1,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(modifier = modifier.height(16.dp))
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            TextButton(
+                modifier = modifier
+                    .width(136.dp)
+                    .border(
+                        width = 1.dp,
+                        shape = RoundedCornerShape(10.dp),
+                        color = WithpeaceTheme.colors.MainPink,
+                    )
+                    .background(WithpeaceTheme.colors.SystemWhite),
+                onClick = { onClickExit() },
+                content = {
+                    Text(
+                        text = stringResource(R.string.dialog_exit),
+                        color = WithpeaceTheme.colors.MainPink,
+                        style = WithpeaceTheme.typography.caption,
+                    )
+                },
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            TextButton(
+                modifier = modifier
+                    .width(136.dp)
+                    .background(WithpeaceTheme.colors.MainPink, shape = RoundedCornerShape(10.dp)),
+                onClick = { onClickSave() },
+                content = {
+                    Text(
+                        text = stringResource(R.string.dialog_save),
+                        color = WithpeaceTheme.colors.SystemWhite,
+                        style = WithpeaceTheme.typography.caption,
+                    )
+                },
+            )
+        }
+        Spacer(modifier = modifier.height(24.dp))
     }
 }
 
