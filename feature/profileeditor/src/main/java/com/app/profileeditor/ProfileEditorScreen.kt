@@ -66,7 +66,6 @@ fun ProfileEditorRoute(
         onEditCompleted = {},
         onNickNameChanged = viewModel::onNickNameChanged,
     )
-
 }
 
 @Composable
@@ -270,7 +269,7 @@ private fun EditCompletedButton(
 fun ProfileEditorPreview() {
     WithpeaceTheme {
         ProfileEditorScreen(
-            profileInfo = ProfileInfo("nickname", null),
+            profileInfo = ProfileInfo("nickname", null,""),
             onClickBackButton = {},
             onNavigateToGallery = {},
             onEditCompleted = {},

@@ -16,6 +16,7 @@ class ProfileEditorViewModel @Inject constructor() : ViewModel() {
         ProfileInfo(
             nickname = "",
             profileImageUrl = null,
+            ""
         ),
     )
     val profileInfo = _profileInfo.asStateFlow()

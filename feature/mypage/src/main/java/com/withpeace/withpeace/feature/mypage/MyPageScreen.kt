@@ -17,6 +17,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,21 +25,38 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.landscapist.glide.GlideImage
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.TitleBar
+import com.withpeace.withpeace.core.domain.model.profile.ProfileInfo
 
 @Composable
 fun MyPageRoute(
+    viewModel: MyPageViewModel = hiltViewModel(),
     onShowSnackBar: (message: String) -> Unit = {},
     onEditProfile: () -> Unit,
     onLogoutClick: () -> Unit,
     onWithdrawClick: () -> Unit,
 ) {
+    val mypageUiState by viewModel.postUiState.collectAsStateWithLifecycle()
+    when (mypageUiState) {
+        MyPageUiState.Loading -> {}
+        is MyPageUiState.Success -> {}
+        MyPageUiState.Fail -> {
+            onShowSnackBar(stringResource(R.string.network_failure_message))
+        }
+    }
     MyPageScreen(
         onEditProfile = onEditProfile,
         onLogoutClick = onLogoutClick,
         onWithdrawClick = onWithdrawClick,
+        profileInfo = (mypageUiState as? MyPageUiState.Success)?.profileInfo ?: ProfileInfo(
+            "",
+            "",
+            "",
+        ), // TODO("없을 시 로컬에서 가지고 온다.")
     )
 }
 
@@ -48,6 +66,7 @@ fun MyPageScreen(
     onEditProfile: () -> Unit,
     onLogoutClick: () -> Unit,
     onWithdrawClick: () -> Unit,
+    profileInfo: ProfileInfo,
 ) {
     Column(
         modifier,
@@ -68,7 +87,7 @@ fun MyPageScreen(
                         )
                     GlideImage(
                         modifier = imageModifier,
-                        imageModel = { "" },
+                        imageModel = { profileInfo.profileImageUrl },
                         failure = {
                             Image(
                                 painterResource(id = R.drawable.ic_default_profile),
@@ -79,7 +98,7 @@ fun MyPageScreen(
                     )
                     Text(
                         style = WithpeaceTheme.typography.body,
-                        text = "닉네임닉네임",
+                        text = profileInfo.nickname,
                         modifier = modifier.padding(start = 8.dp),
                     )
                 }
@@ -204,6 +223,7 @@ fun MyPagePreview() {
             modifier = Modifier,
             onLogoutClick = {},
             onWithdrawClick = {},
+            profileInfo = ProfileInfo("닉네임닉네임", "", "abc@gmail.com"),
         )
     }
 }

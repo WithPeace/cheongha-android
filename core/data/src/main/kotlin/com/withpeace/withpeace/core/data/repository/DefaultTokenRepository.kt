@@ -18,7 +18,6 @@ import javax.inject.Inject
 class DefaultTokenRepository @Inject constructor(
     private val tokenPreferenceDataSource: TokenPreferenceDataSource,
     private val authService: AuthService,
-    private val userService: UserService,
 ) : TokenRepository {
     override suspend fun isLogin(): Boolean {
         val token = tokenPreferenceDataSource.accessToken.firstOrNull()
@@ -30,7 +29,7 @@ class DefaultTokenRepository @Inject constructor(
         nickname: String,
         onError: (String) -> Unit,
     ): Flow<Unit> = flow {
-        userService.signUp(
+        authService.signUp(
             SignUpRequest(email = email, nickname = nickname, deviceToken = null),
         ).suspendMapSuccess {
             val data = this.data
