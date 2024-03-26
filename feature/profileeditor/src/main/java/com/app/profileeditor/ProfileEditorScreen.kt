@@ -64,6 +64,7 @@ fun ProfileEditorRoute(
     onClickBackButton: () -> Unit,
     onNavigateToGallery: () -> Unit,
     viewModel: ProfileEditorViewModel,
+    onUpdateSuccess: () -> Unit,
 ) {
     var showAlertDialog by remember { mutableStateOf(false) }
     val profileUiState: ProfileEditUiState by viewModel.profileEditUiState.collectAsStateWithLifecycle()
@@ -74,7 +75,8 @@ fun ProfileEditorRoute(
             ChangingProfileInfo(nickname = editing.nickname, profileImage = editing.profileImage)
         }
 
-        ProfileEditUiState.NoChanges -> {
+        is ProfileEditUiState.NoChanges -> {
+            viewModel.updateIsNicknameValidStatus(ProfileNicknameValidUiState.Valid)
             viewModel.baseProfileInfo
         }
     }
@@ -98,15 +100,32 @@ fun ProfileEditorRoute(
         viewModel.profileEditUiEvent.collect {
             when (it) {
                 ProfileEditUiEvent.ShowDuplicate -> {
-                    onShowSnackBar("중복")
+                    viewModel.updateIsNicknameValidStatus(ProfileNicknameValidUiState.InValidDuplicated)
                 }
 
-                ProfileEditUiEvent.ShowFailure -> {}
-                ProfileEditUiEvent.ShowInvalidFormat -> {}
-                ProfileEditUiEvent.ShowUnchanged -> {}
-                ProfileEditUiEvent.ShowUpdateSuccess -> {}
+                ProfileEditUiEvent.ShowDuplicateSnackBar -> {
+                    onShowSnackBar("중복된 닉네임입니다.")
+                }
+
+                ProfileEditUiEvent.ShowFailure -> {
+                    onShowSnackBar("서버와 통신 중 오류가 발생했습니다.")
+                }
+
+                ProfileEditUiEvent.ShowInvalidFormat -> {
+                    viewModel.updateIsNicknameValidStatus(ProfileNicknameValidUiState.InValidFormat)
+                }
+
+                ProfileEditUiEvent.ShowUnchanged -> {
+                    onShowSnackBar("수정사항이 없습니다.")
+                }
+
+                ProfileEditUiEvent.ShowUpdateSuccess -> {
+                    onShowSnackBar("변경되었습니다.")
+                    onUpdateSuccess()
+                }
+
                 ProfileEditUiEvent.ShowNicknameVerified -> {
-                    onShowSnackBar("맞음")
+                    viewModel.updateIsNicknameValidStatus(ProfileNicknameValidUiState.Valid)
                 }
             }
         }
@@ -123,12 +142,14 @@ fun ProfileEditorRoute(
             }
         },
         onNavigateToGallery = onNavigateToGallery,
-        onEditCompleted = {},
+        onEditCompleted = {
+            viewModel.updateProfile()
+        },
         onNickNameChanged = viewModel::onNickNameChanged,
         onKeyBoardTimerEnd = {
             viewModel.verifyNickname()
         },
-        isNicknameError = false,
+        nicknameValidStatus = viewModel.profileNicknameValidUiState.collectAsStateWithLifecycle().value,
     )
 
 }
@@ -142,7 +163,7 @@ fun ProfileEditorScreen(
     onEditCompleted: () -> Unit,
     onNickNameChanged: (String) -> Unit,
     onKeyBoardTimerEnd: () -> Unit,
-    isNicknameError: Boolean,
+    nicknameValidStatus: ProfileNicknameValidUiState,
 ) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -184,7 +205,7 @@ fun ProfileEditorScreen(
                     onNickNameChanged(it)
                 },
                 onKeyBoardTimerEnd = onKeyBoardTimerEnd,
-                isNicknameVerified = isNicknameError,
+                nicknameValidStatus = nicknameValidStatus,
             )
 
         }
@@ -252,7 +273,7 @@ private fun ProfileImage(
 private fun NickNameTextField(
     modifier: Modifier = Modifier,
     nickname: String,
-    isNicknameVerified: Boolean,
+    nicknameValidStatus: ProfileNicknameValidUiState,
     onNickNameChanged: (String) -> Unit,
     onKeyBoardTimerEnd: () -> Unit,
 ) {
@@ -306,12 +327,22 @@ private fun NickNameTextField(
             )
         }
         Divider(
-            color = WithpeaceTheme.colors.SystemBlack,
+            color = if (nicknameValidStatus is ProfileNicknameValidUiState.Valid) WithpeaceTheme.colors.SystemBlack
+            else WithpeaceTheme.colors.SystemError,
             modifier = modifier
                 .width(140.dp)
                 .height(1.dp),
         )
-        Text(text = "", modifier = modifier.padding(top = 4.dp))
+    }
+    if (nicknameValidStatus !is ProfileNicknameValidUiState.Valid) {
+        Text(
+            text = if (nicknameValidStatus is ProfileNicknameValidUiState.InValidDuplicated) stringResource(
+                R.string.nickname_duplicated,
+            ) else stringResource(id = R.string.nickname_policy),
+            style = WithpeaceTheme.typography.caption,
+            color = WithpeaceTheme.colors.SystemError,
+            modifier = modifier.padding(top = 4.dp),
+        )
     }
 }
 
@@ -434,7 +465,7 @@ fun ProfileEditorPreview() {
             onEditCompleted = {},
             onNickNameChanged = {},
             onKeyBoardTimerEnd = {},
-            isNicknameError = false,
+            nicknameValidStatus = ProfileNicknameValidUiState.Valid,
         )
     }
 }

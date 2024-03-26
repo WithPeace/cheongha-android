@@ -7,6 +7,7 @@ import com.app.profileeditor.navigation.PROFILE_IMAGE_URL_ARGUMENT
 import com.app.profileeditor.navigation.PROFILE_NICKNAME_ARGUMENT
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
 import com.withpeace.withpeace.core.domain.model.profile.ChangingProfileInfo
+import com.withpeace.withpeace.core.domain.usecase.UpdateProfileUseCase
 import com.withpeace.withpeace.core.domain.usecase.VerifyNicknameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class ProfileEditorViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val verifyNicknameUseCase: VerifyNicknameUseCase,
+    private val updateProfileUseCase: UpdateProfileUseCase,
 ) : ViewModel() {
     val baseProfileInfo = ChangingProfileInfo(
         nickname = savedStateHandle.get<String>(PROFILE_NICKNAME_ARGUMENT) ?: "",
@@ -36,13 +38,16 @@ class ProfileEditorViewModel @Inject constructor(
     private val _profileEditUiEvent = Channel<ProfileEditUiEvent>()
     val profileEditUiEvent = _profileEditUiEvent.receiveAsFlow()
 
+    private val _profileNicknameValidUiState =
+        MutableStateFlow<ProfileNicknameValidUiState>(ProfileNicknameValidUiState.Valid)
+    val profileNicknameValidUiState = _profileNicknameValidUiState.asStateFlow()
+
     fun onImageChanged(imageUri: String) {
         _profileEditUiState.update {
             val updateData = ProfileEditUiState.Editing(
                 (it as? ProfileEditUiState.Editing)?.nickname
                     ?: baseProfileInfo.nickname.value,
                 profileImage = imageUri,
-                isBasicTextValid = false,
             )
             if (baseProfileInfo.isSameTo(updateData.nickname, updateData.profileImage)) {
                 return@update ProfileEditUiState.NoChanges
@@ -57,7 +62,6 @@ class ProfileEditorViewModel @Inject constructor(
                 nickname = nickname,
                 profileImage = (it as? ProfileEditUiState.Editing)?.profileImage
                     ?: baseProfileInfo.profileImage ?: "default.png",
-                isBasicTextValid = false,
             ) // Editing 중이면 값을 갱신, 아닐 경우 기본 값에 nickname만 값을 추가
             if (baseProfileInfo.isSameTo(updateData.nickname, updateData.profileImage)) {
                 return@update ProfileEditUiState.NoChanges
@@ -100,15 +104,33 @@ class ProfileEditorViewModel @Inject constructor(
         }
     }
 
+    fun updateIsNicknameValidStatus(status: ProfileNicknameValidUiState) {
+        _profileNicknameValidUiState.update { status }
+    }
+
     fun updateProfile() {
         if (_profileEditUiState.value is ProfileEditUiState.NoChanges) {
             viewModelScope.launch {
                 _profileEditUiEvent.send(ProfileEditUiEvent.ShowUnchanged)
             }
+        } else if (_profileEditUiState.value is ProfileEditUiState.Editing) {
+            val editing = _profileEditUiState.value as ProfileEditUiState.Editing
+            viewModelScope.launch {
+                updateProfileUseCase(
+                    beforeProfile = baseProfileInfo,
+                    afterProfile = ChangingProfileInfo(editing.nickname, editing.profileImage),
+                    onError = {
+                        this.launch {
+                            _profileEditUiEvent.send(ProfileEditUiEvent.ShowFailure)
+                        }
+                    },
+                ).collect {
+                    _profileEditUiEvent.send(ProfileEditUiEvent.ShowUpdateSuccess)
+                }
+            }
         }
     }
 }
-// 1. 하단 문구 및 오류 표시
 // 2. updateProfileUsecase() 3개 있어야겠다. ㅋㅋ
 // 3. 오류 표시
 // 4, 이전 화면 갱신

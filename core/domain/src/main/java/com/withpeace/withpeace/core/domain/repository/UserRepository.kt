@@ -1,6 +1,7 @@
 package com.withpeace.withpeace.core.domain.repository
 
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.profile.ChangingProfileInfo
 import com.withpeace.withpeace.core.domain.model.profile.Nickname
 import com.withpeace.withpeace.core.domain.model.profile.ProfileInfo
 import kotlinx.coroutines.flow.Flow
@@ -15,17 +16,17 @@ interface UserRepository {
     fun updateProfileImage(
         profileImage: String,
         onError: (WithPeaceError) -> Unit,
-    ): Flow<String>
+    ): Flow<Unit>
 
     fun updateNickname(
         nickname: String,
         onError: (WithPeaceError) -> Unit,
-    ): Flow<String>
+    ): Flow<Unit>
 
     fun updateProfile(
         nickname: String, profileImage: String,
         onError: (WithPeaceError) -> Unit,
-    ): Flow<ProfileInfo>
+    ): Flow<Unit>
 
     fun verifyNicknameDuplicated(
         nickname: Nickname,

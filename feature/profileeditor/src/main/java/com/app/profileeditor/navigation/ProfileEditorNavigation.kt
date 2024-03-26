@@ -9,6 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.app.profileeditor.ProfileEditorRoute
 import com.app.profileeditor.ProfileEditorViewModel
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 const val PROFILE_EDITOR_ROUTE = "profileEditorRoute"
 const val IMAGE_LIST_ARGUMENT = "image_list_argument"
@@ -22,13 +24,15 @@ fun NavController.navigateProfileEditor(
     nickname: String?,
     profileImageUrl: String?,
 ) {
-    navigate("$PROFILE_EDITOR_ROUTE/${nickname ?: ""}/${profileImageUrl ?: ""}", navOptions)
+    val encodedUrl = URLEncoder.encode(profileImageUrl, StandardCharsets.UTF_8.toString())
+    navigate("$PROFILE_EDITOR_ROUTE/${nickname ?: ""}/${encodedUrl ?: ""}", navOptions)
 }
 
 fun NavGraphBuilder.profileEditorNavGraph(
     onShowSnackBar: (message: String) -> Unit,
     onClickBackButton: () -> Unit,
     onNavigateToGallery: () -> Unit,
+    onUpdateSuccess: () -> Unit,
 ) {
     composable(
         route = PROFILE_EDITOR_ROUTE_WITH_ARGUMENT,
@@ -40,12 +44,15 @@ fun NavGraphBuilder.profileEditorNavGraph(
         val selectedImageUri =
             entry.savedStateHandle.get<List<String>>(IMAGE_LIST_ARGUMENT) ?: emptyList()
         val viewModel: ProfileEditorViewModel = hiltViewModel()
-        viewModel.onImageChanged(imageUri = selectedImageUri.firstOrNull() ?: "default.png")
+        if (selectedImageUri.isNotEmpty()) {
+            viewModel.onImageChanged(imageUri = selectedImageUri.firstOrNull() ?: "default.png")
+        }
         ProfileEditorRoute(
             onShowSnackBar = onShowSnackBar,
             onClickBackButton = onClickBackButton,
             onNavigateToGallery = onNavigateToGallery,
             viewModel = viewModel,
+            onUpdateSuccess = onUpdateSuccess,
         )
     }
 }

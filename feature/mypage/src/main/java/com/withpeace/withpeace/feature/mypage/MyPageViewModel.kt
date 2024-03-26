@@ -18,11 +18,7 @@ class MyPageViewModel @Inject constructor(
     private val _myPageUiState = MutableStateFlow<MyPageUiState>(MyPageUiState.Loading)
     val myPageUiState = _myPageUiState.asStateFlow()
 
-    init {
-        getProfile()
-    }
-
-    private fun getProfile() {
+    fun getProfile() {
         viewModelScope.launch {
             userRepository.getProfile { error ->
             }.collect { profileInfo ->
