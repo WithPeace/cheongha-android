@@ -1,6 +1,7 @@
 package com.withpeace.withpeace.core.domain.repository
 
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.profile.Nickname
 import com.withpeace.withpeace.core.domain.model.profile.ProfileInfo
 import kotlinx.coroutines.flow.Flow
 
@@ -26,8 +27,8 @@ interface UserRepository {
         onError: (WithPeaceError) -> Unit,
     ): Flow<ProfileInfo>
 
-    fun isNicknameDuplicated(
-        nickname: String,
+    fun verifyNicknameDuplicated(
+        nickname: Nickname,
         onError: (WithPeaceError) -> Unit,
     ): Flow<Boolean>
 }

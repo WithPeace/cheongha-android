@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,6 +55,8 @@ import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.domain.model.profile.ChangingProfileInfo
 import com.withpeace.withpeace.core.permission.ImagePermissionHelper
 import com.withpeace.withpeace.feature.profileeditor.R
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun ProfileEditorRoute(
@@ -64,23 +67,22 @@ fun ProfileEditorRoute(
 ) {
     var showAlertDialog by remember { mutableStateOf(false) }
     val profileUiState: ProfileEditUiState by viewModel.profileEditUiState.collectAsStateWithLifecycle()
+
     val profileInfo = when (profileUiState) {
         is ProfileEditUiState.Editing -> {
             val editing = profileUiState as ProfileEditUiState.Editing
             ChangingProfileInfo(nickname = editing.nickname, profileImage = editing.profileImage)
         }
 
-        is ProfileEditUiState.NoChanges -> {
-            ChangingProfileInfo(
-                viewModel.baseProfileInfo.nickname,
-                viewModel.baseProfileInfo.profileImage,
-            )
+        ProfileEditUiState.NoChanges -> {
+            viewModel.baseProfileInfo
         }
     }
     if (showAlertDialog) {
         ModifySaveDialog(
             onClickSave = {
                 showAlertDialog = false
+                viewModel.updateProfile()
             },
             onClickExit = {
                 showAlertDialog = false
@@ -91,6 +93,26 @@ fun ProfileEditorRoute(
             },
         )
     }
+
+    LaunchedEffect(viewModel.profileEditUiEvent) {
+        viewModel.profileEditUiEvent.collect {
+            when (it) {
+                ProfileEditUiEvent.ShowDuplicate -> {
+                    onShowSnackBar("중복")
+                }
+
+                ProfileEditUiEvent.ShowFailure -> {}
+                ProfileEditUiEvent.ShowInvalidFormat -> {}
+                ProfileEditUiEvent.ShowUnchanged -> {}
+                ProfileEditUiEvent.ShowUpdateSuccess -> {}
+                ProfileEditUiEvent.ShowNicknameVerified -> {
+                    onShowSnackBar("맞음")
+                }
+            }
+        }
+    }
+
+
     ProfileEditorScreen(
         profileInfo = ChangingProfileInfo(profileInfo.nickname, profileInfo.profileImage),
         onClickBackButton = {
@@ -103,6 +125,10 @@ fun ProfileEditorRoute(
         onNavigateToGallery = onNavigateToGallery,
         onEditCompleted = {},
         onNickNameChanged = viewModel::onNickNameChanged,
+        onKeyBoardTimerEnd = {
+            viewModel.verifyNickname()
+        },
+        isNicknameError = false,
     )
 
 }
@@ -115,6 +141,8 @@ fun ProfileEditorScreen(
     onNavigateToGallery: () -> Unit,
     onEditCompleted: () -> Unit,
     onNickNameChanged: (String) -> Unit,
+    onKeyBoardTimerEnd: () -> Unit,
+    isNicknameError: Boolean,
 ) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -151,10 +179,12 @@ fun ProfileEditorScreen(
             )
             Spacer(modifier = modifier.height(16.dp))
             NickNameTextField(
-                nickname = profileInfo.nickname,
+                nickname = profileInfo.nickname.value,
                 onNickNameChanged = {
                     onNickNameChanged(it)
                 },
+                onKeyBoardTimerEnd = onKeyBoardTimerEnd,
+                isNicknameVerified = isNicknameError,
             )
 
         }
@@ -222,16 +252,26 @@ private fun ProfileImage(
 private fun NickNameTextField(
     modifier: Modifier = Modifier,
     nickname: String,
+    isNicknameVerified: Boolean,
     onNickNameChanged: (String) -> Unit,
+    onKeyBoardTimerEnd: () -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+    LaunchedEffect(nickname) {
+        delay(1.seconds)
+        onKeyBoardTimerEnd()
+    }
+
     Column(
         modifier = modifier
             .width(140.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         BasicTextField(
-            value = nickname, onValueChange = onNickNameChanged,
+            value = nickname,
+            onValueChange = {
+                onNickNameChanged(it)
+            },
             modifier = modifier.fillMaxWidth(),
             enabled = true,
             textStyle = WithpeaceTheme.typography.body.copy(textAlign = TextAlign.Center),
@@ -393,6 +433,8 @@ fun ProfileEditorPreview() {
             onNavigateToGallery = {},
             onEditCompleted = {},
             onNickNameChanged = {},
+            onKeyBoardTimerEnd = {},
+            isNicknameError = false,
         )
     }
 }

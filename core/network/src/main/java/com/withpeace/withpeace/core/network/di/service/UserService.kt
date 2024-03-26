@@ -8,6 +8,7 @@ import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.PUT
 import retrofit2.http.Part
+import retrofit2.http.Query
 
 interface UserService {
     @GET("/api/v1/users/profile")
@@ -18,4 +19,7 @@ interface UserService {
 
     @PATCH("/api/v1/users/profile/image")
     suspend fun updateImage(@Part imageFile: MultipartBody.Part): ApiResponse<BaseResponse<String>>
+
+    @GET("/api/v1/users/profile/nickname/check")
+    suspend fun isNicknameDuplicate(@Query("nickname") nickname: String): ApiResponse<BaseResponse<String>>
 }

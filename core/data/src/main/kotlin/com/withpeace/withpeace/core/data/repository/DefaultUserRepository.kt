@@ -6,6 +6,7 @@ import com.skydoves.sandwich.suspendOnError
 import com.skydoves.sandwich.suspendOnException
 import com.withpeace.withpeace.core.data.mapper.toDomain
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.profile.Nickname
 import com.withpeace.withpeace.core.domain.model.profile.ProfileInfo
 import com.withpeace.withpeace.core.domain.repository.UserRepository
 import com.withpeace.withpeace.core.network.di.service.UserService
@@ -56,10 +57,19 @@ class DefaultUserRepository @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override fun isNicknameDuplicated(
-        nickname: String,
+    override fun verifyNicknameDuplicated(
+        nickname: Nickname,
         onError: (WithPeaceError) -> Unit,
-    ): Flow<Boolean> {
-        TODO("Not yet implemented")
+    ): Flow<Boolean> = flow {
+        userService.isNicknameDuplicate(nickname.value).suspendMapSuccess {
+            if (this.data == "true") {
+                onError(WithPeaceError.GeneralError(code = 2))
+            }
+            emit(true)
+        }.suspendOnError {
+            onError(WithPeaceError.GeneralError(statusCode.code, messageOrNull))
+        }.suspendOnException {
+            onError(WithPeaceError.GeneralError(message = messageOrNull))
+        }
     }
 }
