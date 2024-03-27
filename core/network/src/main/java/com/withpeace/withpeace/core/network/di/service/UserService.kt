@@ -28,7 +28,7 @@ interface UserService {
     @Multipart
     @PUT("/api/v1/users/profile")
     suspend fun updateProfile(
-        @Part nickname: RequestBody,
+        @Part("nickname") nickname: RequestBody,
         @Part imageFile: MultipartBody.Part,
     ): ApiResponse<BaseResponse<String>>
 

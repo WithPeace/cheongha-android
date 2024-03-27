@@ -131,6 +131,3 @@ class ProfileEditorViewModel @Inject constructor(
         }
     }
 }
-// 2. updateProfileUsecase() 3개 있어야겠다. ㅋㅋ
-// 3. 오류 표시
-// 4, 이전 화면 갱신
