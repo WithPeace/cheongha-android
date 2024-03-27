@@ -54,7 +54,7 @@ fun MyPageRoute(
         viewModel.getProfile()
     }
     val profileInfo = (mypageUiState as? MyPageUiState.Success)?.profileInfo ?: ProfileInfo(
-        "",
+        "nickname",
         "default.png",
         "",
     ) // TODO("없을 시 로컬에서 가지고 온다.")
