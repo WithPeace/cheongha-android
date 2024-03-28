@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -73,8 +74,19 @@ fun PostDetailScreen(
 ) {
     val lazyListState = rememberLazyListState()
     when (postUiState) {
-        PostDetailUiState.Fail -> Text(text = "불러오지 못함")
-        PostDetailUiState.Loading -> CircularProgressIndicator()
+        PostDetailUiState.Fail -> Box(modifier = Modifier.fillMaxSize()) {
+            Text(
+                text = "네트워크 상태를 확인해주세요",
+                modifier = Modifier.align(Alignment.Center),
+            )
+        }
+
+        PostDetailUiState.Loading -> Box(modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center),
+                color = WithpeaceTheme.colors.MainPink,
+            )
+        }
         is PostDetailUiState.Success -> {
             var showBottomSheet by rememberSaveable {
                 mutableStateOf(false)
