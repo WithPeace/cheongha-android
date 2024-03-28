@@ -239,6 +239,7 @@ fun UserProfile(
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column {
+            Spacer(modifier = Modifier.height(5.dp))
             Text(
                 text = user.name,
                 style = WithpeaceTheme.typography.body,
