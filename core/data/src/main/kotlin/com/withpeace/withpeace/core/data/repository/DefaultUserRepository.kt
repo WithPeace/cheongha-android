@@ -54,13 +54,7 @@ class DefaultUserRepository @Inject constructor(
         profileImage: String,
         onError: (WithPeaceError) -> Unit,
     ): Flow<Unit> = flow {
-        val requestFile: File = Uri.parse(profileImage).convertToFile(context)
-        val imageRequestBody = requestFile.asRequestBody("image/*".toMediaTypeOrNull())
-        val imagePart = MultipartBody.Part.createFormData(
-            "imageFile",
-            requestFile.name,
-            imageRequestBody,
-        )
+        val imagePart = getImagePart(profileImage)
         userService.updateProfile(
             nickname.toRequestBody("text/plain".toMediaTypeOrNull()), imagePart,
         ).suspendMapSuccess {
@@ -89,15 +83,8 @@ class DefaultUserRepository @Inject constructor(
         profileImage: String,
         onError: (WithPeaceError) -> Unit,
     ): Flow<Unit> = flow {
-        val requestFile: File = Uri.parse(profileImage).convertToFile(context)
-        val imageRequestBody = requestFile.asRequestBody("image/*".toMediaTypeOrNull())
-        val imagePart = MultipartBody.Part.createFormData(
-            "imageFile",
-            requestFile.name,
-            imageRequestBody,
-        )
+        val imagePart = getImagePart(profileImage)
         userService.updateImage(imagePart).suspendMapSuccess {
-
             emit(Unit)
         }.suspendOnError {
             if (statusCode.code == 401) onError(WithPeaceError.UnAuthorized())
@@ -123,5 +110,15 @@ class DefaultUserRepository @Inject constructor(
         }.suspendOnException {
             onError(WithPeaceError.GeneralError(message = messageOrNull))
         }
+    }
+
+    private fun getImagePart(profileImage: String): MultipartBody.Part {
+        val requestFile: File = Uri.parse(profileImage).convertToFile(context)
+        val imageRequestBody = requestFile.asRequestBody("image/*".toMediaTypeOrNull())
+        return MultipartBody.Part.createFormData(
+            "imageFile",
+            requestFile.name,
+            imageRequestBody,
+        )
     }
 }
