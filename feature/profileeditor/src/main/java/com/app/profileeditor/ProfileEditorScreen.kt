@@ -1,5 +1,6 @@
 package com.app.profileeditor
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -49,10 +50,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.app.profileeditor.uistate.ProfileEditUiEvent
+import com.app.profileeditor.uistate.ProfileEditUiState
+import com.app.profileeditor.uistate.ProfileNicknameValidUiState
+import com.app.profileeditor.uistate.ProfileUiModel
 import com.skydoves.landscapist.glide.GlideImage
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
-import com.withpeace.withpeace.core.domain.model.profile.ChangingProfileInfo
 import com.withpeace.withpeace.core.permission.ImagePermissionHelper
 import com.withpeace.withpeace.feature.profileeditor.R
 import kotlinx.coroutines.delay
@@ -72,7 +76,7 @@ fun ProfileEditorRoute(
     val profileInfo = when (profileUiState) {
         is ProfileEditUiState.Editing -> {
             val editing = profileUiState as ProfileEditUiState.Editing
-            ChangingProfileInfo(nickname = editing.nickname, profileImage = editing.profileImage)
+            ProfileUiModel(nickname = editing.profileInfo.nickname, profileImage = editing.profileInfo.profileImage)
         }
 
         is ProfileEditUiState.NoChanges -> {
@@ -133,7 +137,7 @@ fun ProfileEditorRoute(
 
 
     ProfileEditorScreen(
-        profileInfo = ChangingProfileInfo(profileInfo.nickname, profileInfo.profileImage),
+        profileInfo = ProfileUiModel(profileInfo.nickname, profileInfo.profileImage),
         onClickBackButton = {
             if (profileUiState is ProfileEditUiState.Editing) {
                 showAlertDialog = true
@@ -156,7 +160,7 @@ fun ProfileEditorRoute(
 
 @Composable
 fun ProfileEditorScreen(
-    profileInfo: ChangingProfileInfo,
+    profileInfo: ProfileUiModel,
     modifier: Modifier = Modifier,
     onClickBackButton: () -> Unit,
     onNavigateToGallery: () -> Unit,
@@ -200,7 +204,7 @@ fun ProfileEditorScreen(
             )
             Spacer(modifier = modifier.height(16.dp))
             NickNameTextField(
-                nickname = profileInfo.nickname.value,
+                nickname = profileInfo.nickname,
                 onNickNameChanged = {
                     onNickNameChanged(it)
                 },
@@ -459,7 +463,7 @@ fun ModifySaveDialogContent(
 fun ProfileEditorPreview() {
     WithpeaceTheme {
         ProfileEditorScreen(
-            profileInfo = ChangingProfileInfo("nickname", ""),
+            profileInfo = ProfileUiModel("nickname", ""),
             onClickBackButton = {},
             onNavigateToGallery = {},
             onEditCompleted = {},
@@ -469,3 +473,4 @@ fun ProfileEditorPreview() {
         )
     }
 }
+// uiModel 적용, glide 수정, response 값 전달

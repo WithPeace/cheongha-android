@@ -1,9 +1,8 @@
-package com.app.profileeditor
+package com.app.profileeditor.uistate
 
 sealed interface ProfileEditUiState {
     data class Editing(
-        val nickname: String,
-        val profileImage: String,
+        val profileInfo: ProfileUiModel
     ) : ProfileEditUiState
 
     data object NoChanges : ProfileEditUiState

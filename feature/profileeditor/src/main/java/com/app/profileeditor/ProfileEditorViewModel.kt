@@ -5,8 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.profileeditor.navigation.PROFILE_IMAGE_URL_ARGUMENT
 import com.app.profileeditor.navigation.PROFILE_NICKNAME_ARGUMENT
+import com.app.profileeditor.uistate.ProfileEditUiEvent
+import com.app.profileeditor.uistate.ProfileEditUiState
+import com.app.profileeditor.uistate.ProfileNicknameValidUiState
+import com.app.profileeditor.uistate.ProfileUiModel
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
-import com.withpeace.withpeace.core.domain.model.profile.ChangingProfileInfo
 import com.withpeace.withpeace.core.domain.usecase.UpdateProfileUseCase
 import com.withpeace.withpeace.core.domain.usecase.VerifyNicknameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +27,7 @@ class ProfileEditorViewModel @Inject constructor(
     private val verifyNicknameUseCase: VerifyNicknameUseCase,
     private val updateProfileUseCase: UpdateProfileUseCase,
 ) : ViewModel() {
-    val baseProfileInfo = ChangingProfileInfo(
+    val baseProfileInfo = ProfileUiModel(
         nickname = savedStateHandle.get<String>(PROFILE_NICKNAME_ARGUMENT) ?: "",
         profileImage = savedStateHandle.get<String>(PROFILE_IMAGE_URL_ARGUMENT) ?: "default.png",
     ) // 최초 정보에서 변경사항이 있는지 비교를 위한 필드
@@ -45,11 +48,13 @@ class ProfileEditorViewModel @Inject constructor(
     fun onImageChanged(imageUri: String) {
         _profileEditUiState.update {
             val updateData = ProfileEditUiState.Editing(
-                (it as? ProfileEditUiState.Editing)?.nickname
-                    ?: baseProfileInfo.nickname.value,
-                profileImage = imageUri,
+                ProfileUiModel(
+                    (it as? ProfileEditUiState.Editing)?.profileInfo?.nickname
+                        ?: baseProfileInfo.nickname,
+                    profileImage = imageUri,
+                ),
             )
-            if (baseProfileInfo.isSameTo(updateData.nickname, updateData.profileImage)) {
+            if (baseProfileInfo == updateData.profileInfo) {
                 return@update ProfileEditUiState.NoChanges
             }
             updateData
@@ -59,11 +64,13 @@ class ProfileEditorViewModel @Inject constructor(
     fun onNickNameChanged(nickname: String) {
         _profileEditUiState.update {
             val updateData = ProfileEditUiState.Editing(
-                nickname = nickname,
-                profileImage = (it as? ProfileEditUiState.Editing)?.profileImage
-                    ?: baseProfileInfo.profileImage ?: "default.png",
+                ProfileUiModel(
+                    nickname = nickname,
+                    profileImage = (it as? ProfileEditUiState.Editing)?.profileInfo?.profileImage
+                        ?: baseProfileInfo.profileImage,
+                ),
             ) // Editing 중이면 값을 갱신, 아닐 경우 기본 값에 nickname만 값을 추가
-            if (baseProfileInfo.isSameTo(updateData.nickname, updateData.profileImage)) {
+            if (baseProfileInfo == updateData.profileInfo) {
                 return@update ProfileEditUiState.NoChanges
             } // 변경 값이 기본 값일 경우 noChanges 상태
             updateData
@@ -93,7 +100,7 @@ class ProfileEditorViewModel @Inject constructor(
                         )
                     }
                 },
-                nickname = (profileEditUiState.value as ProfileEditUiState.Editing).nickname,
+                nickname = (profileEditUiState.value as ProfileEditUiState.Editing).profileInfo.nickname,
             ).collect { verified ->
                 if (verified) {
                     _profileEditUiEvent.send(
@@ -117,8 +124,8 @@ class ProfileEditorViewModel @Inject constructor(
             val editing = _profileEditUiState.value as ProfileEditUiState.Editing
             viewModelScope.launch {
                 updateProfileUseCase(
-                    beforeProfile = baseProfileInfo,
-                    afterProfile = ChangingProfileInfo(editing.nickname, editing.profileImage),
+                    beforeProfile = baseProfileInfo.toDomain(),
+                    afterProfile = editing.profileInfo.toDomain(),
                     onError = {
                         this.launch {
                             _profileEditUiEvent.send(ProfileEditUiEvent.ShowFailure)

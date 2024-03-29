@@ -1,4 +1,4 @@
-package com.app.profileeditor
+package com.app.profileeditor.uistate
 
 sealed interface ProfileEditUiEvent {
     data object ShowDuplicate : ProfileEditUiEvent

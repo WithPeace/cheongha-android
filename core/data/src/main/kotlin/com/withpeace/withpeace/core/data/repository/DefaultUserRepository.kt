@@ -2,7 +2,6 @@ package com.withpeace.withpeace.core.data.repository
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import com.skydoves.sandwich.messageOrNull
 import com.skydoves.sandwich.suspendMapSuccess
 import com.skydoves.sandwich.suspendOnError
@@ -115,8 +114,10 @@ class DefaultUserRepository @Inject constructor(
         userService.isNicknameDuplicate(nickname.value).suspendMapSuccess {
             if (this.data == "true") {
                 onError(WithPeaceError.GeneralError(code = 2))
+                return@suspendMapSuccess emit(false)
+            } else {
+                emit(true)
             }
-            emit(true)
         }.suspendOnError {
             onError(WithPeaceError.GeneralError(statusCode.code, messageOrNull))
         }.suspendOnException {

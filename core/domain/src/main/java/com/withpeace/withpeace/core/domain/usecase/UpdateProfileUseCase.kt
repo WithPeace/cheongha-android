@@ -14,7 +14,6 @@ class UpdateProfileUseCase @Inject constructor(
         afterProfile: ChangingProfileInfo,
         onError: (WithPeaceError) -> Unit,
     ): Flow<Unit> {
-        println("test test test test")
         return if (beforeProfile.profileImage != afterProfile.profileImage
             && afterProfile.nickname != beforeProfile.nickname && afterProfile.profileImage != null
         ) { // 이미지 닉네임 둘 다 변경 되었을 때
