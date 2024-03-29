@@ -32,7 +32,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.landscapist.glide.GlideImage
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.TitleBar
-import com.withpeace.withpeace.core.domain.model.profile.ProfileInfo
+import com.withpeace.withpeace.feature.mypage.uistate.MyPageUiState
+import com.withpeace.withpeace.feature.mypage.uistate.ProfileInfoUiModel
 
 @Composable
 fun MyPageRoute(
@@ -53,14 +54,14 @@ fun MyPageRoute(
     LaunchedEffect(Unit){
         viewModel.getProfile()
     }
-    val profileInfo = (mypageUiState as? MyPageUiState.Success)?.profileInfo ?: ProfileInfo(
+    val profileInfo = (mypageUiState as? MyPageUiState.Success)?.profileInfo ?: ProfileInfoUiModel(
         "nickname",
         "default.png",
         "",
     ) // TODO("없을 시 로컬에서 가지고 온다.")
     MyPageScreen(
         onEditProfile = {
-            onEditProfile(it.nickname, it.profileImageUrl)
+            onEditProfile(it.nickname, it.profileImage)
         },
         onLogoutClick = onLogoutClick,
         onWithdrawClick = onWithdrawClick,
@@ -71,10 +72,10 @@ fun MyPageRoute(
 @Composable
 fun MyPageScreen(
     modifier: Modifier = Modifier,
-    onEditProfile: (ProfileInfo) -> Unit,
+    onEditProfile: (ProfileInfoUiModel) -> Unit,
     onLogoutClick: () -> Unit,
     onWithdrawClick: () -> Unit,
-    profileInfo: ProfileInfo,
+    profileInfo: ProfileInfoUiModel,
 ) {
     Column(
         modifier,
@@ -95,7 +96,7 @@ fun MyPageScreen(
                         )
                     GlideImage(
                         modifier = imageModifier.clip(CircleShape),
-                        imageModel = { profileInfo.profileImageUrl },
+                        imageModel = { profileInfo.profileImage },
                         failure = {
                             Image(
                                 painterResource(id = R.drawable.ic_default_profile),
@@ -233,7 +234,7 @@ fun MyPagePreview() {
             modifier = Modifier,
             onLogoutClick = {},
             onWithdrawClick = {},
-            profileInfo = ProfileInfo("닉네임닉네임", "", "abc@gmail.com"),
+            profileInfo = ProfileInfoUiModel("닉네임닉네임", "", "abc@gmail.com"),
         )
     }
 }

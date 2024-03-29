@@ -3,6 +3,8 @@ package com.withpeace.withpeace.feature.mypage
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.withpeace.withpeace.core.domain.repository.UserRepository
+import com.withpeace.withpeace.feature.mypage.uistate.MyPageUiState
+import com.withpeace.withpeace.feature.mypage.uistate.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,11 +26,10 @@ class MyPageViewModel @Inject constructor(
             }.collect { profileInfo ->
                 _myPageUiState.update {
                     MyPageUiState.Success(
-                        profileInfo,
+                        profileInfo.toUiModel(),
                     )
                 }
             }
         }
-
     }
 }
