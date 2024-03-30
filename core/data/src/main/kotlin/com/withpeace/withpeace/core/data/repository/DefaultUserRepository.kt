@@ -97,13 +97,12 @@ class DefaultUserRepository @Inject constructor(
     override fun verifyNicknameDuplicated(
         nickname: Nickname,
         onError: (WithPeaceError) -> Unit,
-    ): Flow<Boolean> = flow {
+    ): Flow<Unit> = flow {
         userService.isNicknameDuplicate(nickname.value).suspendMapSuccess {
-            if (this.data == "true") {
+            if (this.data) {
                 onError(WithPeaceError.GeneralError(code = 2))
-                return@suspendMapSuccess emit(false)
             } else {
-                emit(true)
+                emit(Unit)
             }
         }.suspendOnError {
             onError(WithPeaceError.GeneralError(statusCode.code, messageOrNull))

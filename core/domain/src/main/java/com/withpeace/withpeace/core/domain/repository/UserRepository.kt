@@ -31,5 +31,5 @@ interface UserRepository {
     fun verifyNicknameDuplicated(
         nickname: Nickname,
         onError: (WithPeaceError) -> Unit,
-    ): Flow<Boolean>
+    ): Flow<Unit>
 }

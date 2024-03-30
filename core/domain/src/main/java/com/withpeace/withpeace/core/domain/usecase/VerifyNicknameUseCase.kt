@@ -10,10 +10,10 @@ import javax.inject.Inject
 class VerifyNicknameUseCase @Inject constructor(
     private val userRepository: UserRepository,
 ) {
-    operator fun invoke(nickname: String, onError: (WithPeaceError) -> Unit): Flow<Boolean> {
+    operator fun invoke(nickname: String, onError: (WithPeaceError) -> Unit): Flow<Unit> {
         if (!Nickname.verifyNickname(nickname)) {
             onError(WithPeaceError.GeneralError(code = 1))
-            return flow { emit(false) }
+            return flow {  }
         }
         return userRepository.verifyNicknameDuplicated(Nickname.create(nickname), onError = onError)
     }

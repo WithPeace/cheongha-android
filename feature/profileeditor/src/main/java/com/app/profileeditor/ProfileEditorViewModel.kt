@@ -101,12 +101,10 @@ class ProfileEditorViewModel @Inject constructor(
                     }
                 },
                 nickname = (profileEditUiState.value as ProfileEditUiState.Editing).profileInfo.nickname,
-            ).collect { verified ->
-                if (verified) {
-                    _profileEditUiEvent.send(
-                        ProfileEditUiEvent.ShowNicknameVerified,
-                    )
-                }
+            ).collect {
+                _profileEditUiEvent.send(
+                    ProfileEditUiEvent.ShowNicknameVerified,
+                )
             }
         }
     }

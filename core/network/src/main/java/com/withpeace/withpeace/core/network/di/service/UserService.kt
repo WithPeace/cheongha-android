@@ -33,5 +33,5 @@ interface UserService {
     ): ApiResponse<BaseResponse<String>>
 
     @GET("/api/v1/users/profile/nickname/check")
-    suspend fun isNicknameDuplicate(@Query("nickname") nickname: String): ApiResponse<BaseResponse<String>>
+    suspend fun isNicknameDuplicate(@Query("nickname") nickname: String): ApiResponse<BaseResponse<Boolean>>
 }
