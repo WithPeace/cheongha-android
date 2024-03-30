@@ -2,6 +2,7 @@ package com.withpeace.withpeace.core.domain.usecase
 
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
 import com.withpeace.withpeace.core.domain.model.profile.ChangingProfileInfo
+import com.withpeace.withpeace.core.domain.model.profile.ProfileChangingStatus
 import com.withpeace.withpeace.core.domain.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -14,21 +15,22 @@ class UpdateProfileUseCase @Inject constructor(
         afterProfile: ChangingProfileInfo,
         onError: (WithPeaceError) -> Unit,
     ): Flow<Unit> {
-        return if (beforeProfile.profileImage != afterProfile.profileImage
-            && afterProfile.nickname != beforeProfile.nickname && afterProfile.profileImage != null
-        ) { // 이미지 닉네임 둘 다 변경 되었을 때
-            userRepository.updateProfile(
-                afterProfile.nickname.value, afterProfile.profileImage,
-                onError = onError,
-            )
-        } else if (afterProfile.profileImage != null && beforeProfile.profileImage != afterProfile.profileImage
-        ) { // 이미지만 변경되었을 때
-            userRepository.updateProfileImage(
-                profileImage = afterProfile.profileImage,
-                onError = onError,
-            )
-        } else { // 닉네임만 변경 되었을 때
-            userRepository.updateNickname(afterProfile.nickname.value, onError = onError)
+        return when (ProfileChangingStatus.getStatus(beforeProfile, afterProfile)) {
+            ProfileChangingStatus.AllChanging -> {
+                userRepository.updateProfile(
+                    afterProfile.nickname.value, afterProfile.profileImage!!,
+                    onError = onError,
+                )
+            }
+            ProfileChangingStatus.OnlyImageChanging -> {
+                userRepository.updateProfileImage(
+                    profileImage = afterProfile.profileImage!!,
+                    onError = onError,
+                )
+            }
+            ProfileChangingStatus.OnlyNicknameChanging -> {
+                userRepository.updateNickname(afterProfile.nickname.value, onError = onError)
+            }
         }
     }
 }
