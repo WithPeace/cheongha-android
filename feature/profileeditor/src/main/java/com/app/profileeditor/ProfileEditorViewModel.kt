@@ -84,7 +84,6 @@ class ProfileEditorViewModel @Inject constructor(
         viewModelScope.launch {
             verifyNicknameUseCase(
                 onError = { error ->
-                    this.launch {
                         _profileEditUiEvent.send(
                             when (error) {
                                 is WithPeaceError.GeneralError -> {
@@ -94,11 +93,9 @@ class ProfileEditorViewModel @Inject constructor(
                                         else -> ProfileEditUiEvent.ShowFailure
                                     }
                                 }
-
                                 else -> ProfileEditUiEvent.ShowFailure
                             },
                         )
-                    }
                 },
                 nickname = (profileEditUiState.value as ProfileEditUiState.Editing).profileInfo.nickname,
             ).collect {

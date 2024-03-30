@@ -52,7 +52,7 @@ class DefaultUserRepository @Inject constructor(
     override fun updateProfile(
         nickname: String,
         profileImage: String,
-        onError: (WithPeaceError) -> Unit,
+        onError: suspend (WithPeaceError) -> Unit,
     ): Flow<Unit> = flow {
         val imagePart = getImagePart(profileImage)
         userService.updateProfile(
@@ -67,7 +67,7 @@ class DefaultUserRepository @Inject constructor(
         }
     }
 
-    override fun updateNickname(nickname: String, onError: (WithPeaceError) -> Unit): Flow<Unit> =
+    override fun updateNickname(nickname: String, onError: suspend (WithPeaceError) -> Unit): Flow<Unit> =
         flow {
             userService.updateNickname(NicknameRequest(nickname)).suspendMapSuccess {
                 emit(Unit)
@@ -81,7 +81,7 @@ class DefaultUserRepository @Inject constructor(
 
     override fun updateProfileImage(
         profileImage: String,
-        onError: (WithPeaceError) -> Unit,
+        onError: suspend (WithPeaceError) -> Unit,
     ): Flow<Unit> = flow {
         val imagePart = getImagePart(profileImage)
         userService.updateImage(imagePart).suspendMapSuccess {
@@ -96,7 +96,7 @@ class DefaultUserRepository @Inject constructor(
 
     override fun verifyNicknameDuplicated(
         nickname: Nickname,
-        onError: (WithPeaceError) -> Unit,
+        onError: suspend (WithPeaceError) -> Unit,
     ): Flow<Unit> = flow {
         userService.isNicknameDuplicate(nickname.value).suspendMapSuccess {
             if (this.data) {

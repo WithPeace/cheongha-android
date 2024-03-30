@@ -13,7 +13,7 @@ class UpdateProfileUseCase @Inject constructor(
     operator fun invoke(
         beforeProfile: ChangingProfileInfo,
         afterProfile: ChangingProfileInfo,
-        onError: (WithPeaceError) -> Unit,
+        onError: suspend (WithPeaceError) -> Unit,
     ): Flow<Unit> {
         return when (ProfileChangingStatus.getStatus(beforeProfile, afterProfile)) {
             ProfileChangingStatus.AllChanging -> {
