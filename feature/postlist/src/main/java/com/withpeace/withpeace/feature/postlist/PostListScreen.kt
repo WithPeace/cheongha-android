@@ -45,6 +45,7 @@ import com.withpeace.withpeace.core.ui.R
 import com.withpeace.withpeace.core.ui.toRelativeString
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
+import java.lang.IllegalStateException
 import java.time.LocalDateTime
 
 @Composable
@@ -95,7 +96,7 @@ fun PostListScreen(
 
             is LoadState.NotLoading -> {
                 PostListItems(
-                    postList = postListPagingData.itemSnapshotList.items,
+                    postListPagingData = postListPagingData,
                 )
             }
         }
@@ -104,7 +105,7 @@ fun PostListScreen(
 
 @Composable
 fun PostListItems(
-    postList: List<Post>,
+    postListPagingData: LazyPagingItems<Post>,
 ) {
     val context = LocalContext.current
     LazyColumn(
@@ -112,9 +113,9 @@ fun PostListItems(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(
-            items = postList,
-            key = { it.postId },
-        ) { post ->
+            postListPagingData.itemCount
+        ) {
+            val post = postListPagingData[it]?:throw IllegalStateException()
             WithpeaceCard(
                 modifier = Modifier.fillMaxWidth(),
             ) {
