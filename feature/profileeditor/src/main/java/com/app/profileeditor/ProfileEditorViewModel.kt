@@ -114,18 +114,16 @@ class ProfileEditorViewModel @Inject constructor(
     }
 
     fun updateProfile() {
-        if (_profileEditUiState.value is ProfileEditUiState.NoChanges) {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            if (_profileEditUiState.value is ProfileEditUiState.NoChanges) {
                 _profileEditUiEvent.send(ProfileEditUiEvent.ShowUnchanged)
-            }
-        } else if (_profileEditUiState.value is ProfileEditUiState.Editing) {
-            val editing = _profileEditUiState.value as ProfileEditUiState.Editing
-            viewModelScope.launch {
+            } else if (_profileEditUiState.value is ProfileEditUiState.Editing) {
+                val editing = _profileEditUiState.value as ProfileEditUiState.Editing
                 updateProfileUseCase(
                     beforeProfile = baseProfileInfo.toDomain(),
                     afterProfile = editing.profileInfo.toDomain(),
                     onError = {
-                        this.launch {
+                        viewModelScope.launch {
                             _profileEditUiEvent.send(ProfileEditUiEvent.ShowFailure)
                         }
                     },
