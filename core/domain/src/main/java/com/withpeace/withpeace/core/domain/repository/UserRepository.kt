@@ -7,7 +7,7 @@ import com.withpeace.withpeace.core.domain.model.profile.ProfileInfo
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
-    fun getProfile(onError: (WithPeaceError) -> Unit): Flow<ProfileInfo>
+    fun getProfile(onError: suspend (WithPeaceError) -> Unit): Flow<ProfileInfo>
     fun registerProfile(
         nickname: String, profileImage: String,
         onError: (WithPeaceError) -> Unit,

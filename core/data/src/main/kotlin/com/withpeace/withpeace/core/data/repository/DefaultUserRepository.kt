@@ -29,7 +29,7 @@ class DefaultUserRepository @Inject constructor(
     private val userService: UserService,
 ) : UserRepository {
     override fun getProfile(
-        onError: (WithPeaceError) -> Unit,
+        onError: suspend (WithPeaceError) -> Unit,
     ): Flow<ProfileInfo> = flow {
         userService.getProfile().suspendMapSuccess {
             emit(this.data.toDomain())

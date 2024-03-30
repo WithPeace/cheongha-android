@@ -32,6 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.landscapist.glide.GlideImage
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.TitleBar
+import com.withpeace.withpeace.feature.mypage.uistate.MyPageUiEvent
 import com.withpeace.withpeace.feature.mypage.uistate.MyPageUiState
 import com.withpeace.withpeace.feature.mypage.uistate.ProfileInfoUiModel
 
@@ -47,11 +48,21 @@ fun MyPageRoute(
     when (mypageUiState) {
         MyPageUiState.Loading -> {}
         is MyPageUiState.Success -> {}
-        MyPageUiState.Fail -> {
-            onShowSnackBar(stringResource(R.string.network_failure_message))
+
+    }
+    LaunchedEffect(viewModel.myPageUiEvent) {
+        viewModel.myPageUiEvent.collect {
+            when(it) {
+                MyPageUiEvent.UnAuthorizedError -> {
+                    onShowSnackBar("인증에 실패했습니다")
+                }
+                MyPageUiEvent.GeneralError -> {
+                    onShowSnackBar("서버와의 오류가 발생했습니다. 다시 시도해주세요.")
+                }
+            }
         }
     }
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         viewModel.getProfile()
     }
     val profileInfo = (mypageUiState as? MyPageUiState.Success)?.profileInfo ?: ProfileInfoUiModel(
