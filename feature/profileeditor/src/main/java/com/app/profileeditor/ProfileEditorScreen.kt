@@ -72,17 +72,8 @@ fun ProfileEditorRoute(
     var showAlertDialog by remember { mutableStateOf(false) }
     val profileUiState: ProfileEditUiState by viewModel.profileEditUiState.collectAsStateWithLifecycle()
 
-    val profileInfo = when (profileUiState) {
-        is ProfileEditUiState.Editing -> {
-            val editing = profileUiState as ProfileEditUiState.Editing
-            ProfileUiModel(nickname = editing.profileInfo.nickname, profileImage = editing.profileInfo.profileImage)
-        }
+    val profileInfo = profileUiState.currentProfileInfo
 
-        is ProfileEditUiState.NoChanges -> {
-            viewModel.updateIsNicknameValidStatus(ProfileNicknameValidUiState.Valid)
-            viewModel.baseProfileInfo
-        }
-    }
     if (showAlertDialog) {
         ModifySaveDialog(
             onClickSave = {
@@ -138,7 +129,7 @@ fun ProfileEditorRoute(
     ProfileEditorScreen(
         profileInfo = ProfileUiModel(profileInfo.nickname, profileInfo.profileImage),
         onClickBackButton = {
-            if (profileUiState is ProfileEditUiState.Editing) {
+            if (profileUiState.isChanged) {
                 showAlertDialog = true
             } else {
                 onClickBackButton()

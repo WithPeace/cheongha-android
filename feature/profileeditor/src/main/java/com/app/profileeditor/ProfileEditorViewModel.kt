@@ -34,7 +34,7 @@ class ProfileEditorViewModel @Inject constructor(
 
     private val _profileEditUiState =
         MutableStateFlow<ProfileEditUiState>(
-            ProfileEditUiState.NoChanges,
+            ProfileEditUiState(baseProfileInfo, false),
         )
     val profileEditUiState = _profileEditUiState.asStateFlow()
 
@@ -46,39 +46,49 @@ class ProfileEditorViewModel @Inject constructor(
     val profileNicknameValidUiState = _profileNicknameValidUiState.asStateFlow()
 
     fun onImageChanged(imageUri: String) {
+        val changingUiState = _profileEditUiState.value.currentProfileInfo.copy(
+            nickname = _profileEditUiState.value.currentProfileInfo.nickname,
+            profileImage = imageUri,
+        )
         _profileEditUiState.update {
-            val updateData = ProfileEditUiState.Editing(
-                ProfileUiModel(
-                    (it as? ProfileEditUiState.Editing)?.profileInfo?.nickname
-                        ?: baseProfileInfo.nickname,
-                    profileImage = imageUri,
-                ),
-            )
-            if (baseProfileInfo == updateData.profileInfo) {
-                return@update ProfileEditUiState.NoChanges
+            return@update if (baseProfileInfo == changingUiState
+            ) {
+                _profileEditUiState.value.copy(
+                    currentProfileInfo = baseProfileInfo,
+                    isChanged = false,
+                )
+            } else {
+                _profileEditUiState.value.copy(
+                    currentProfileInfo = changingUiState,
+                    isChanged = true,
+                )
             }
-            updateData
         }
     }
-
     fun onNickNameChanged(nickname: String) {
+        val changingUiState = _profileEditUiState.value.currentProfileInfo.copy(
+            nickname = nickname,
+            profileImage = _profileEditUiState.value.currentProfileInfo.profileImage,
+        )
         _profileEditUiState.update {
-            val updateData = ProfileEditUiState.Editing(
-                ProfileUiModel(
-                    nickname = nickname,
-                    profileImage = (it as? ProfileEditUiState.Editing)?.profileInfo?.profileImage
-                        ?: baseProfileInfo.profileImage,
-                ),
-            ) // Editing 중이면 값을 갱신, 아닐 경우 기본 값에 nickname만 값을 추가
-            if (baseProfileInfo == updateData.profileInfo) {
-                return@update ProfileEditUiState.NoChanges
-            } // 변경 값이 기본 값일 경우 noChanges 상태
-            updateData
+            // changingUiState.toDomain().getChangingState(baseProfileInfo.toDomain()).toUiModel()
+            return@update if (baseProfileInfo == changingUiState
+            ) {
+                _profileEditUiState.value.copy(
+                    currentProfileInfo = baseProfileInfo,
+                    isChanged = false,
+                )
+            } else {
+                _profileEditUiState.value.copy(
+                    currentProfileInfo = changingUiState,
+                    isChanged = true,
+                )
+            }
         }
     }
 
     fun verifyNickname() {
-        if (profileEditUiState.value is ProfileEditUiState.NoChanges) {
+        if (profileEditUiState.value.isChanged.not()) {
             return
         }
         viewModelScope.launch {
@@ -93,11 +103,12 @@ class ProfileEditorViewModel @Inject constructor(
                                         else -> ProfileEditUiEvent.ShowFailure
                                     }
                                 }
+
                                 else -> ProfileEditUiEvent.ShowFailure
                             },
                         )
                 },
-                nickname = (profileEditUiState.value as ProfileEditUiState.Editing).profileInfo.nickname,
+                nickname = _profileEditUiState.value.currentProfileInfo.nickname,
             ).collect {
                 _profileEditUiEvent.send(
                     ProfileEditUiEvent.ShowNicknameVerified,
@@ -112,13 +123,12 @@ class ProfileEditorViewModel @Inject constructor(
 
     fun updateProfile() {
         viewModelScope.launch {
-            if (_profileEditUiState.value is ProfileEditUiState.NoChanges) {
+            if (_profileEditUiState.value.isChanged.not()) {
                 _profileEditUiEvent.send(ProfileEditUiEvent.ShowUnchanged)
-            } else if (_profileEditUiState.value is ProfileEditUiState.Editing) {
-                val editing = _profileEditUiState.value as ProfileEditUiState.Editing
+            } else if (_profileEditUiState.value.isChanged) {
                 updateProfileUseCase(
                     beforeProfile = baseProfileInfo.toDomain(),
-                    afterProfile = editing.profileInfo.toDomain(),
+                    afterProfile = _profileEditUiState.value.currentProfileInfo.toDomain(),
                     onError = {
                         _profileEditUiEvent.send(ProfileEditUiEvent.ShowFailure)
 
