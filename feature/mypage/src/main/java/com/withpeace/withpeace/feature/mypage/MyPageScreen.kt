@@ -41,7 +41,7 @@ fun MyPageRoute(
     viewModel: MyPageViewModel = hiltViewModel(),
     onShowSnackBar: (message: String) -> Unit = {},
     onEditProfile: (nickname: String, profileImageUrl: String) -> Unit,
-    onLogoutClick: () -> Unit,
+    onLogoutSuccess: () -> Unit,
     onWithdrawClick: () -> Unit,
 ) {
     val mypageUiState by viewModel.myPageUiState.collectAsStateWithLifecycle()
@@ -52,13 +52,16 @@ fun MyPageRoute(
     }
     LaunchedEffect(viewModel.myPageUiEvent) {
         viewModel.myPageUiEvent.collect {
-            when(it) {
+            when (it) {
                 MyPageUiEvent.UnAuthorizedError -> {
                     onShowSnackBar("인증에 실패했습니다")
                 }
+
                 MyPageUiEvent.GeneralError -> {
                     onShowSnackBar("서버와의 오류가 발생했습니다. 다시 시도해주세요.")
                 }
+
+                MyPageUiEvent.Logout -> onLogoutSuccess()
             }
         }
     }
@@ -74,7 +77,9 @@ fun MyPageRoute(
         onEditProfile = {
             onEditProfile(it.nickname, it.profileImage)
         },
-        onLogoutClick = onLogoutClick,
+        onLogoutClick = {
+            viewModel.logout()
+        },
         onWithdrawClick = onWithdrawClick,
         profileInfo = profileInfo,
     )

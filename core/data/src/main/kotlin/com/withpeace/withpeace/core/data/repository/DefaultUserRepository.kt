@@ -8,6 +8,7 @@ import com.skydoves.sandwich.suspendOnError
 import com.skydoves.sandwich.suspendOnException
 import com.withpeace.withpeace.core.data.mapper.toDomain
 import com.withpeace.withpeace.core.data.util.convertToFile
+import com.withpeace.withpeace.core.datastore.dataStore.TokenPreferenceDataSource
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
 import com.withpeace.withpeace.core.domain.model.profile.Nickname
 import com.withpeace.withpeace.core.domain.model.profile.ProfileInfo
@@ -28,6 +29,7 @@ import javax.inject.Inject
 class DefaultUserRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val userService: UserService,
+    private val tokenPreferenceDataSource: TokenPreferenceDataSource,
 ) : UserRepository {
     override fun getProfile(
         onError: suspend (WithPeaceError) -> Unit,
@@ -35,8 +37,12 @@ class DefaultUserRepository @Inject constructor(
         userService.getProfile().suspendMapSuccess {
             emit(this.data.toDomain())
         }.suspendOnError {
-            if (statusCode.code == 401) onError(WithPeaceError.UnAuthorized())
-            else onError(WithPeaceError.GeneralError(statusCode.code, messageOrNull))
+            if (statusCode.code == 401) {
+                onError(WithPeaceError.UnAuthorized())
+            } else {
+                val errorBody = errorBody?.getErrorBody()
+                onError(WithPeaceError.GeneralError(errorBody?.code, errorBody?.message))
+            }
         }.suspendOnException {
             onError(WithPeaceError.GeneralError(message = messageOrNull))
         }
@@ -119,6 +125,22 @@ class DefaultUserRepository @Inject constructor(
             }
         }.suspendOnError {
             onError(WithPeaceError.GeneralError(statusCode.code, messageOrNull))
+        }.suspendOnException {
+            onError(WithPeaceError.GeneralError(message = messageOrNull))
+        }
+    }
+
+    override fun logout(onError: suspend (WithPeaceError) -> Unit): Flow<Unit> = flow {
+        userService.logout().suspendMapSuccess {
+            tokenPreferenceDataSource.removeAll()
+            emit(Unit)
+        }.suspendOnError {
+            if (statusCode.code == 401) {
+                onError(WithPeaceError.UnAuthorized())
+            } else {
+                val errorBody = errorBody?.getErrorBody()
+                onError(WithPeaceError.GeneralError(errorBody?.code, errorBody?.message))
+            }
         }.suspendOnException {
             onError(WithPeaceError.GeneralError(message = messageOrNull))
         }

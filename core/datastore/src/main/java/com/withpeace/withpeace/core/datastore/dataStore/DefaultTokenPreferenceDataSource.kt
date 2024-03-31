@@ -33,6 +33,12 @@ class DefaultTokenPreferenceDataSource @Inject constructor(
         }
     }
 
+    override suspend fun removeAll() {
+        dataStore.edit { preferences ->
+            preferences.clear()
+        }
+    }
+
     companion object {
         private val ACCESS_TOKEN = stringPreferencesKey("ACCESS_TOKEN")
         private val REFRESH_TOKEN = stringPreferencesKey("REFRESH_TOKEN")

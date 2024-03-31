@@ -9,7 +9,7 @@ import javax.inject.Inject
 class GetProfileInfoUseCase @Inject constructor(
     private val userRepository: UserRepository,
 ) {
-    operator fun invoke(onError: (WithPeaceError) -> Unit): Flow<ProfileInfo> {
+    operator fun invoke(onError: suspend (WithPeaceError) -> Unit): Flow<ProfileInfo> {
         return userRepository.getProfile(
             onError = onError,
         )

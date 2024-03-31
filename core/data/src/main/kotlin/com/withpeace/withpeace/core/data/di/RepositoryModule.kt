@@ -32,5 +32,7 @@ interface RepositoryModule {
 
     @Binds
     @Singleton
-    fun bindsUserRepository(defaultUserRepository: DefaultUserRepository): UserRepository
+    fun bindsUserRepository(
+        defaultUserRepository: DefaultUserRepository,
+    ): UserRepository
 }

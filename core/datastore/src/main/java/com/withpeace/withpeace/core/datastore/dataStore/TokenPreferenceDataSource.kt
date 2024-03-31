@@ -11,4 +11,5 @@ interface TokenPreferenceDataSource {
     suspend fun updateRefreshToken(refreshToken: String)
 
     suspend fun updateAccessToken(accessToken: String)
+    suspend fun removeAll()
 }

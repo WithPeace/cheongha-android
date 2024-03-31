@@ -3,7 +3,8 @@ package com.withpeace.withpeace.feature.mypage
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
-import com.withpeace.withpeace.core.domain.repository.UserRepository
+import com.withpeace.withpeace.core.domain.usecase.GetProfileInfoUseCase
+import com.withpeace.withpeace.core.domain.usecase.LogoutUseCase
 import com.withpeace.withpeace.feature.mypage.uistate.MyPageUiEvent
 import com.withpeace.withpeace.feature.mypage.uistate.MyPageUiState
 import com.withpeace.withpeace.feature.mypage.uistate.toUiModel
@@ -18,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
-    private val userRepository: UserRepository,
+    private val getUserInfoUseCase: GetProfileInfoUseCase,
+    private val logoutUseCase: LogoutUseCase,
 ) : ViewModel() {
     private val _myPageUiEvent = Channel<MyPageUiEvent>()
     val myPageUiEvent = _myPageUiEvent.receiveAsFlow()
@@ -28,7 +30,7 @@ class MyPageViewModel @Inject constructor(
 
     fun getProfile() {
         viewModelScope.launch {
-            userRepository.getProfile { error ->
+            getUserInfoUseCase { error ->
                 when (error) {
                     is WithPeaceError.GeneralError -> {
                         _myPageUiEvent.send(MyPageUiEvent.GeneralError)
@@ -44,6 +46,21 @@ class MyPageViewModel @Inject constructor(
                         profileInfo.toUiModel(),
                     )
                 }
+            }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            logoutUseCase {
+                _myPageUiEvent.send(
+                    when (it) {
+                        is WithPeaceError.GeneralError -> MyPageUiEvent.GeneralError
+                        is WithPeaceError.UnAuthorized -> MyPageUiEvent.UnAuthorizedError
+                    },
+                )
+            }.collect {
+                _myPageUiEvent.send(MyPageUiEvent.Logout)
             }
         }
     }

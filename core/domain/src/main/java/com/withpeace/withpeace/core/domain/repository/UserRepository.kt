@@ -31,4 +31,6 @@ interface UserRepository {
         nickname: Nickname,
         onError: suspend (WithPeaceError) -> Unit,
     ): Flow<Unit>
+
+    fun logout(onError: suspend (WithPeaceError) -> Unit): Flow<Unit>
 }

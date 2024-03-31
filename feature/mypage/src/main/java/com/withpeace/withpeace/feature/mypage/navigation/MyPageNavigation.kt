@@ -15,14 +15,14 @@ fun NavController.navigateMyPage(navOptions: NavOptions? = null) {
 fun NavGraphBuilder.myPageNavGraph(
     onShowSnackBar: (message: String) -> Unit,
     onEditProfile: (nickname: String, profileImageUrl: String) -> Unit,
-    onLogoutClick: () -> Unit,
+    onLogoutSuccess: () -> Unit,
     onWithdrawClick: () -> Unit,
 ) {
     composable(route = MY_PAGE_ROUTE) {
         MyPageRoute(
             onShowSnackBar = onShowSnackBar,
             onEditProfile = onEditProfile,
-            onLogoutClick = onLogoutClick,
+            onLogoutSuccess = onLogoutSuccess,
             onWithdrawClick = onWithdrawClick,
         )
     }
