@@ -93,20 +93,12 @@ fun ProfileEditorRoute(
     LaunchedEffect(viewModel.profileEditUiEvent) {
         viewModel.profileEditUiEvent.collect {
             when (it) {
-                ProfileEditUiEvent.ShowDuplicate -> {
-                    viewModel.updateIsNicknameValidStatus(ProfileNicknameValidUiState.InValidDuplicated)
-                }
-
                 ProfileEditUiEvent.ShowDuplicateSnackBar -> {
                     onShowSnackBar("중복된 닉네임입니다.")
                 }
 
                 ProfileEditUiEvent.ShowFailure -> {
                     onShowSnackBar("서버와 통신 중 오류가 발생했습니다.")
-                }
-
-                ProfileEditUiEvent.ShowInvalidFormat -> {
-                    viewModel.updateIsNicknameValidStatus(ProfileNicknameValidUiState.InValidFormat)
                 }
 
                 ProfileEditUiEvent.ShowUnchanged -> {
@@ -116,10 +108,6 @@ fun ProfileEditorRoute(
                 ProfileEditUiEvent.ShowUpdateSuccess -> {
                     onShowSnackBar("변경되었습니다.")
                     onUpdateSuccess()
-                }
-
-                ProfileEditUiEvent.ShowNicknameVerified -> {
-                    viewModel.updateIsNicknameValidStatus(ProfileNicknameValidUiState.Valid)
                 }
             }
         }

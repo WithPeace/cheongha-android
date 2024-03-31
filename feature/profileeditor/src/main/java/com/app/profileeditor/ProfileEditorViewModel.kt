@@ -94,30 +94,25 @@ class ProfileEditorViewModel @Inject constructor(
         viewModelScope.launch {
             verifyNicknameUseCase(
                 onError = { error ->
-                        _profileEditUiEvent.send(
-                            when (error) {
-                                is WithPeaceError.GeneralError -> {
-                                    when (error.code) {
-                                        1 -> ProfileEditUiEvent.ShowInvalidFormat
-                                        2 -> ProfileEditUiEvent.ShowDuplicate
-                                        else -> ProfileEditUiEvent.ShowFailure
-                                    }
-                                }
+                    when (error) {
+                        is WithPeaceError.GeneralError -> {
+                            when (error.code) {
+                                1 -> updateIsNicknameValidStatus(ProfileNicknameValidUiState.InValidFormat)
+                                2 -> updateIsNicknameValidStatus(ProfileNicknameValidUiState.InValidDuplicated)
+                            }
+                        }
 
-                                else -> ProfileEditUiEvent.ShowFailure
-                            },
-                        )
+                        else -> _profileEditUiEvent.send(ProfileEditUiEvent.ShowFailure)
+                    }
                 },
                 nickname = _profileEditUiState.value.currentProfileInfo.nickname,
             ).collect {
-                _profileEditUiEvent.send(
-                    ProfileEditUiEvent.ShowNicknameVerified,
-                )
+                updateIsNicknameValidStatus(ProfileNicknameValidUiState.Valid)
             }
         }
     }
 
-    fun updateIsNicknameValidStatus(status: ProfileNicknameValidUiState) {
+    private fun updateIsNicknameValidStatus(status: ProfileNicknameValidUiState) {
         _profileNicknameValidUiState.update { status }
     }
 
