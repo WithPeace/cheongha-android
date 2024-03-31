@@ -10,15 +10,15 @@ sealed interface ProfileChangingStatus {
             beforeProfile: ChangingProfileInfo,
             afterProfile: ChangingProfileInfo,
         ): ProfileChangingStatus {
-            return if (beforeProfile.profileImage != afterProfile.profileImage
-                && afterProfile.nickname != beforeProfile.nickname && afterProfile.profileImage != null
-            ) {
-                AllChanging
-            } else if (afterProfile.profileImage != null && beforeProfile.profileImage != afterProfile.profileImage
-            ) {
-                OnlyImageChanging
-            } else {
-                OnlyNicknameChanging
+            return when {
+                beforeProfile.profileImage != afterProfile.profileImage &&
+                    afterProfile.nickname != beforeProfile.nickname &&
+                    afterProfile.profileImage != null -> AllChanging
+
+                afterProfile.profileImage != null &&
+                    beforeProfile.profileImage != afterProfile.profileImage -> OnlyImageChanging
+
+                else -> OnlyNicknameChanging
             }
         }
     }

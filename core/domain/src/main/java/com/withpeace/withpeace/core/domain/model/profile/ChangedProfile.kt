@@ -1,6 +1,6 @@
 package com.withpeace.withpeace.core.domain.model.profile
 
 data class ChangedProfile(
-    val nickname: String,
-    val profileImageUrl: String,
+    val nickname: Nickname?,
+    val profileImageUrl: String?,
 )
