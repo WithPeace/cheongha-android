@@ -120,9 +120,8 @@ class ProfileEditorViewModel @Inject constructor(
                     beforeProfile = baseProfileInfo.toDomain(),
                     afterProfile = editing.profileInfo.toDomain(),
                     onError = {
-                        viewModelScope.launch {
-                            _profileEditUiEvent.send(ProfileEditUiEvent.ShowFailure)
-                        }
+                        _profileEditUiEvent.send(ProfileEditUiEvent.ShowFailure)
+
                     },
                 ).collect {
                     _profileEditUiEvent.send(ProfileEditUiEvent.ShowUpdateSuccess)
