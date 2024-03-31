@@ -88,7 +88,8 @@ class ProfileEditorViewModel @Inject constructor(
     }
 
     fun verifyNickname() {
-        if (profileEditUiState.value.isChanged.not()) {
+        if (profileEditUiState.value.isChanged.not()
+        ) {
             return
         }
         viewModelScope.launch {
@@ -101,7 +102,6 @@ class ProfileEditorViewModel @Inject constructor(
                                 2 -> updateIsNicknameValidStatus(ProfileNicknameValidUiState.InValidDuplicated)
                             }
                         }
-
                         else -> _profileEditUiEvent.send(ProfileEditUiEvent.ShowFailure)
                     }
                 },

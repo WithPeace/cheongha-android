@@ -131,6 +131,7 @@ fun ProfileEditorRoute(
             viewModel.verifyNickname()
         },
         nicknameValidStatus = viewModel.profileNicknameValidUiState.collectAsStateWithLifecycle().value,
+        isChanged = profileUiState.isChanged,
     )
 
 }
@@ -138,6 +139,7 @@ fun ProfileEditorRoute(
 @Composable
 fun ProfileEditorScreen(
     profileInfo: ProfileUiModel,
+    isChanged: Boolean,
     modifier: Modifier = Modifier,
     onClickBackButton: () -> Unit,
     onNavigateToGallery: () -> Unit,
@@ -187,6 +189,7 @@ fun ProfileEditorScreen(
                 },
                 onKeyBoardTimerEnd = onKeyBoardTimerEnd,
                 nicknameValidStatus = nicknameValidStatus,
+                isChanged = isChanged,
             )
 
         }
@@ -254,6 +257,7 @@ private fun ProfileImage(
 private fun NickNameTextField(
     modifier: Modifier = Modifier,
     nickname: String,
+    isChanged: Boolean,
     nicknameValidStatus: ProfileNicknameValidUiState,
     onNickNameChanged: (String) -> Unit,
     onKeyBoardTimerEnd: () -> Unit,
@@ -308,14 +312,14 @@ private fun NickNameTextField(
             )
         }
         Divider(
-            color = if (nicknameValidStatus is ProfileNicknameValidUiState.Valid) WithpeaceTheme.colors.SystemBlack
+            color = if (nicknameValidStatus is ProfileNicknameValidUiState.Valid || isChanged.not()) WithpeaceTheme.colors.SystemBlack
             else WithpeaceTheme.colors.SystemError,
             modifier = modifier
                 .width(140.dp)
                 .height(1.dp),
         )
     }
-    if (nicknameValidStatus !is ProfileNicknameValidUiState.Valid) {
+    if (nicknameValidStatus !is ProfileNicknameValidUiState.Valid && isChanged.not()) {
         Text(
             text = if (nicknameValidStatus is ProfileNicknameValidUiState.InValidDuplicated) stringResource(
                 R.string.nickname_duplicated,
@@ -447,6 +451,7 @@ fun ProfileEditorPreview() {
             onNickNameChanged = {},
             onKeyBoardTimerEnd = {},
             nicknameValidStatus = ProfileNicknameValidUiState.Valid,
+            isChanged = false
         )
     }
 }
