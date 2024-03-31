@@ -12,6 +12,7 @@ import com.withpeace.withpeace.core.domain.model.WithPeaceError
 import com.withpeace.withpeace.core.domain.model.profile.Nickname
 import com.withpeace.withpeace.core.domain.model.profile.ProfileInfo
 import com.withpeace.withpeace.core.domain.repository.UserRepository
+import com.withpeace.withpeace.core.network.di.common.getErrorBody
 import com.withpeace.withpeace.core.network.di.request.NicknameRequest
 import com.withpeace.withpeace.core.network.di.service.UserService
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -60,8 +61,12 @@ class DefaultUserRepository @Inject constructor(
         ).suspendMapSuccess {
             emit(Unit)
         }.suspendOnError {
-            if (statusCode.code == 401) onError(WithPeaceError.UnAuthorized())
-            else onError(WithPeaceError.GeneralError(statusCode.code, messageOrNull))
+            if (statusCode.code == 401) {
+                onError(WithPeaceError.UnAuthorized())
+            } else {
+                val errorBody = errorBody?.getErrorBody()
+                onError(WithPeaceError.GeneralError(errorBody?.code, errorBody?.message))
+            }
         }.suspendOnException {
             onError(WithPeaceError.GeneralError(message = messageOrNull))
         }
@@ -72,8 +77,12 @@ class DefaultUserRepository @Inject constructor(
             userService.updateNickname(NicknameRequest(nickname)).suspendMapSuccess {
                 emit(Unit)
             }.suspendOnError {
-                if (statusCode.code == 401) onError(WithPeaceError.UnAuthorized())
-                else onError(WithPeaceError.GeneralError(statusCode.code, messageOrNull))
+                if (statusCode.code == 401) {
+                    onError(WithPeaceError.UnAuthorized())
+                } else {
+                    val errorBody = errorBody?.getErrorBody()
+                    onError(WithPeaceError.GeneralError(errorBody?.code, errorBody?.message))
+                }
             }.suspendOnException {
                 onError(WithPeaceError.GeneralError(message = messageOrNull))
             }
@@ -87,8 +96,12 @@ class DefaultUserRepository @Inject constructor(
         userService.updateImage(imagePart).suspendMapSuccess {
             emit(Unit)
         }.suspendOnError {
-            if (statusCode.code == 401) onError(WithPeaceError.UnAuthorized())
-            else onError(WithPeaceError.GeneralError(statusCode.code, messageOrNull))
+            if (statusCode.code == 401) {
+                onError(WithPeaceError.UnAuthorized())
+            } else {
+                val errorBody = errorBody?.getErrorBody()
+                onError(WithPeaceError.GeneralError(errorBody?.code, errorBody?.message))
+            }
         }.suspendOnException {
             onError(WithPeaceError.GeneralError(message = messageOrNull))
         }

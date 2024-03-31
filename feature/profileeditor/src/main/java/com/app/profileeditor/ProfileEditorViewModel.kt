@@ -125,8 +125,19 @@ class ProfileEditorViewModel @Inject constructor(
                     beforeProfile = baseProfileInfo.toDomain(),
                     afterProfile = _profileEditUiState.value.currentProfileInfo.toDomain(),
                     onError = {
-                        _profileEditUiEvent.send(ProfileEditUiEvent.ShowFailure)
+                        _profileEditUiEvent.send(
+                            when (it) {
+                                is WithPeaceError.GeneralError -> {
+                                    when (it.code) {
+                                        40001 -> ProfileEditUiEvent.ShowInvalidFormatSnackBar
+                                        40007 -> ProfileEditUiEvent.ShowDuplicateSnackBar
+                                        else -> ProfileEditUiEvent.ShowFailure
+                                    }
+                                }
 
+                                is WithPeaceError.UnAuthorized -> ProfileEditUiEvent.UnAuthorized
+                            },
+                        )
                     },
                 ).collect {
                     _profileEditUiEvent.send(ProfileEditUiEvent.ShowUpdateSuccess)
