@@ -319,7 +319,7 @@ private fun NickNameTextField(
                 .height(1.dp),
         )
     }
-    if (nicknameValidStatus !is ProfileNicknameValidUiState.Valid && isChanged.not()) {
+    if (nicknameValidStatus !is ProfileNicknameValidUiState.Valid && isChanged) {
         Text(
             text = if (nicknameValidStatus is ProfileNicknameValidUiState.InValidDuplicated) stringResource(
                 R.string.nickname_duplicated,
