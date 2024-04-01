@@ -1,10 +1,10 @@
 package com.app.profileeditor.uistate
 
 sealed interface ProfileEditUiEvent {
-    data object ShowDuplicateSnackBar : ProfileEditUiEvent
-    data object ShowInvalidFormatSnackBar : ProfileEditUiEvent
-    data object ShowUpdateSuccess : ProfileEditUiEvent
-    data object ShowFailure : ProfileEditUiEvent
-    data object ShowUnchanged : ProfileEditUiEvent
+    data object NicknameDuplicated : ProfileEditUiEvent
+    data object NicknameInvalidFormat : ProfileEditUiEvent
+    data class UpdateSuccess(val nickname: String, val imageUrl: String) : ProfileEditUiEvent
+    data object UpdateFailure : ProfileEditUiEvent
+    data object ProfileUnchanged : ProfileEditUiEvent
     data object UnAuthorized : ProfileEditUiEvent
 }

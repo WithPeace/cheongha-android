@@ -10,6 +10,7 @@ import com.withpeace.withpeace.core.data.mapper.toDomain
 import com.withpeace.withpeace.core.data.util.convertToFile
 import com.withpeace.withpeace.core.datastore.dataStore.TokenPreferenceDataSource
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.profile.ChangedProfile
 import com.withpeace.withpeace.core.domain.model.profile.Nickname
 import com.withpeace.withpeace.core.domain.model.profile.ProfileInfo
 import com.withpeace.withpeace.core.domain.repository.UserRepository
@@ -60,12 +61,12 @@ class DefaultUserRepository @Inject constructor(
         nickname: String,
         profileImage: String,
         onError: suspend (WithPeaceError) -> Unit,
-    ): Flow<Unit> = flow {
+    ): Flow<ChangedProfile> = flow {
         val imagePart = getImagePart(profileImage)
         userService.updateProfile(
             nickname.toRequestBody("text/plain".toMediaTypeOrNull()), imagePart,
         ).suspendMapSuccess {
-            emit(Unit)
+            emit(this.data.toDomain())
         }.suspendOnError {
             if (statusCode.code == 401) {
                 onError(WithPeaceError.UnAuthorized())
@@ -78,10 +79,13 @@ class DefaultUserRepository @Inject constructor(
         }
     }
 
-    override fun updateNickname(nickname: String, onError: suspend (WithPeaceError) -> Unit): Flow<Unit> =
+    override fun updateNickname(
+        nickname: String,
+        onError: suspend (WithPeaceError) -> Unit,
+    ): Flow<ChangedProfile> =
         flow {
             userService.updateNickname(NicknameRequest(nickname)).suspendMapSuccess {
-                emit(Unit)
+                emit(ChangedProfile(nickname = Nickname(this.data)))
             }.suspendOnError {
                 if (statusCode.code == 401) {
                     onError(WithPeaceError.UnAuthorized())
@@ -97,10 +101,10 @@ class DefaultUserRepository @Inject constructor(
     override fun updateProfileImage(
         profileImage: String,
         onError: suspend (WithPeaceError) -> Unit,
-    ): Flow<Unit> = flow {
+    ): Flow<ChangedProfile> = flow {
         val imagePart = getImagePart(profileImage)
         userService.updateImage(imagePart).suspendMapSuccess {
-            emit(Unit)
+            emit(ChangedProfile(profileImageUrl = this.data))
         }.suspendOnError {
             if (statusCode.code == 401) {
                 onError(WithPeaceError.UnAuthorized())

@@ -1,6 +1,7 @@
 package com.withpeace.withpeace.core.domain.usecase
 
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.profile.ChangedProfile
 import com.withpeace.withpeace.core.domain.model.profile.ChangingProfileInfo
 import com.withpeace.withpeace.core.domain.model.profile.ProfileChangingStatus
 import com.withpeace.withpeace.core.domain.repository.UserRepository
@@ -16,7 +17,7 @@ class UpdateProfileUseCase @Inject constructor(
         beforeProfile: ChangingProfileInfo,
         afterProfile: ChangingProfileInfo,
         onError: suspend (WithPeaceError) -> Unit,
-    ): Flow<Unit> {
+    ): Flow<ChangedProfile> {
         return when (ProfileChangingStatus.getStatus(beforeProfile, afterProfile)) {
             ProfileChangingStatus.AllChanging -> {
                 userRepository.updateProfile(

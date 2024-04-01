@@ -13,6 +13,8 @@ import com.withpeace.withpeace.feature.home.navigation.homeNavGraph
 import com.withpeace.withpeace.feature.login.navigation.LOGIN_ROUTE
 import com.withpeace.withpeace.feature.login.navigation.loginNavGraph
 import com.withpeace.withpeace.feature.login.navigation.navigateLogin
+import com.withpeace.withpeace.feature.mypage.navigation.MY_PAGE_CHANGED_IMAGE_ARGUMENT
+import com.withpeace.withpeace.feature.mypage.navigation.MY_PAGE_CHANGED_NICKNAME_ARGUMENT
 import com.withpeace.withpeace.feature.mypage.navigation.myPageNavGraph
 import com.withpeace.withpeace.feature.postlist.navigation.postListGraph
 import com.withpeace.withpeace.feature.registerpost.navigation.IMAGE_LIST_ARGUMENT
@@ -85,9 +87,13 @@ fun WithpeaceNavHost(
             onNavigateToGallery = {
                 navController.navigateToGallery(imageLimit = 1)
             },
-            onUpdateSuccess = {
+            onUpdateSuccess = { nickname, imageUrl ->
+                navController.previousBackStackEntry?.savedStateHandle?.apply {
+                    set(MY_PAGE_CHANGED_NICKNAME_ARGUMENT, nickname)
+                    set(MY_PAGE_CHANGED_IMAGE_ARGUMENT, imageUrl)
+                }
                 navController.popBackStack()
-            }
+            },
         )
         postListGraph(onShowSnackBar)
     }

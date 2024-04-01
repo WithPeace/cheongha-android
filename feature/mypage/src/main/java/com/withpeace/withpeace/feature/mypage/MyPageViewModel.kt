@@ -6,7 +6,7 @@ import com.withpeace.withpeace.core.domain.model.WithPeaceError
 import com.withpeace.withpeace.core.domain.usecase.GetProfileInfoUseCase
 import com.withpeace.withpeace.core.domain.usecase.LogoutUseCase
 import com.withpeace.withpeace.feature.mypage.uistate.MyPageUiEvent
-import com.withpeace.withpeace.feature.mypage.uistate.MyPageUiState
+import com.withpeace.withpeace.feature.mypage.uistate.ProfileInfoUiModel
 import com.withpeace.withpeace.feature.mypage.uistate.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -25,10 +25,20 @@ class MyPageViewModel @Inject constructor(
     private val _myPageUiEvent = Channel<MyPageUiEvent>()
     val myPageUiEvent = _myPageUiEvent.receiveAsFlow()
 
-    private val _myPageUiState = MutableStateFlow<MyPageUiState>(MyPageUiState.Loading)
-    val myPageUiState = _myPageUiState.asStateFlow()
+    private val _profileUiModel = MutableStateFlow(
+        ProfileInfoUiModel(
+            "nickname",
+            "default.png",
+            "",
+        ),
+    )
+    val myPageUiState = _profileUiModel.asStateFlow()
 
-    fun getProfile() {
+    init {
+        getProfile()
+    }
+
+    private fun getProfile() {
         viewModelScope.launch {
             getUserInfoUseCase { error ->
                 when (error) {
@@ -41,12 +51,19 @@ class MyPageViewModel @Inject constructor(
                     }
                 }
             }.collect { profileInfo ->
-                _myPageUiState.update {
-                    MyPageUiState.Success(
-                        profileInfo.toUiModel(),
-                    )
+                _profileUiModel.update {
+                    profileInfo.toUiModel()
                 }
             }
+        }
+    }
+
+    fun updateProfile(nickname: String?, profileUrl: String?) {
+        _profileUiModel.update {
+            it.copy(
+                nickname = nickname ?: it.nickname,
+                profileImage = profileUrl ?: it.profileImage,
+            )
         }
     }
 

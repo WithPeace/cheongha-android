@@ -33,7 +33,6 @@ import com.skydoves.landscapist.glide.GlideImage
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.TitleBar
 import com.withpeace.withpeace.feature.mypage.uistate.MyPageUiEvent
-import com.withpeace.withpeace.feature.mypage.uistate.MyPageUiState
 import com.withpeace.withpeace.feature.mypage.uistate.ProfileInfoUiModel
 
 @Composable
@@ -44,12 +43,7 @@ fun MyPageRoute(
     onLogoutSuccess: () -> Unit,
     onWithdrawClick: () -> Unit,
 ) {
-    val mypageUiState by viewModel.myPageUiState.collectAsStateWithLifecycle()
-    when (mypageUiState) {
-        MyPageUiState.Loading -> {}
-        is MyPageUiState.Success -> {}
-
-    }
+    val profileInfo by viewModel.myPageUiState.collectAsStateWithLifecycle()
     LaunchedEffect(viewModel.myPageUiEvent) {
         viewModel.myPageUiEvent.collect {
             when (it) {
@@ -65,14 +59,6 @@ fun MyPageRoute(
             }
         }
     }
-    LaunchedEffect(Unit) {
-        viewModel.getProfile()
-    }
-    val profileInfo = (mypageUiState as? MyPageUiState.Success)?.profileInfo ?: ProfileInfoUiModel(
-        "nickname",
-        "default.png",
-        "",
-    ) // TODO("없을 시 로컬에서 가지고 온다.")
     MyPageScreen(
         onEditProfile = {
             onEditProfile(it.nickname, it.profileImage)

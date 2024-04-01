@@ -3,6 +3,7 @@ package com.withpeace.withpeace.core.network.di.service
 import com.skydoves.sandwich.ApiResponse
 import com.withpeace.withpeace.core.network.di.request.NicknameRequest
 import com.withpeace.withpeace.core.network.di.response.BaseResponse
+import com.withpeace.withpeace.core.network.di.response.ChangedProfileResponse
 import com.withpeace.withpeace.core.network.di.response.ProfileResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -31,7 +32,7 @@ interface UserService {
     suspend fun updateProfile(
         @Part("nickname") nickname: RequestBody,
         @Part imageFile: MultipartBody.Part,
-    ): ApiResponse<BaseResponse<String>>
+    ): ApiResponse<BaseResponse<ChangedProfileResponse>>
 
     @GET("/api/v1/users/profile/nickname/check")
     suspend fun isNicknameDuplicate(@Query("nickname") nickname: String): ApiResponse<BaseResponse<Boolean>>

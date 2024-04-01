@@ -61,7 +61,7 @@ class ProfileEditorViewModel @Inject constructor(
 
     fun verifyNickname() { // 닉네임만 바뀐 경우, 기본 값이 아닌 경우
         if (_profileEditUiState.value.nickname == baseProfileInfo.nickname) {
-            return updateIsNicknameValidStatus(ProfileNicknameValidUiState.Valid)
+            return _profileNicknameValidUiState.update { ProfileNicknameValidUiState.Valid }
         }
         viewModelScope.launch {
             verifyNicknameUseCase(
@@ -69,23 +69,19 @@ class ProfileEditorViewModel @Inject constructor(
                     when (error) {
                         is WithPeaceError.GeneralError -> {
                             when (error.code) {
-                                1 -> updateIsNicknameValidStatus(ProfileNicknameValidUiState.InValidFormat)
-                                2 -> updateIsNicknameValidStatus(ProfileNicknameValidUiState.InValidDuplicated)
+                                1 -> _profileNicknameValidUiState.update { ProfileNicknameValidUiState.InValidFormat }
+                                2 -> _profileNicknameValidUiState.update { ProfileNicknameValidUiState.InValidDuplicated }
                             }
                         }
 
-                        else -> _profileEditUiEvent.send(ProfileEditUiEvent.ShowFailure)
+                        else -> _profileEditUiEvent.send(ProfileEditUiEvent.UpdateFailure)
                     }
                 },
                 nickname = _profileEditUiState.value.nickname,
             ).collect {
-                updateIsNicknameValidStatus(ProfileNicknameValidUiState.Valid)
+                _profileNicknameValidUiState.update { ProfileNicknameValidUiState.Valid }
             }
         }
-    }
-
-    private fun updateIsNicknameValidStatus(status: ProfileNicknameValidUiState) {
-        _profileNicknameValidUiState.update { status }
     }
 
     fun updateProfile() {
@@ -98,10 +94,10 @@ class ProfileEditorViewModel @Inject constructor(
                         when (it) {
                             is WithPeaceError.GeneralError -> {
                                 when (it.code) {
-                                    3 -> ProfileEditUiEvent.ShowUnchanged
-                                    40001 -> ProfileEditUiEvent.ShowInvalidFormatSnackBar
-                                    40007 -> ProfileEditUiEvent.ShowDuplicateSnackBar
-                                    else -> ProfileEditUiEvent.ShowFailure
+                                    3 -> ProfileEditUiEvent.ProfileUnchanged
+                                    40001 -> ProfileEditUiEvent.NicknameInvalidFormat
+                                    40007 -> ProfileEditUiEvent.NicknameDuplicated
+                                    else -> ProfileEditUiEvent.UpdateFailure
                                 }
                             }
 
@@ -110,7 +106,12 @@ class ProfileEditorViewModel @Inject constructor(
                     )
                 },
             ).collect {
-                _profileEditUiEvent.send(ProfileEditUiEvent.ShowUpdateSuccess)
+                _profileEditUiEvent.send(
+                    ProfileEditUiEvent.UpdateSuccess(
+                        it.nickname?.value ?: _profileEditUiState.value.nickname,
+                        it.profileImageUrl ?: _profileEditUiState.value.profileImage,
+                    ),
+                )
             }
         }
     }

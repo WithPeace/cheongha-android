@@ -66,7 +66,7 @@ fun ProfileEditorRoute(
     onClickBackButton: () -> Unit,
     onNavigateToGallery: () -> Unit,
     viewModel: ProfileEditorViewModel,
-    onUpdateSuccess: () -> Unit,
+    onUpdateSuccess: (nickname: String, imageUrl: String) -> Unit,
 ) {
     var showAlertDialog by remember { mutableStateOf(false) }
     val profileInfo: ProfileUiModel by viewModel.profileEditUiState.collectAsStateWithLifecycle()
@@ -90,17 +90,17 @@ fun ProfileEditorRoute(
     LaunchedEffect(viewModel.profileEditUiEvent) {
         viewModel.profileEditUiEvent.collect {
             when (it) {
-                ProfileEditUiEvent.ShowDuplicateSnackBar -> onShowSnackBar("중복된 닉네임입니다.")
+                ProfileEditUiEvent.NicknameDuplicated -> onShowSnackBar("중복된 닉네임입니다.")
 
-                ProfileEditUiEvent.ShowInvalidFormatSnackBar -> onShowSnackBar("닉네임 형식이 올바르지 않습니다.")
+                ProfileEditUiEvent.NicknameInvalidFormat -> onShowSnackBar("닉네임 형식이 올바르지 않습니다.")
 
-                ProfileEditUiEvent.ShowFailure -> onShowSnackBar("서버와 통신 중 오류가 발생했습니다.")
+                ProfileEditUiEvent.UpdateFailure -> onShowSnackBar("서버와 통신 중 오류가 발생했습니다.")
 
-                ProfileEditUiEvent.ShowUnchanged -> onShowSnackBar("수정사항이 없습니다.")
+                ProfileEditUiEvent.ProfileUnchanged -> onShowSnackBar("수정사항이 없습니다.")
 
-                ProfileEditUiEvent.ShowUpdateSuccess -> {
+                is ProfileEditUiEvent.UpdateSuccess -> {
                     onShowSnackBar("변경되었습니다.")
-                    onUpdateSuccess()
+                    onUpdateSuccess(it.nickname, it.imageUrl)
                 }
 
                 ProfileEditUiEvent.UnAuthorized -> onShowSnackBar("인가 되지 않은 게정이에요")

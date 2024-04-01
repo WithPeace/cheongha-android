@@ -32,7 +32,7 @@ fun NavGraphBuilder.profileEditorNavGraph(
     onShowSnackBar: (message: String) -> Unit,
     onClickBackButton: () -> Unit,
     onNavigateToGallery: () -> Unit,
-    onUpdateSuccess: () -> Unit,
+    onUpdateSuccess: (nickname: String, imageUrl: String) -> Unit,
 ) {
     composable(
         route = PROFILE_EDITOR_ROUTE_WITH_ARGUMENT,
