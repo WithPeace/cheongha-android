@@ -6,7 +6,7 @@ import com.withpeace.withpeace.core.network.di.response.ChangedProfileResponse
 
 fun ChangedProfileResponse.toDomain(): ChangedProfile {
     return ChangedProfile(
-        nickname = Nickname.create(this.nickname),
+        nickname = Nickname(this.nickname),
         profileImageUrl = profileImageUrl,
     )
 }

@@ -1,10 +1,7 @@
 package com.withpeace.withpeace.core.domain.model.profile
 
-data class ChangingProfileInfo(val nickname: Nickname, val profileImage: String?) {
-
-    companion object {
-        operator fun invoke(nickname: String, profileImage: String?): ChangingProfileInfo {
-            return ChangingProfileInfo(Nickname.create(nickname), profileImage)
-        }
+data class ChangingProfileInfo(val nickname: String, val profileImage: String) {
+    fun getChangingStatus(baseProfileInfo: ChangingProfileInfo): ProfileChangingStatus {
+        return ProfileChangingStatus.getStatus(baseProfileInfo, this)
     }
 }

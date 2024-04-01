@@ -50,7 +50,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.profileeditor.uistate.ProfileEditUiEvent
-import com.app.profileeditor.uistate.ProfileEditUiState
 import com.app.profileeditor.uistate.ProfileNicknameValidUiState
 import com.app.profileeditor.uistate.ProfileUiModel
 import com.skydoves.landscapist.glide.GlideImage
@@ -70,9 +69,7 @@ fun ProfileEditorRoute(
     onUpdateSuccess: () -> Unit,
 ) {
     var showAlertDialog by remember { mutableStateOf(false) }
-    val profileUiState: ProfileEditUiState by viewModel.profileEditUiState.collectAsStateWithLifecycle()
-
-    val profileInfo = profileUiState.currentProfileInfo
+    val profileInfo: ProfileUiModel by viewModel.profileEditUiState.collectAsStateWithLifecycle()
 
     if (showAlertDialog) {
         ModifySaveDialog(
@@ -114,9 +111,9 @@ fun ProfileEditorRoute(
 
 
     ProfileEditorScreen(
-        profileInfo = ProfileUiModel(profileInfo.nickname, profileInfo.profileImage),
+        profileInfo = profileInfo,
         onClickBackButton = {
-            if (profileUiState.isChanged) {
+            if (profileInfo.isChanged) {
                 showAlertDialog = true
             } else {
                 onClickBackButton()
@@ -131,7 +128,7 @@ fun ProfileEditorRoute(
             viewModel.verifyNickname()
         },
         nicknameValidStatus = viewModel.profileNicknameValidUiState.collectAsStateWithLifecycle().value,
-        isChanged = profileUiState.isChanged,
+        isChanged = profileInfo.isChanged,
     )
 
 }
@@ -444,7 +441,7 @@ fun ModifySaveDialogContent(
 fun ProfileEditorPreview() {
     WithpeaceTheme {
         ProfileEditorScreen(
-            profileInfo = ProfileUiModel("nickname", ""),
+            profileInfo = ProfileUiModel("nickname", "", false),
             onClickBackButton = {},
             onNavigateToGallery = {},
             onEditCompleted = {},

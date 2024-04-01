@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.app.profileeditor.navigation.PROFILE_IMAGE_URL_ARGUMENT
 import com.app.profileeditor.navigation.PROFILE_NICKNAME_ARGUMENT
 import com.app.profileeditor.uistate.ProfileEditUiEvent
-import com.app.profileeditor.uistate.ProfileEditUiState
 import com.app.profileeditor.uistate.ProfileNicknameValidUiState
 import com.app.profileeditor.uistate.ProfileUiModel
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
@@ -19,6 +18,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import toDomain
+import toUiModel
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,14 +28,15 @@ class ProfileEditorViewModel @Inject constructor(
     private val verifyNicknameUseCase: VerifyNicknameUseCase,
     private val updateProfileUseCase: UpdateProfileUseCase,
 ) : ViewModel() {
-    val baseProfileInfo = ProfileUiModel(
+    private val baseProfileInfo = ProfileUiModel(
         nickname = savedStateHandle.get<String>(PROFILE_NICKNAME_ARGUMENT) ?: "",
         profileImage = savedStateHandle.get<String>(PROFILE_IMAGE_URL_ARGUMENT) ?: "default.png",
+        isChanged = false,
     ) // 최초 정보에서 변경사항이 있는지 비교를 위한 필드
 
     private val _profileEditUiState =
-        MutableStateFlow<ProfileEditUiState>(
-            ProfileEditUiState(baseProfileInfo, false),
+        MutableStateFlow(
+            ProfileUiModel(baseProfileInfo.nickname, baseProfileInfo.profileImage, false),
         )
     val profileEditUiState = _profileEditUiState.asStateFlow()
 
@@ -46,51 +48,20 @@ class ProfileEditorViewModel @Inject constructor(
     val profileNicknameValidUiState = _profileNicknameValidUiState.asStateFlow()
 
     fun onImageChanged(imageUri: String) {
-        val changingUiState = _profileEditUiState.value.currentProfileInfo.copy(
-            nickname = _profileEditUiState.value.currentProfileInfo.nickname,
-            profileImage = imageUri,
-        )
         _profileEditUiState.update {
-            return@update if (baseProfileInfo == changingUiState
-            ) {
-                _profileEditUiState.value.copy(
-                    currentProfileInfo = baseProfileInfo,
-                    isChanged = false,
-                )
-            } else {
-                _profileEditUiState.value.copy(
-                    currentProfileInfo = changingUiState,
-                    isChanged = true,
-                )
-            }
-        }
-    }
-    fun onNickNameChanged(nickname: String) {
-        val changingUiState = _profileEditUiState.value.currentProfileInfo.copy(
-            nickname = nickname,
-            profileImage = _profileEditUiState.value.currentProfileInfo.profileImage,
-        )
-        _profileEditUiState.update {
-            // changingUiState.toDomain().getChangingState(baseProfileInfo.toDomain()).toUiModel()
-            return@update if (baseProfileInfo == changingUiState
-            ) {
-                _profileEditUiState.value.copy(
-                    currentProfileInfo = baseProfileInfo,
-                    isChanged = false,
-                )
-            } else {
-                _profileEditUiState.value.copy(
-                    currentProfileInfo = changingUiState,
-                    isChanged = true,
-                )
-            }
+            return@update it.toDomain().copy(profileImage = imageUri).toUiModel(baseProfileInfo)
         }
     }
 
-    fun verifyNickname() {
-        if (profileEditUiState.value.isChanged.not()
-        ) {
-            return
+    fun onNickNameChanged(nickname: String) {
+        _profileEditUiState.update {
+            return@update it.toDomain().copy(nickname = nickname).toUiModel(baseProfileInfo)
+        }
+    }
+
+    fun verifyNickname() { // 닉네임만 바뀐 경우, 기본 값이 아닌 경우
+        if (_profileEditUiState.value.nickname == baseProfileInfo.nickname) {
+            return updateIsNicknameValidStatus(ProfileNicknameValidUiState.Valid)
         }
         viewModelScope.launch {
             verifyNicknameUseCase(
@@ -102,10 +73,11 @@ class ProfileEditorViewModel @Inject constructor(
                                 2 -> updateIsNicknameValidStatus(ProfileNicknameValidUiState.InValidDuplicated)
                             }
                         }
+
                         else -> _profileEditUiEvent.send(ProfileEditUiEvent.ShowFailure)
                     }
                 },
-                nickname = _profileEditUiState.value.currentProfileInfo.nickname,
+                nickname = _profileEditUiState.value.nickname,
             ).collect {
                 updateIsNicknameValidStatus(ProfileNicknameValidUiState.Valid)
             }
@@ -118,30 +90,27 @@ class ProfileEditorViewModel @Inject constructor(
 
     fun updateProfile() {
         viewModelScope.launch {
-            if (_profileEditUiState.value.isChanged.not()) {
-                _profileEditUiEvent.send(ProfileEditUiEvent.ShowUnchanged)
-            } else if (_profileEditUiState.value.isChanged) {
-                updateProfileUseCase(
-                    beforeProfile = baseProfileInfo.toDomain(),
-                    afterProfile = _profileEditUiState.value.currentProfileInfo.toDomain(),
-                    onError = {
-                        _profileEditUiEvent.send(
-                            when (it) {
-                                is WithPeaceError.GeneralError -> {
-                                    when (it.code) {
-                                        40001 -> ProfileEditUiEvent.ShowInvalidFormatSnackBar
-                                        40007 -> ProfileEditUiEvent.ShowDuplicateSnackBar
-                                        else -> ProfileEditUiEvent.ShowFailure
-                                    }
+            updateProfileUseCase(
+                beforeProfile = baseProfileInfo.toDomain(),
+                afterProfile = _profileEditUiState.value.toDomain(),
+                onError = {
+                    _profileEditUiEvent.send(
+                        when (it) {
+                            is WithPeaceError.GeneralError -> {
+                                when (it.code) {
+                                    3 -> ProfileEditUiEvent.ShowUnchanged
+                                    40001 -> ProfileEditUiEvent.ShowInvalidFormatSnackBar
+                                    40007 -> ProfileEditUiEvent.ShowDuplicateSnackBar
+                                    else -> ProfileEditUiEvent.ShowFailure
                                 }
+                            }
 
-                                is WithPeaceError.UnAuthorized -> ProfileEditUiEvent.UnAuthorized
-                            },
-                        )
-                    },
-                ).collect {
-                    _profileEditUiEvent.send(ProfileEditUiEvent.ShowUpdateSuccess)
-                }
+                            is WithPeaceError.UnAuthorized -> ProfileEditUiEvent.UnAuthorized
+                        },
+                    )
+                },
+            ).collect {
+                _profileEditUiEvent.send(ProfileEditUiEvent.ShowUpdateSuccess)
             }
         }
     }

@@ -2,8 +2,12 @@ package com.withpeace.withpeace.core.domain.model.profile
 
 sealed interface ProfileChangingStatus {
     data object OnlyNicknameChanging : ProfileChangingStatus
+
     data object OnlyImageChanging : ProfileChangingStatus
+
     data object AllChanging : ProfileChangingStatus
+
+    data object Same : ProfileChangingStatus
 
     companion object {
         fun getStatus(
@@ -12,13 +16,14 @@ sealed interface ProfileChangingStatus {
         ): ProfileChangingStatus {
             return when {
                 beforeProfile.profileImage != afterProfile.profileImage &&
-                    afterProfile.nickname != beforeProfile.nickname &&
-                    afterProfile.profileImage != null -> AllChanging
+                    afterProfile.nickname != beforeProfile.nickname -> AllChanging
 
-                afterProfile.profileImage != null &&
+                beforeProfile.nickname == afterProfile.nickname &&
                     beforeProfile.profileImage != afterProfile.profileImage -> OnlyImageChanging
 
-                else -> OnlyNicknameChanging
+                beforeProfile.nickname != afterProfile.nickname -> OnlyNicknameChanging
+
+                else -> Same
             }
         }
     }

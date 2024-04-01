@@ -7,8 +7,3 @@ package com.app.profileeditor.uistate
 //
 //     data object NoChanges : ProfileEditUiState
 // }
-
-data class ProfileEditUiState(
-    val currentProfileInfo: ProfileUiModel,
-    val isChanged: Boolean,
-)
