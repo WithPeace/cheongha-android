@@ -1,4 +1,4 @@
-package com.app.profileeditor.uistate
+package com.withpeace.withpeace.core.ui.profile
 
 sealed interface ProfileNicknameValidUiState {
     data object Valid : ProfileNicknameValidUiState

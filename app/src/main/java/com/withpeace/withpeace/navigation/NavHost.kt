@@ -44,7 +44,12 @@ fun WithpeaceNavHost(
                 navController.navigateHome()
             },
         )
-        signUpNavGraph(onShowSnackBar = onShowSnackBar)
+        signUpNavGraph(
+            onShowSnackBar = onShowSnackBar,
+            onNavigateToGallery = {
+                navController.navigateToGallery(imageLimit = 1)
+            },
+        )
         registerPostNavGraph(
             onShowSnackBar = onShowSnackBar,
             onCompleteRegisterPost = {},
