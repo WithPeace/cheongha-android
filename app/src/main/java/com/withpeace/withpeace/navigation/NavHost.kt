@@ -14,7 +14,6 @@ import com.withpeace.withpeace.feature.login.navigation.LOGIN_ROUTE
 import com.withpeace.withpeace.feature.login.navigation.loginNavGraph
 import com.withpeace.withpeace.feature.login.navigation.navigateLogin
 import com.withpeace.withpeace.feature.mypage.navigation.myPageNavGraph
-import com.withpeace.withpeace.feature.post.navigation.postNavGraph
 import com.withpeace.withpeace.feature.postlist.navigation.postListGraph
 import com.withpeace.withpeace.feature.registerpost.navigation.IMAGE_LIST_ARGUMENT
 import com.withpeace.withpeace.feature.registerpost.navigation.registerPostNavGraph
@@ -59,7 +58,6 @@ fun WithpeaceNavHost(
             onShowSnackBar = onShowSnackBar,
         )
         homeNavGraph(onShowSnackBar)
-        postNavGraph(onShowSnackBar)
         myPageNavGraph(
             onShowSnackBar = onShowSnackBar,
             onEditProfile = { nickname, profileImageUrl ->
