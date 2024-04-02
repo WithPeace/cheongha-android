@@ -9,6 +9,7 @@ import com.skydoves.sandwich.suspendOnException
 import com.withpeace.withpeace.core.data.mapper.toDomain
 import com.withpeace.withpeace.core.data.util.convertToFile
 import com.withpeace.withpeace.core.datastore.dataStore.TokenPreferenceDataSource
+import com.withpeace.withpeace.core.domain.model.SignUpInfo
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
 import com.withpeace.withpeace.core.domain.model.profile.ChangedProfile
 import com.withpeace.withpeace.core.domain.model.profile.Nickname
@@ -49,12 +50,37 @@ class DefaultUserRepository @Inject constructor(
         }
     }
 
-    override fun registerProfile(
-        nickname: String,
-        profileImage: String,
-        onError: (WithPeaceError) -> Unit,
-    ): Flow<Unit> {
-        TODO("Not yet implemented")
+    override suspend fun signUp(
+        signUpInfo: SignUpInfo,
+        onError: suspend (WithPeaceError) -> Unit,
+    ): Flow<Unit> = flow {
+        val nicknameRequestBody =
+            signUpInfo.nickname.toRequestBody("text/plain".toMediaTypeOrNull())
+        val request =
+            if (signUpInfo.profileImage.isNullOrEmpty()) {
+                userService.signUp(
+                    nicknameRequestBody,
+                )
+            } else {
+                val profileImagePart = getImagePart(signUpInfo.profileImage!!)
+                userService.signUp(nicknameRequestBody, profileImagePart)
+            }
+
+        request.suspendMapSuccess {
+            val data = this.data
+            tokenPreferenceDataSource.updateAccessToken(data.accessToken)
+            tokenPreferenceDataSource.updateRefreshToken(data.refreshToken)
+            emit(Unit)
+        }.suspendOnError {
+            if (statusCode.code == 401) {
+                onError(WithPeaceError.UnAuthorized())
+            } else {
+                val errorBody = errorBody?.getErrorBody()
+                onError(WithPeaceError.GeneralError(errorBody?.code, errorBody?.message))
+            }
+        }.suspendOnException {
+            onError(WithPeaceError.GeneralError(message = messageOrNull))
+        }
     }
 
     override fun updateProfile(
@@ -133,6 +159,8 @@ class DefaultUserRepository @Inject constructor(
             onError(WithPeaceError.GeneralError(message = messageOrNull))
         }
     }
+
+
 
     override fun logout(onError: suspend (WithPeaceError) -> Unit): Flow<Unit> = flow {
         userService.logout().suspendMapSuccess {

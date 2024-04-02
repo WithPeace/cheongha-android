@@ -18,18 +18,20 @@ fun NavController.navigateSignUp(navOptions: NavOptions? = null) {
 fun NavGraphBuilder.signUpNavGraph(
     onShowSnackBar: (message: String) -> Unit,
     onNavigateToGallery: () -> Unit,
+    onSignUpSuccess: () -> Unit,
 ) {
     composable(route = SIGN_UP_ROUTE) { entry ->
         val selectedImageUri =
             entry.savedStateHandle.get<List<String>>(IMAGE_LIST_ARGUMENT) ?: emptyList()
         val viewModel: SignUpViewModel = hiltViewModel()
         if (selectedImageUri.isNotEmpty()) {
-            viewModel.onImageChanged(imageUri = selectedImageUri.firstOrNull() ?: "default.png")
+            viewModel.onImageChanged(imageUri = selectedImageUri.firstOrNull() ?: null)
         }
         SignUpRoute(
             onShowSnackBar = onShowSnackBar,
             onNavigateToGallery = onNavigateToGallery,
             viewModel = viewModel,
+            onSignUpSuccess = onSignUpSuccess
         )
     }
 }

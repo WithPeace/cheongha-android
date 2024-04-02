@@ -13,6 +13,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,26 +25,45 @@ import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.ui.profile.NickNameEditor
 import com.withpeace.withpeace.core.ui.profile.ProfileImageEditor
 import com.withpeace.withpeace.core.ui.profile.ProfileNicknameValidUiState
+import com.withpeace.withpeace.feature.signup.uistate.SignUpUiEvent
+import com.withpeace.withpeace.feature.signup.uistate.SignUpUiModel
 
 @Composable
 fun SignUpRoute(
     viewModel: SignUpViewModel,
     onShowSnackBar: (message: String) -> Unit,
     onNavigateToGallery: () -> Unit,
+    onSignUpSuccess: () -> Unit,
 ) {
     val signUpInfo = viewModel.signUpUiModel.collectAsStateWithLifecycle()
+    val nicknameValidStatus = viewModel.profileNicknameValidUiState.collectAsStateWithLifecycle()
     SignUpScreen(
         isChanged = signUpInfo.value.nickname.isNotEmpty(),
+        signUpInfo = signUpInfo.value,
         onNavigateToGallery = onNavigateToGallery,
         onSignUpClick = viewModel::signUp,
         onNickNameChanged = viewModel::onNickNameChanged,
         onKeyBoardTimerEnd = viewModel::verifyNickname,
-        nicknameValidStatus = ProfileNicknameValidUiState.InValidDuplicated,
+        nicknameValidStatus = nicknameValidStatus.value,
     )
+    LaunchedEffect(viewModel.signUpEvent) {
+        viewModel.signUpEvent.collect {
+            when (it) {
+                SignUpUiEvent.EmptyNickname -> onShowSnackBar("닉네임 등록을 완료해주세요")
+                SignUpUiEvent.NicknameDuplicated -> onShowSnackBar("중복된 닉네임입니다.")
+                SignUpUiEvent.NicknameInvalidFormat -> onShowSnackBar("닉네임 형식이 올바르지 않습니다.")
+                SignUpUiEvent.SignUpFail -> onShowSnackBar("서버와 통신 중 오류가 발생했습니다.")
+                SignUpUiEvent.SignUpSuccess -> onSignUpSuccess()
+                SignUpUiEvent.UnAuthorized -> onShowSnackBar("인가 되지 않은 게정이에요")
+                SignUpUiEvent.VerifyFail -> onShowSnackBar("서버와 통신 중 오류가 발생했습니다.")
+            }
+        }
+    }
 }
 
 @Composable
 fun SignUpScreen(
+    signUpInfo: SignUpUiModel,
     isChanged: Boolean,
     modifier: Modifier = Modifier,
     onNavigateToGallery: () -> Unit,
@@ -69,7 +89,7 @@ fun SignUpScreen(
             )
             Spacer(modifier = Modifier.height(24.dp))
             ProfileImageEditor(
-                profileImage = "",
+                profileImage = signUpInfo.profileImage,
                 modifier = modifier,
                 onNavigateToGallery = { onNavigateToGallery() },
                 contentDescription = stringResource(R.string.set_up_profile_image),
@@ -83,9 +103,9 @@ fun SignUpScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
             NickNameEditor(
-                nickname = "",
+                nickname = signUpInfo.nickname,
                 onNickNameChanged = onNickNameChanged,
-                isChanged = false, // nickname.isNotEmpty()
+                isChanged = isChanged, // nickname.isNotEmpty()
                 modifier = modifier,
                 nicknameValidStatus = nicknameValidStatus,
                 onKeyBoardTimerEnd = onKeyBoardTimerEnd,
@@ -113,7 +133,7 @@ private fun SignUpButton(
                 start = WithpeaceTheme.padding.BasicHorizontalPadding,
             )
             .fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(containerColor = WithpeaceTheme.colors.SystemGray2),
+        colors = ButtonDefaults.buttonColors(containerColor = WithpeaceTheme.colors.MainPink),
         shape = RoundedCornerShape(9.dp),
     ) {
         Text(
@@ -135,5 +155,6 @@ fun SignUpPreview() {
         onNickNameChanged = { },
         onKeyBoardTimerEnd = {},
         nicknameValidStatus = ProfileNicknameValidUiState.InValidDuplicated,
+        signUpInfo = SignUpUiModel(nickname = "", profileImage = null),
     )
 }

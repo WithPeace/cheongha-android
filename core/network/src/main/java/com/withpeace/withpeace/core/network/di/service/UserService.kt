@@ -5,6 +5,7 @@ import com.withpeace.withpeace.core.network.di.request.NicknameRequest
 import com.withpeace.withpeace.core.network.di.response.BaseResponse
 import com.withpeace.withpeace.core.network.di.response.ChangedProfileResponse
 import com.withpeace.withpeace.core.network.di.response.ProfileResponse
+import com.withpeace.withpeace.core.network.di.response.TokenResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -39,4 +40,17 @@ interface UserService {
 
     @POST("/api/v1/auth/logout")
     suspend fun logout(): ApiResponse<BaseResponse<String>>
+
+    @Multipart
+    @POST("/api/v1/auth/register")
+    suspend fun signUp(
+        @Part("nickname") nickname: RequestBody,
+        @Part imageFile: MultipartBody.Part,
+    ): ApiResponse<BaseResponse<TokenResponse>>
+
+    @Multipart
+    @POST("/api/v1/auth/register")
+    suspend fun signUp(
+        @Part("nickname") nickname: RequestBody,
+    ): ApiResponse<BaseResponse<TokenResponse>>
 }
