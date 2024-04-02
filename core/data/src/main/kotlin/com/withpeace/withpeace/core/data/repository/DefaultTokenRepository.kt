@@ -9,7 +9,6 @@ import com.withpeace.withpeace.core.domain.model.role.Role
 import com.withpeace.withpeace.core.domain.repository.TokenRepository
 import com.withpeace.withpeace.core.network.di.request.SignUpRequest
 import com.withpeace.withpeace.core.network.di.service.AuthService
-import com.withpeace.withpeace.core.network.di.service.UserService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -47,8 +46,10 @@ class DefaultTokenRepository @Inject constructor(
     ): Flow<Role> = flow {
         authService.googleLogin(AUTHORIZATION_FORMAT.format(idToken)).suspendMapSuccess {
             val data = this.data
-            tokenPreferenceDataSource.updateAccessToken(data.tokenResponse.accessToken)
-            tokenPreferenceDataSource.updateRefreshToken(data.tokenResponse.refreshToken)
+            if (data.role.roleToDomain() == Role.USER) {
+                tokenPreferenceDataSource.updateAccessToken(data.tokenResponse.accessToken)
+                tokenPreferenceDataSource.updateRefreshToken(data.tokenResponse.refreshToken)
+            }
             emit(data.role.roleToDomain())
         }.suspendOnFailure { onError(message()) }
     }.flowOn(Dispatchers.IO)
