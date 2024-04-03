@@ -2,7 +2,7 @@ package com.withpeace.withpeace.core.interceptor
 
 import com.skydoves.sandwich.suspendMapSuccess
 import com.skydoves.sandwich.suspendOnError
-import com.withpeace.withpeace.core.datastore.dataStore.TokenPreferenceDataSource
+import com.withpeace.withpeace.core.datastore.dataStore.token.TokenPreferenceDataSource
 import com.withpeace.withpeace.core.network.di.response.TokenResponse
 import com.withpeace.withpeace.core.network.di.service.AuthService
 import kotlinx.coroutines.flow.firstOrNull

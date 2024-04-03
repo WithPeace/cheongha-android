@@ -8,7 +8,8 @@ import com.skydoves.sandwich.suspendOnError
 import com.skydoves.sandwich.suspendOnException
 import com.withpeace.withpeace.core.data.mapper.toDomain
 import com.withpeace.withpeace.core.data.util.convertToFile
-import com.withpeace.withpeace.core.datastore.dataStore.TokenPreferenceDataSource
+import com.withpeace.withpeace.core.datastore.dataStore.token.TokenPreferenceDataSource
+import com.withpeace.withpeace.core.datastore.dataStore.user.UserPreferenceDataSource
 import com.withpeace.withpeace.core.domain.model.SignUpInfo
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
 import com.withpeace.withpeace.core.domain.model.profile.ChangedProfile
@@ -32,6 +33,7 @@ class DefaultUserRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val userService: UserService,
     private val tokenPreferenceDataSource: TokenPreferenceDataSource,
+    private val userPreferenceDataSource: UserPreferenceDataSource,
 ) : UserRepository {
     override fun getProfile(
         onError: suspend (WithPeaceError) -> Unit,
@@ -165,6 +167,7 @@ class DefaultUserRepository @Inject constructor(
     override fun logout(onError: suspend (WithPeaceError) -> Unit): Flow<Unit> = flow {
         userService.logout().suspendMapSuccess {
             tokenPreferenceDataSource.removeAll()
+            userPreferenceDataSource.removeAll()
             emit(Unit)
         }.suspendOnError {
             if (statusCode.code == 401) {

@@ -1,4 +1,4 @@
-package com.withpeace.withpeace.core.datastore.dataStore
+package com.withpeace.withpeace.core.datastore.dataStore.token
 
 import kotlinx.coroutines.flow.Flow
 
