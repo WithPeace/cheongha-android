@@ -15,6 +15,7 @@ import com.withpeace.withpeace.core.domain.model.WithPeaceError
 import com.withpeace.withpeace.core.domain.model.profile.ChangedProfile
 import com.withpeace.withpeace.core.domain.model.profile.Nickname
 import com.withpeace.withpeace.core.domain.model.profile.ProfileInfo
+import com.withpeace.withpeace.core.domain.model.role.Role
 import com.withpeace.withpeace.core.domain.repository.UserRepository
 import com.withpeace.withpeace.core.network.di.common.getErrorBody
 import com.withpeace.withpeace.core.network.di.request.NicknameRequest
@@ -70,6 +71,7 @@ class DefaultUserRepository @Inject constructor(
 
         request.suspendMapSuccess {
             val data = this.data
+            userPreferenceDataSource.updateUserRole(Role.USER.name)
             tokenPreferenceDataSource.updateAccessToken(data.accessToken)
             tokenPreferenceDataSource.updateRefreshToken(data.refreshToken)
             emit(Unit)
