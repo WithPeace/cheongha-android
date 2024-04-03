@@ -1,6 +1,9 @@
 package com.withpeace.withpeace.core.domain.usecase
 
+import com.withpeace.withpeace.core.domain.model.SignUpInfo
+import com.withpeace.withpeace.core.domain.model.WithPeaceError
 import com.withpeace.withpeace.core.domain.repository.TokenRepository
+import com.withpeace.withpeace.core.domain.repository.UserRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -11,24 +14,26 @@ import org.junit.Test
 
 class SignUpUseCaseTest {
     private lateinit var signUpUseCase: SignUpUseCase
-    private val tokenRepository: TokenRepository = mockk(relaxed = true)
+    private val userRepository: UserRepository = mockk(relaxed = true)
 
-    private fun initialize() = SignUpUseCase(tokenRepository)
+    private fun initialize() = SignUpUseCase(userRepository)
 
     @Test
     fun `회원가입에 성공하면, 성공응답을 반환한다`() = runTest {
         // given
         val onSuccess = mockk<() -> Unit>(relaxed = true)
         coEvery {
-            tokenRepository.signUp(
-                "Email",
-                "nickname",
+            userRepository.signUp(
+                SignUpInfo(
+                    "Email",
+                    "nickname",
+                ),
                 onError = any(),
             )
         } returns flow { onSuccess.invoke() }
         signUpUseCase = initialize()
         // when
-        signUpUseCase("Email", "nickname", {}).collect()
+        signUpUseCase(SignUpInfo("Email", "nickname"), {}).collect()
         // then
         coVerify { onSuccess.invoke() }
     }
@@ -36,18 +41,26 @@ class SignUpUseCaseTest {
     @Test
     fun `회원가입에 실패하면, 메세지가 담긴 실패응답을 반환한다`() = runTest {
         // given
-        val errorMock = mockk<(String) -> Unit>(relaxed = true)
+        val errorMock = mockk<(WithPeaceError) -> Unit>(relaxed = true)
         coEvery {
-            tokenRepository.signUp(
-                "Email",
-                "nickname",
+            userRepository.signUp(
+                SignUpInfo(
+                    "Email",
+                    "nickname",
+                ),
                 onError = errorMock,
             )
-        } returns flow { errorMock("test") }
+        } returns flow { errorMock(WithPeaceError.UnAuthorized()) }
         signUpUseCase = initialize()
         // when
-        signUpUseCase("Email", "nickname", onError = errorMock).collect()
+        signUpUseCase(
+            SignUpInfo(
+                "Email",
+                "nickname",
+            ),
+            onError = errorMock,
+        ).collect()
         // then
-        coVerify { errorMock("test") }
+        coVerify { errorMock(WithPeaceError.UnAuthorized()) }
     }
 }

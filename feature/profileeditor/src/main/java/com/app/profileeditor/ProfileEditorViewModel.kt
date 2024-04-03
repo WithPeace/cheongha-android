@@ -6,11 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.app.profileeditor.navigation.PROFILE_IMAGE_URL_ARGUMENT
 import com.app.profileeditor.navigation.PROFILE_NICKNAME_ARGUMENT
 import com.app.profileeditor.uistate.ProfileEditUiEvent
-import com.app.profileeditor.uistate.ProfileNicknameValidUiState
 import com.app.profileeditor.uistate.ProfileUiModel
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
 import com.withpeace.withpeace.core.domain.usecase.UpdateProfileUseCase
 import com.withpeace.withpeace.core.domain.usecase.VerifyNicknameUseCase
+import com.withpeace.withpeace.core.ui.profile.ProfileNicknameValidUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow

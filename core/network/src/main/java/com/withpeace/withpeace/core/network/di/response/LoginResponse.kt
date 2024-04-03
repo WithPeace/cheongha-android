@@ -8,4 +8,5 @@ data class LoginResponse(
     @SerialName("jwtTokenDto")
     val tokenResponse: TokenResponse,
     val role: String,
+    val userId: Long,
 )

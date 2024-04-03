@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.core.domain.repository
 
+import com.withpeace.withpeace.core.domain.model.SignUpInfo
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
 import com.withpeace.withpeace.core.domain.model.profile.ChangedProfile
 import com.withpeace.withpeace.core.domain.model.profile.Nickname
@@ -8,10 +9,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
     fun getProfile(onError: suspend (WithPeaceError) -> Unit): Flow<ProfileInfo>
-    fun registerProfile(
-        nickname: String, profileImage: String,
-        onError: (WithPeaceError) -> Unit,
-    ): Flow<Unit>
 
     fun updateProfileImage(
         profileImage: String,
@@ -34,4 +31,8 @@ interface UserRepository {
     ): Flow<Unit>
 
     fun logout(onError: suspend (WithPeaceError) -> Unit): Flow<Unit>
+    suspend fun signUp(
+        signUpInfo: SignUpInfo,
+        onError: suspend (WithPeaceError) -> Unit
+    ): Flow<Unit>
 }
