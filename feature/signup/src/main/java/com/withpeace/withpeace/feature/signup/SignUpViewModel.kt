@@ -72,8 +72,10 @@ class SignUpViewModel @Inject constructor(
 
     fun signUp() {
         viewModelScope.launch {
-            if (_signUpInfo.value.nickname.isEmpty()) {
-                _signUpEvent.send(SignUpUiEvent.EmptyNickname)
+            if (_signUpInfo.value.nickname.isEmpty() ||
+                profileNicknameValidUiState.value !is ProfileNicknameValidUiState.Valid
+            ) {
+                _signUpEvent.send(SignUpUiEvent.NicknameInValid)
                 return@launch
             }
             viewModelScope.launch {
@@ -83,8 +85,8 @@ class SignUpViewModel @Inject constructor(
                         when (it) {
                             is WithPeaceError.GeneralError -> {
                                 when (it.code) {
-                                    40001 -> SignUpUiEvent.NicknameInvalidFormat
-                                    40007 -> SignUpUiEvent.NicknameDuplicated
+                                    40001 -> SignUpUiEvent.NicknameInValid
+                                    40007 -> SignUpUiEvent.NicknameInValid
                                     else -> SignUpUiEvent.SignUpFail
                                 }
                             }
@@ -102,7 +104,3 @@ class SignUpViewModel @Inject constructor(
     }
 }
 
-// 테스트 히스토리
-// 아무것도 입력 안했을 떄
-// 중복된 닉네임
-// 닉네임과 이미지 함께 전송

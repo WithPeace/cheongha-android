@@ -49,13 +49,11 @@ fun SignUpRoute(
     LaunchedEffect(viewModel.signUpEvent) {
         viewModel.signUpEvent.collect {
             when (it) {
-                SignUpUiEvent.EmptyNickname -> onShowSnackBar("닉네임 등록을 완료해주세요")
-                SignUpUiEvent.NicknameDuplicated -> onShowSnackBar("중복된 닉네임입니다.")
-                SignUpUiEvent.NicknameInvalidFormat -> onShowSnackBar("닉네임 형식이 올바르지 않습니다.")
-                SignUpUiEvent.SignUpFail -> onShowSnackBar("서버와 통신 중 오류가 발생했습니다.")
+                SignUpUiEvent.NicknameInValid -> onShowSnackBar("닉네임 등록을 완료해주세요")
+                SignUpUiEvent.SignUpFail -> onShowSnackBar("서버와 통신 중 오류가 발생했습니다")
                 SignUpUiEvent.SignUpSuccess -> onSignUpSuccess()
                 SignUpUiEvent.UnAuthorized -> onShowSnackBar("인가 되지 않은 게정이에요")
-                SignUpUiEvent.VerifyFail -> onShowSnackBar("서버와 통신 중 오류가 발생했습니다.")
+                SignUpUiEvent.VerifyFail -> onShowSnackBar("서버와 통신 중 오류가 발생했습니다")
             }
         }
     }
