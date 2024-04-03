@@ -20,7 +20,9 @@ interface AuthService {
     ): ApiResponse<BaseResponse<LoginResponse>>
 
     @POST("/api/v1/auth/refresh")
-    suspend fun refreshAccessToken(): ApiResponse<BaseResponse<TokenResponse>>
+    suspend fun refreshAccessToken(
+        @Header("Reauthorization") refreshToken: String,
+    ): ApiResponse<BaseResponse<TokenResponse>>
 
     @POST("/api/v1/auth/logout")
     suspend fun logout(): ApiResponse<BaseResponse<String>>
