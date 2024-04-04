@@ -24,19 +24,20 @@ fun WithPeaceBackButtonTopAppBar(
     onClickBackButton: () -> Unit,
     title: @Composable () -> Unit,
     actions: @Composable (RowScope.() -> Unit) = {},
-    windowInsets: WindowInsets = WindowInsets(0,0,0,0)
+    windowInsets: WindowInsets = WindowInsets(0, 0, 0, 0),
 ) {
     TopAppBar(
         title = title,
         modifier = modifier,
         navigationIcon = {
             Icon(
-                modifier = Modifier
-                    .padding(start = 20.dp, bottom = 16.dp, top = 16.dp, end = 28.dp)
-                    .clickable {
-                        onClickBackButton()
-                    }
-                    .padding(4.dp),
+                modifier =
+                    Modifier
+                        .padding(start = 20.dp, bottom = 16.dp, top = 16.dp, end = 28.dp)
+                        .clickable {
+                            onClickBackButton()
+                        }
+                        .padding(4.dp),
                 painter = painterResource(id = R.drawable.ic_backarrow_left),
                 contentDescription = "BackArrowLeft",
             )
@@ -44,7 +45,6 @@ fun WithPeaceBackButtonTopAppBar(
         windowInsets = windowInsets,
         actions = actions,
         colors = TopAppBarDefaults.topAppBarColors(containerColor = WithpeaceTheme.colors.SystemWhite),
-        windowInsets = WindowInsets(0, 0, 0, 0),
     )
 }
 
@@ -60,4 +60,3 @@ private fun BackButtonTopAppBarPreview() {
         )
     }
 }
-
