@@ -2,6 +2,7 @@ package com.withpeace.withpeace.core.designsystem.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -23,22 +24,25 @@ fun WithPeaceBackButtonTopAppBar(
     onClickBackButton: () -> Unit,
     title: @Composable () -> Unit,
     actions: @Composable (RowScope.() -> Unit) = {},
+    windowInsets: WindowInsets = WindowInsets(0, 0, 0, 0),
 ) {
     TopAppBar(
         title = title,
         modifier = modifier,
         navigationIcon = {
             Icon(
-                modifier = Modifier
-                    .padding(start = 20.dp, bottom = 16.dp, top = 16.dp, end = 28.dp)
-                    .clickable {
-                        onClickBackButton()
-                    }
-                    .padding(4.dp),
+                modifier =
+                    Modifier
+                        .padding(start = 20.dp, bottom = 16.dp, top = 16.dp, end = 28.dp)
+                        .clickable {
+                            onClickBackButton()
+                        }
+                        .padding(4.dp),
                 painter = painterResource(id = R.drawable.ic_backarrow_left),
                 contentDescription = "BackArrowLeft",
             )
         },
+        windowInsets = windowInsets,
         actions = actions,
         colors = TopAppBarDefaults.topAppBarColors(containerColor = WithpeaceTheme.colors.SystemWhite),
     )
@@ -56,4 +60,3 @@ private fun BackButtonTopAppBarPreview() {
         )
     }
 }
-

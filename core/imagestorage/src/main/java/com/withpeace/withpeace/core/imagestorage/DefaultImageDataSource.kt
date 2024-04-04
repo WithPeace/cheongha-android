@@ -50,7 +50,7 @@ class DefaultImageDataSource(
             val bucketNameColumn = cursor.getColumnIndexOrThrow(Images.Media.BUCKET_DISPLAY_NAME)
             while (cursor.moveToNext()) {
                 val uri = ContentUris.withAppendedId(uriExternal, cursor.getLong(idColumn))
-                val folderName = cursor.getString(bucketNameColumn)
+                val folderName = cursor.getString(bucketNameColumn) ?: continue
                 val matchedFolder = folderList.find { it.folderName == folderName }
                 if (matchedFolder == null) { //처음 등장하는 폴더 이름이면 리스트에 추가
                     folderList.add(ImageFolderEntity(folderName, uri, 1))

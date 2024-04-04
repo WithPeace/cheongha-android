@@ -17,8 +17,10 @@ import javax.inject.Singleton
 object DataStoreModule {
 
     private const val AUTH_DATASTORE_NAME = "AUTH_PREFERENCES"
+    private const val USER_DATASTORE_NAME = "USER_PREFERENCES"
 
     private val Context.authDataStore: DataStore<Preferences> by preferencesDataStore(name = AUTH_DATASTORE_NAME)
+    private val Context.userDataStore: DataStore<Preferences> by preferencesDataStore(name = USER_DATASTORE_NAME)
 
     @Provides
     @Singleton
@@ -26,4 +28,11 @@ object DataStoreModule {
     fun providesTokenDataStore(
         @ApplicationContext context: Context,
     ): DataStore<Preferences> = context.authDataStore
+
+    @Provides
+    @Singleton
+    @Named("user")
+    fun providesUserDataStore(
+        @ApplicationContext context: Context,
+    ): DataStore<Preferences> = context.userDataStore
 }

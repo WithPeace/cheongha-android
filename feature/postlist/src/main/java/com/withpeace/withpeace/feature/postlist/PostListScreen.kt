@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.feature.postlist
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,11 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -43,14 +42,13 @@ import com.withpeace.withpeace.core.domain.model.post.Post
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.ui.R
 import com.withpeace.withpeace.core.ui.toRelativeString
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
-import java.lang.IllegalStateException
 import java.time.LocalDateTime
 
 @Composable
 fun PostListRoute(
     viewModel: PostListViewModel = hiltViewModel(),
+    navigateToDetail: (postId: Long) -> Unit,
     onShowSnackBar: (String) -> Unit,
 ) {
     val postListPagingData = viewModel.postListPagingFlow.collectAsLazyPagingItems()
@@ -59,6 +57,7 @@ fun PostListRoute(
         currentTopic = currentTopic,
         postListPagingData = postListPagingData,
         onTopicChanged = viewModel::onTopicChanged,
+        navigateToDetail = navigateToDetail,
     )
 }
 
@@ -67,6 +66,7 @@ fun PostListScreen(
     currentTopic: PostTopic,
     postListPagingData: LazyPagingItems<Post>,
     onTopicChanged: (PostTopic) -> Unit = {},
+    navigateToDetail: (postId: Long) -> Unit = {},
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Spacer(modifier = Modifier.height(8.dp))
@@ -97,6 +97,7 @@ fun PostListScreen(
             is LoadState.NotLoading -> {
                 PostListItems(
                     postListPagingData = postListPagingData,
+                    navigateToDetail = navigateToDetail,
                 )
             }
         }
@@ -106,6 +107,7 @@ fun PostListScreen(
 @Composable
 fun PostListItems(
     postListPagingData: LazyPagingItems<Post>,
+    navigateToDetail: (postId: Long) -> Unit = {},
 ) {
     val context = LocalContext.current
     LazyColumn(
@@ -113,28 +115,33 @@ fun PostListItems(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(
-            postListPagingData.itemCount
+            postListPagingData.itemCount,
         ) {
-            val post = postListPagingData[it]?:throw IllegalStateException()
+            val post = postListPagingData[it] ?: throw IllegalStateException()
             WithpeaceCard(
-                modifier = Modifier.fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable { navigateToDetail(post.postId) },
             ) {
                 ConstraintLayout(
-                    modifier = Modifier
-                        .padding(vertical = 15.dp, horizontal = 16.dp)
-                        .fillMaxWidth()
-                        .wrapContentHeight(),
+                    modifier =
+                        Modifier
+                            .padding(vertical = 15.dp, horizontal = 16.dp)
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
                 ) {
                     val (column, image) = createRefs()
                     Column(
-                        modifier = Modifier
-                            .padding(end = 8.dp)
-                            .constrainAs(column) {
-                                top.linkTo(parent.top)
-                                start.linkTo(parent.start)
-                                end.linkTo(image.start)
-                                width = Dimension.fillToConstraints
-                            },
+                        modifier =
+                            Modifier
+                                .padding(end = 8.dp)
+                                .constrainAs(column) {
+                                    top.linkTo(parent.top)
+                                    start.linkTo(parent.start)
+                                    end.linkTo(image.start)
+                                    width = Dimension.fillToConstraints
+                                },
                     ) {
                         Text(
                             text = post.title,
@@ -161,13 +168,14 @@ fun PostListItems(
                     }
                     post.postImageUrl?.let {
                         GlideImage(
-                            modifier = Modifier
-                                .size(72.dp)
-                                .constrainAs(image) {
-                                    top.linkTo(parent.top)
-                                    bottom.linkTo(parent.bottom)
-                                    end.linkTo(parent.end)
-                                },
+                            modifier =
+                                Modifier
+                                    .size(72.dp)
+                                    .constrainAs(image) {
+                                        top.linkTo(parent.top)
+                                        bottom.linkTo(parent.bottom)
+                                        end.linkTo(parent.end)
+                                    },
                             imageModel = { it },
                             previewPlaceholder = R.drawable.ic_freedom,
                         )
@@ -198,11 +206,11 @@ private fun PostListScreenPreview() {
                             )
                         },
                         sourceLoadStates =
-                        LoadStates(
-                            refresh = LoadState.NotLoading(false),
-                            append = LoadState.NotLoading(false),
-                            prepend = LoadState.NotLoading(false),
-                        ),
+                            LoadStates(
+                                refresh = LoadState.NotLoading(false),
+                                append = LoadState.NotLoading(false),
+                                prepend = LoadState.NotLoading(false),
+                            ),
                     ),
                 ).collectAsLazyPagingItems(),
         )

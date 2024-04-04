@@ -4,7 +4,6 @@ import com.google.common.truth.Truth.assertThat
 import com.withpeace.withpeace.core.domain.repository.TokenRepository
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 

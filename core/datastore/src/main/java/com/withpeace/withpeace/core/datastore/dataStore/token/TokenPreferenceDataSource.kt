@@ -1,4 +1,4 @@
-package com.withpeace.withpeace.core.datastore.dataStore
+package com.withpeace.withpeace.core.datastore.dataStore.token
 
 import kotlinx.coroutines.flow.Flow
 
@@ -11,4 +11,5 @@ interface TokenPreferenceDataSource {
     suspend fun updateRefreshToken(refreshToken: String)
 
     suspend fun updateAccessToken(accessToken: String)
+    suspend fun removeAll()
 }
