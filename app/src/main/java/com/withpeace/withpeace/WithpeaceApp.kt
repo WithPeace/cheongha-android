@@ -19,7 +19,6 @@ import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.navigation.WithpeaceNavHost
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun WithpeaceApp(
     startDestination: String,
@@ -33,21 +32,23 @@ fun WithpeaceApp(
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+    val parentDestination = currentDestination?.parent
 
     Scaffold(
         bottomBar = {
-            currentDestination?.let {
-                if (BottomTab.contains(it.route ?: "")) {
-                    MainBottomBar(
-                        modifier = Modifier.height(56.dp),
-                        currentDestination = currentDestination ?: return@Scaffold,
-                        navController = navController,
-                    )
-                }
+            if (
+                BottomTab.contains(parentDestination?.route ?: currentDestination?.route ?: "")
+            ) {
+                MainBottomBar(
+                    modifier = Modifier.height(56.dp),
+                    currentDestination = if (parentDestination?.route == null) {
+                        currentDestination ?: return@Scaffold
+                    } else parentDestination,
+                    navController = navController,
+                )
             }
         },
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackBarHostState) },
         containerColor = WithpeaceTheme.colors.SystemWhite,
     ) { innerPadding ->

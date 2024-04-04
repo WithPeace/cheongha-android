@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
+import androidx.navigation.navigation
 import com.app.profileeditor.navigation.navigateProfileEditor
 import com.app.profileeditor.navigation.profileEditorNavGraph
 import com.withpeace.withpeace.feature.gallery.navigation.galleryNavGraph
@@ -17,6 +18,9 @@ import com.withpeace.withpeace.feature.login.navigation.navigateLogin
 import com.withpeace.withpeace.feature.mypage.navigation.MY_PAGE_CHANGED_IMAGE_ARGUMENT
 import com.withpeace.withpeace.feature.mypage.navigation.MY_PAGE_CHANGED_NICKNAME_ARGUMENT
 import com.withpeace.withpeace.feature.mypage.navigation.myPageNavGraph
+import com.withpeace.withpeace.feature.postdetail.navigation.navigateToPostDetail
+import com.withpeace.withpeace.feature.postdetail.navigation.postDetailGraph
+import com.withpeace.withpeace.feature.postlist.navigation.POST_LIST_ROUTE
 import com.withpeace.withpeace.feature.postlist.navigation.postListGraph
 import com.withpeace.withpeace.feature.registerpost.navigation.IMAGE_LIST_ARGUMENT
 import com.withpeace.withpeace.feature.registerpost.navigation.registerPostNavGraph
@@ -51,11 +55,12 @@ fun WithpeaceNavHost(
             },
             onSignUpSuccess = {
                 navController.navigateHome(
-                    navOptions = navOptions {
-                        popUpTo(navController.graph.id) {
-                            inclusive = true
-                        }
-                    },
+                    navOptions =
+                        navOptions {
+                            popUpTo(navController.graph.id) {
+                                inclusive = true
+                            }
+                        },
                 )
             },
         )
@@ -73,19 +78,31 @@ fun WithpeaceNavHost(
         galleryNavGraph(
             onClickBackButton = {
                 navController.previousBackStackEntry?.savedStateHandle?.set(
-                    IMAGE_LIST_ARGUMENT, emptyList<String>(),
+                    IMAGE_LIST_ARGUMENT,
+                    emptyList<String>(),
                 )
                 navController.popBackStack()
             },
             onCompleteRegisterImages = {
                 navController.previousBackStackEntry?.savedStateHandle?.set(
-                    IMAGE_LIST_ARGUMENT, it,
+                    IMAGE_LIST_ARGUMENT,
+                    it,
                 )
                 navController.popBackStack()
             },
             onShowSnackBar = onShowSnackBar,
         )
         homeNavGraph(onShowSnackBar)
+        navigation(startDestination = POST_LIST_ROUTE, POST_NESTED_ROUTE) {
+            postDetailGraph(
+                onShowSnackBar = onShowSnackBar,
+                onClickBackButton = navController::popBackStack,
+            )
+            postListGraph(
+                onShowSnackBar = onShowSnackBar,
+                navigateToPostDetail = navController::navigateToPostDetail,
+            )
+        }
         myPageNavGraph(
             onShowSnackBar = onShowSnackBar,
             onEditProfile = { nickname, profileImageUrl ->
@@ -96,11 +113,12 @@ fun WithpeaceNavHost(
             },
             onLogoutSuccess = {
                 navController.navigateLogin(
-                    navOptions = navOptions {
-                        popUpTo(navController.graph.id) {
-                            inclusive = true
-                        }
-                    },
+                    navOptions =
+                        navOptions {
+                            popUpTo(navController.graph.id) {
+                                inclusive = true
+                            }
+                        },
                 )
             },
             onWithdrawClick = {},
@@ -121,6 +139,8 @@ fun WithpeaceNavHost(
                 navController.popBackStack()
             },
         )
-        postListGraph(onShowSnackBar)
+        postListGraph(onShowSnackBar, navigateToPostDetail = navController::navigateToPostDetail)
     }
 }
+
+const val POST_NESTED_ROUTE = "post_nested_route"
