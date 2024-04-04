@@ -44,6 +44,7 @@ fun WithPeaceBackButtonTopAppBar(
         windowInsets = windowInsets,
         actions = actions,
         colors = TopAppBarDefaults.topAppBarColors(containerColor = WithpeaceTheme.colors.SystemWhite),
+        windowInsets = WindowInsets(0, 0, 0, 0),
     )
 }
 

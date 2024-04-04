@@ -2,7 +2,7 @@ package com.withpeace.withpeace.core.interceptor
 
 import com.skydoves.sandwich.suspendMapSuccess
 import com.skydoves.sandwich.suspendOnError
-import com.withpeace.withpeace.core.datastore.dataStore.TokenPreferenceDataSource
+import com.withpeace.withpeace.core.datastore.dataStore.token.TokenPreferenceDataSource
 import com.withpeace.withpeace.core.network.di.response.TokenResponse
 import com.withpeace.withpeace.core.network.di.service.AuthService
 import kotlinx.coroutines.flow.firstOrNull
@@ -28,6 +28,7 @@ class AuthInterceptor @Inject constructor(
             if (refreshToken != null) {
                 while (count <= REQUEST_MAX_NUM) {
                     requestRefreshToken(
+                        refreshToken,
                         onSuccess = { data ->
                             tokenPreferenceDataSource.updateAccessToken(data.accessToken)
                             tokenPreferenceDataSource.updateRefreshToken(data.refreshToken)
@@ -43,11 +44,12 @@ class AuthInterceptor @Inject constructor(
     }
 
     private fun requestRefreshToken(
+        refreshToken: String,
         onSuccess: suspend (TokenResponse) -> Unit,
         onFail: () -> Unit,
     ) {
         runBlocking {
-            authService.refreshAccessToken()
+            authService.refreshAccessToken(refreshToken)
                 .suspendMapSuccess {
                     onSuccess(data)
                 }.suspendOnError {

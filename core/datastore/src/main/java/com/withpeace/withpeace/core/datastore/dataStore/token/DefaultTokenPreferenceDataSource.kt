@@ -1,4 +1,4 @@
-package com.withpeace.withpeace.core.datastore.dataStore
+package com.withpeace.withpeace.core.datastore.dataStore.token
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -30,6 +30,12 @@ class DefaultTokenPreferenceDataSource @Inject constructor(
     override suspend fun updateRefreshToken(refreshToken: String) {
         dataStore.edit { preferences ->
             preferences[REFRESH_TOKEN] = refreshToken
+        }
+    }
+
+    override suspend fun removeAll() {
+        dataStore.edit { preferences ->
+            preferences.clear()
         }
     }
 

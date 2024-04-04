@@ -17,11 +17,6 @@ object ServiceModule {
 
     @Provides
     @Singleton
-    fun providesAuthService(@Named("general") retrofit: Retrofit): UserService =
-        retrofit.create(UserService::class.java)
-
-    @Provides
-    @Singleton
     fun providesLoginService(@Named("auth") retrofit: Retrofit): AuthService =
         retrofit.create(AuthService::class.java)
 
@@ -29,4 +24,9 @@ object ServiceModule {
     @Singleton
     fun providesPostService(@Named("general") retrofit: Retrofit): PostService =
         retrofit.create(PostService::class.java)
+
+    @Provides
+    @Singleton
+    fun providesUserService(@Named("general") retrofit: Retrofit): UserService =
+        retrofit.create(UserService::class.java)
 }

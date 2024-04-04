@@ -1,7 +1,6 @@
 package com.withpeace.withpeace.core.domain.usecase
 
 import com.withpeace.withpeace.core.domain.repository.TokenRepository
-import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class IsLoginUseCase @Inject constructor(
