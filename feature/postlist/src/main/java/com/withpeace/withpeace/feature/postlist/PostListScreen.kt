@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -42,6 +43,7 @@ import com.withpeace.withpeace.core.domain.model.post.Post
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.ui.R
 import com.withpeace.withpeace.core.ui.toRelativeString
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOf
 import java.time.LocalDateTime
 
@@ -59,6 +61,15 @@ fun PostListRoute(
         onTopicChanged = viewModel::onTopicChanged,
         navigateToDetail = navigateToDetail,
     )
+
+    LaunchedEffect(null) {
+        viewModel.uiEvent.collectLatest {
+            when (it) {
+                PostListUiEvent.NetworkError -> onShowSnackBar("네트워크를 확인해 주세요")
+                PostListUiEvent.UnAuthorizedError -> ("인가되지 않은 계정이에요")
+            }
+        }
+    }
 }
 
 @Composable
