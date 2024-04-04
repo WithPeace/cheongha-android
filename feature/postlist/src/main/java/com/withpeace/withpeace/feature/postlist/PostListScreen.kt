@@ -39,9 +39,9 @@ import com.withpeace.withpeace.core.designsystem.theme.PretendardFont
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.WithpeaceCard
 import com.withpeace.withpeace.core.domain.model.date.Date
-import com.withpeace.withpeace.core.domain.model.post.Post
-import com.withpeace.withpeace.core.domain.model.post.PostTopic
+import com.withpeace.withpeace.core.ui.PostTopicUiState
 import com.withpeace.withpeace.core.ui.R
+import com.withpeace.withpeace.core.ui.post.PostUiModel
 import com.withpeace.withpeace.core.ui.toRelativeString
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOf
@@ -74,9 +74,9 @@ fun PostListRoute(
 
 @Composable
 fun PostListScreen(
-    currentTopic: PostTopic,
-    postListPagingData: LazyPagingItems<Post>,
-    onTopicChanged: (PostTopic) -> Unit = {},
+    currentTopic: PostTopicUiState,
+    postListPagingData: LazyPagingItems<PostUiModel>,
+    onTopicChanged: (PostTopicUiState) -> Unit = {},
     navigateToDetail: (postId: Long) -> Unit = {},
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -84,7 +84,7 @@ fun PostListScreen(
         TopicTabs(
             currentTopic = currentTopic,
             onClick = onTopicChanged,
-            tabPosition = PostTopic.findIndex(currentTopic),
+            tabPosition = currentTopic.index,
         )
         when (postListPagingData.loadState.refresh) {
             is LoadState.Loading -> {
@@ -117,7 +117,7 @@ fun PostListScreen(
 
 @Composable
 fun PostListItems(
-    postListPagingData: LazyPagingItems<Post>,
+    postListPagingData: LazyPagingItems<PostUiModel>,
     navigateToDetail: (postId: Long) -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -202,16 +202,16 @@ fun PostListItems(
 private fun PostListScreenPreview() {
     WithpeaceTheme {
         PostListScreen(
-            currentTopic = PostTopic.FREEDOM,
+            currentTopic = PostTopicUiState.ECONOMY,
             postListPagingData =
                 flowOf(
                     PagingData.from(
                         List(10) {
-                            Post(
+                            PostUiModel(
                                 postId = 6724,
                                 title = "fugit",
                                 content = "varius",
-                                postTopic = PostTopic.INFORMATION,
+                                postTopic = PostTopicUiState.ECONOMY,
                                 createDate = Date(date = LocalDateTime.now()),
                                 postImageUrl = null,
                             )

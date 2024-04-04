@@ -20,9 +20,9 @@ import com.withpeace.withpeace.core.ui.PostTopicUiState
 
 @Composable
 fun TopicTabs(
-    currentTopic: PostTopic,
+    currentTopic: PostTopicUiState,
     tabPosition: Int,
-    onClick: (PostTopic) -> Unit,
+    onClick: (PostTopicUiState) -> Unit,
 ) {
     TabRow(
         modifier = Modifier.wrapContentSize(),
@@ -38,11 +38,11 @@ fun TopicTabs(
         },
     ) {
         PostTopicUiState.entries.forEachIndexed { index, postTopicUiState ->
-            val color = if (currentTopic == postTopicUiState.topic) WithpeaceTheme.colors.MainPink
+            val color = if (currentTopic == postTopicUiState) WithpeaceTheme.colors.MainPink
             else WithpeaceTheme.colors.SystemGray2
             Tab(
-                selected = postTopicUiState.topic == currentTopic,
-                onClick = { onClick(postTopicUiState.topic) },
+                selected = postTopicUiState == currentTopic,
+                onClick = { onClick(postTopicUiState) },
                 text = {
                     Text(
                         text = stringResource(id = postTopicUiState.textResId),

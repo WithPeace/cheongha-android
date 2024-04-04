@@ -8,8 +8,9 @@ data class PostPageInfo(
     val enablePlaceholders: Boolean = true,
     val pagingSource: PagingSource<Int, Post>,
 ) {
-    val pagingConfig = PagingConfig(
-        pageSize = pageSize,
-        enablePlaceholders = enablePlaceholders,
-    )
+    val pagingConfig =
+        PagingConfig(
+            pageSize = pageSize,
+            enablePlaceholders = enablePlaceholders,
+        )
 }

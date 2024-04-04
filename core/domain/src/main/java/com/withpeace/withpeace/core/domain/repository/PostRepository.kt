@@ -7,7 +7,6 @@ import com.withpeace.withpeace.core.domain.model.post.RegisterPost
 import kotlinx.coroutines.flow.Flow
 
 interface PostRepository {
-
     fun getPosts(
         postTopic: PostTopic,
         pageIndex: Int,

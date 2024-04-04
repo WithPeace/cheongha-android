@@ -2,7 +2,6 @@ package com.withpeace.withpeace.core.data.repository
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import com.skydoves.sandwich.message
 import com.skydoves.sandwich.messageOrNull
 import com.skydoves.sandwich.suspendMapSuccess
@@ -30,78 +29,80 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
 
-class DefaultPostRepository @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val postService: PostService,
-) : PostRepository {
-
-    override fun getPosts(
-        postTopic: PostTopic,
-        pageIndex: Int,
-        pageSize: Int,
-        onError: suspend (WithPeaceError) -> Unit,
-    ): Flow<List<Post>> =
-        flow {
-            postService.getPosts(
-                postTopic = postTopic.name,
-                pageIndex = pageIndex,
-                pageSize = pageSize,
-            ).suspendMapSuccess {
-                emit(data.map { it.toDomain() })
-            }.suspendOnError {
-                onError(GeneralError(statusCode.code, messageOrNull))
-            }.suspendOnException {
-                onError(GeneralError(message = messageOrNull))
-            }
-        }.flowOn(Dispatchers.IO)
-
-    override fun registerPost(
-        post: RegisterPost,
-        onError: suspend (WithPeaceError) -> Unit,
-    ): Flow<Long> =
-        flow {
-            val imageRequestBodies = getImageRequestBodies(post.images.urls)
-            val postRequestBodies = getPostRequestBodies(post)
-            postService.registerPost(postRequestBodies, imageRequestBodies)
-                .suspendMapSuccess {
-                    emit(data.postId)
+class DefaultPostRepository
+    @Inject
+    constructor(
+        @ApplicationContext private val context: Context,
+        private val postService: PostService,
+    ) : PostRepository {
+        override fun getPosts(
+            postTopic: PostTopic,
+            pageIndex: Int,
+            pageSize: Int,
+            onError: suspend (WithPeaceError) -> Unit,
+        ): Flow<List<Post>> =
+            flow {
+                postService.getPosts(
+                    postTopic = postTopic.name,
+                    pageIndex = pageIndex,
+                    pageSize = pageSize,
+                ).suspendMapSuccess {
+                    emit(data.map { it.toDomain() })
                 }.suspendOnError {
-                    if (statusCode.code == 401) onError(UnAuthorized())
-                    else onError(GeneralError(statusCode.code, messageOrNull))
+                    onError(GeneralError(statusCode.code, messageOrNull))
                 }.suspendOnException {
                     onError(GeneralError(message = messageOrNull))
                 }
-        }.flowOn(Dispatchers.IO)
+            }.flowOn(Dispatchers.IO)
 
-    private fun getImageRequestBodies(
-        imageUris: List<String>,
-    ): List<MultipartBody.Part> {
-        val imageFiles = imageUris.map { Uri.parse(it).convertToFile(context) }
-        return imageFiles.map { file ->
-            val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
-            MultipartBody.Part.createFormData(
-                IMAGES_COLUMN,
-                file.name,
-                requestFile,
-            )
+        override fun registerPost(
+            post: RegisterPost,
+            onError: suspend (WithPeaceError) -> Unit,
+        ): Flow<Long> =
+            flow {
+                val imageRequestBodies = getImageRequestBodies(post.images.urls)
+                val postRequestBodies = getPostRequestBodies(post)
+                postService.registerPost(postRequestBodies, imageRequestBodies)
+                    .suspendMapSuccess {
+                        emit(data.postId)
+                    }.suspendOnError {
+                        if (statusCode.code == 401) {
+                            onError(UnAuthorized())
+                        } else {
+                            onError(GeneralError(statusCode.code, messageOrNull))
+                        }
+                    }.suspendOnException {
+                        onError(GeneralError(message = messageOrNull))
+                    }
+            }.flowOn(Dispatchers.IO)
+
+        private fun getImageRequestBodies(imageUris: List<String>): List<MultipartBody.Part> {
+            val imageFiles = imageUris.map { Uri.parse(it).convertToFile(context) }
+            return imageFiles.map { file ->
+                val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+                MultipartBody.Part.createFormData(
+                    IMAGES_COLUMN,
+                    file.name,
+                    requestFile,
+                )
+            }
+        }
+
+        private fun getPostRequestBodies(post: RegisterPost): HashMap<String, RequestBody> {
+            return HashMap<String, RequestBody>().apply {
+                set(
+                    TYPE_COLUMN,
+                    post.topic.toString().toRequestBody("application/json".toMediaTypeOrNull()),
+                )
+                set(TITLE_COLUMN, post.title.toRequestBody("application/json".toMediaTypeOrNull()))
+                set(CONTENT_COLUMN, post.content.toRequestBody("application/json".toMediaTypeOrNull()))
+            }
+        }
+
+        companion object {
+            const val TITLE_COLUMN = "title"
+            const val CONTENT_COLUMN = "content"
+            const val TYPE_COLUMN = "type"
+            const val IMAGES_COLUMN = "images"
         }
     }
-
-    private fun getPostRequestBodies(post: RegisterPost): HashMap<String, RequestBody> {
-        return HashMap<String, RequestBody>().apply {
-            set(
-                TYPE_COLUMN,
-                post.topic.toString().toRequestBody("application/json".toMediaTypeOrNull()),
-            )
-            set(TITLE_COLUMN, post.title.toRequestBody("application/json".toMediaTypeOrNull()))
-            set(CONTENT_COLUMN, post.content.toRequestBody("application/json".toMediaTypeOrNull()))
-        }
-    }
-
-    companion object {
-        const val TITLE_COLUMN = "title"
-        const val CONTENT_COLUMN = "content"
-        const val TYPE_COLUMN = "type"
-        const val IMAGES_COLUMN = "images"
-    }
-}
