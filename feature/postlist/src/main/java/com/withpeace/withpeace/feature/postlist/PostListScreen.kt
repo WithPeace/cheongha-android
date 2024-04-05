@@ -13,12 +13,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -54,7 +57,7 @@ fun PostListRoute(
     onShowSnackBar: (String) -> Unit,
 ) {
     val postListPagingData = viewModel.postListPagingFlow.collectAsLazyPagingItems()
-    val currentTopic = viewModel.currentTopic.collectAsStateWithLifecycle().value
+    val currentTopic by viewModel.currentTopic.collectAsStateWithLifecycle()
     PostListScreen(
         currentTopic = currentTopic,
         postListPagingData = postListPagingData,
@@ -130,29 +133,26 @@ fun PostListItems(
         ) {
             val post = postListPagingData[it] ?: throw IllegalStateException()
             WithpeaceCard(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .clickable { navigateToDetail(post.postId) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { navigateToDetail(post.postId) },
             ) {
                 ConstraintLayout(
-                    modifier =
-                        Modifier
-                            .padding(vertical = 15.dp, horizontal = 16.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
+                    modifier = Modifier
+                        .padding(vertical = 15.dp, horizontal = 16.dp)
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
                 ) {
                     val (column, image) = createRefs()
                     Column(
-                        modifier =
-                            Modifier
-                                .padding(end = 8.dp)
-                                .constrainAs(column) {
-                                    top.linkTo(parent.top)
-                                    start.linkTo(parent.start)
-                                    end.linkTo(image.start)
-                                    width = Dimension.fillToConstraints
-                                },
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .constrainAs(column) {
+                                top.linkTo(parent.top)
+                                start.linkTo(parent.start)
+                                end.linkTo(image.start)
+                                width = Dimension.fillToConstraints
+                            },
                     ) {
                         Text(
                             text = post.title,
@@ -179,14 +179,14 @@ fun PostListItems(
                     }
                     post.postImageUrl?.let {
                         GlideImage(
-                            modifier =
-                                Modifier
-                                    .size(72.dp)
-                                    .constrainAs(image) {
-                                        top.linkTo(parent.top)
-                                        bottom.linkTo(parent.bottom)
-                                        end.linkTo(parent.end)
-                                    },
+                            modifier = Modifier
+                                .size(72.dp)
+                                .clip(RoundedCornerShape(5.dp))
+                                .constrainAs(image) {
+                                    top.linkTo(parent.top)
+                                    bottom.linkTo(parent.bottom)
+                                    end.linkTo(parent.end)
+                                },
                             imageModel = { it },
                             previewPlaceholder = R.drawable.ic_freedom,
                         )

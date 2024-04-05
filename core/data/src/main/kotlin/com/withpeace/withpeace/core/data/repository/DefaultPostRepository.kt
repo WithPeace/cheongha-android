@@ -2,7 +2,6 @@ package com.withpeace.withpeace.core.data.repository
 
 import android.content.Context
 import android.net.Uri
-import com.skydoves.sandwich.message
 import com.skydoves.sandwich.messageOrNull
 import com.skydoves.sandwich.suspendMapSuccess
 import com.skydoves.sandwich.suspendOnError
@@ -49,7 +48,16 @@ class DefaultPostRepository
                 ).suspendMapSuccess {
                     emit(data.map { it.toDomain() })
                 }.suspendOnError {
-                    onError(GeneralError(statusCode.code, messageOrNull))
+                    if (statusCode.code == 401) {
+                        onError(
+                            UnAuthorized(
+                                statusCode.code,
+                                message = null,
+                            ),
+                        )
+                    } else {
+                        onError(GeneralError(statusCode.code, messageOrNull))
+                    }
                 }.suspendOnException {
                     onError(GeneralError(message = messageOrNull))
                 }
