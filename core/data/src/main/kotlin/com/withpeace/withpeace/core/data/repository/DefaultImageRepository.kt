@@ -1,6 +1,8 @@
 package com.withpeace.withpeace.core.data.repository
 
+import com.withpeace.withpeace.core.data.mapper.toDomain
 import com.withpeace.withpeace.core.domain.model.image.ImageFolder
+import com.withpeace.withpeace.core.domain.model.image.ImageInfo
 import com.withpeace.withpeace.core.domain.repository.ImageRepository
 import com.withpeace.withpeace.core.imagestorage.ImageDataSource
 import kotlinx.coroutines.Dispatchers
@@ -21,12 +23,12 @@ class DefaultImageRepository @Inject constructor(
             }
         }
 
-    override suspend fun getImages(page: Int, loadSize: Int, folderName: String?): List<String> =
+    override suspend fun getImages(page: Int, loadSize: Int, folderName: String?): List<ImageInfo> =
         withContext(Dispatchers.IO) {
             imageDataSource.getImages(
                 page = page,
                 loadSize = loadSize,
                 folder = folderName,
-            ).map { it.toString() }
+            ).map { it.toDomain() }
         }
 }

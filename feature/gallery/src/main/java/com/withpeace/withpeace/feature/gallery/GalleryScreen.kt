@@ -41,6 +41,7 @@ import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceCompleteButton
 import com.withpeace.withpeace.core.domain.model.image.ImageFolder
+import com.withpeace.withpeace.core.domain.model.image.ImageInfo
 import com.withpeace.withpeace.core.domain.model.image.LimitedImages
 import com.withpeace.withpeace.feature.gallery.R.drawable
 import com.withpeace.withpeace.feature.gallery.R.string
@@ -96,7 +97,7 @@ fun GalleryScreen(
     allFolders: List<ImageFolder>,
     onSelectFolder: (ImageFolder?) -> Unit = {},
     onSelectImage: (String) -> Unit = {},
-    pagingImages: LazyPagingItems<String>,
+    pagingImages: LazyPagingItems<ImageInfo>,
     selectedImageList: LimitedImages,
     selectedFolder: ImageFolder?,
 ) {
@@ -217,7 +218,7 @@ fun FolderList(
 @Composable
 fun ImageList(
     modifier: Modifier = Modifier,
-    pagingImages: LazyPagingItems<String>,
+    pagingImages: LazyPagingItems<ImageInfo>,
     selectedImageList: LimitedImages,
     onSelectImage: (String) -> Unit,
 ) {
@@ -230,7 +231,7 @@ fun ImageList(
         items(
             pagingImages.itemCount,
         ) { index ->
-            val uriString = pagingImages[index] ?: throw IllegalStateException("uri가 존재하지 않음")
+            val uriString = pagingImages[index]?.uri ?: throw IllegalStateException("uri가 존재하지 않음")
 
             Box(
                 modifier = Modifier
@@ -279,7 +280,7 @@ private fun GalleryScreenPreview() {
             },
             pagingImages = flowOf(
                 PagingData.from(
-                    List(10) { "" },
+                    List(10) { ImageInfo("", "", 1L) },
                     sourceLoadStates =
                     LoadStates(
                         refresh = LoadState.NotLoading(false),

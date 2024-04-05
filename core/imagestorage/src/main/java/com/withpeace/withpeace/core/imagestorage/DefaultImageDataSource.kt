@@ -28,18 +28,24 @@ class DefaultImageDataSource(
         page: Int,
         loadSize: Int,
         folder: String?,
-    ): List<Uri> {
-        val imageUris = mutableListOf<Uri>()
-        val pagingImagesQuery = context.getPagingImagesQuery((page - 1) * loadSize, loadSize, folder)
+    ): List<ImageInfoEntity> {
+        val imageInfo = mutableListOf<ImageInfoEntity>()
+        val pagingImagesQuery =
+            context.getPagingImagesQuery((page - 1) * loadSize, loadSize, folder)
         pagingImagesQuery.use { cursor ->
+            val nameIndex = cursor.getColumnIndex(Images.ImageColumns.MIME_TYPE)
+            val sizeIndex = cursor.getColumnIndex(Images.ImageColumns.SIZE)
             val idColumn = cursor.getColumnIndexOrThrow(Images.Media._ID)
             while (cursor.moveToNext()) {
                 val uri = ContentUris.withAppendedId(uriExternal, cursor.getLong(idColumn))
-                imageUris.add(uri)
+                val mimeType = cursor.getString(nameIndex)
+                val size = cursor.getLong(sizeIndex)
+
+                imageInfo.add(ImageInfoEntity(uri, mimeType, size))
             }
             cursor.close()
         }
-        return imageUris
+        return imageInfo
     }
 
     override suspend fun getFolders(): List<ImageFolderEntity> {
@@ -72,6 +78,8 @@ class DefaultImageDataSource(
         val projection = arrayOf(
             Images.ImageColumns.DATA,
             Images.Media._ID,
+            Images.ImageColumns.MIME_TYPE,
+            Images.ImageColumns.SIZE,
         )
         val selection = folder?.let { "${Images.Media.DATA} LIKE ?" }
         val selectionArgs = folder?.let { arrayOf("%$folder%") }

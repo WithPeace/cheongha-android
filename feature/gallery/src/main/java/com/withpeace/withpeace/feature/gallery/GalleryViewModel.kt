@@ -7,6 +7,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.withpeace.withpeace.core.domain.model.image.ImageFolder
+import com.withpeace.withpeace.core.domain.model.image.ImageInfo
 import com.withpeace.withpeace.core.domain.model.image.LimitedImages
 import com.withpeace.withpeace.core.domain.usecase.GetAlbumImagesUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetAllFoldersUseCase
@@ -61,7 +62,7 @@ class GalleryViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getImagePagingData(folderName:String):PagingData<String>{
+    private suspend fun getImagePagingData(folderName:String):PagingData<ImageInfo>{
         val imagePagingInfo = getAlbumImagesUseCase(folderName)
         return Pager(
             config = imagePagingInfo.pagingConfig,

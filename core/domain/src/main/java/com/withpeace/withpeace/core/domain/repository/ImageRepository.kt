@@ -1,6 +1,7 @@
 package com.withpeace.withpeace.core.domain.repository
 
 import com.withpeace.withpeace.core.domain.model.image.ImageFolder
+import com.withpeace.withpeace.core.domain.model.image.ImageInfo
 
 interface ImageRepository {
 
@@ -10,5 +11,5 @@ interface ImageRepository {
         page: Int,
         loadSize: Int,
         folderName: String?,
-    ): List<String>
+    ): List<ImageInfo>
 }
