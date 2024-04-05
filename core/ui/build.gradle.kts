@@ -9,5 +9,9 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:permission"))
     implementation(project(":core:domain"))
+    implementation(project(":core:designsystem"))
+    implementation(libs.skydoves.landscapist.glide)
+    implementation(libs.skydoves.landscapist.bom)
 }

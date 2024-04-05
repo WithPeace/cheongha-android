@@ -19,7 +19,6 @@ import com.withpeace.withpeace.feature.home.navigation.HOME_ROUTE
 import com.withpeace.withpeace.feature.home.navigation.navigateHome
 import com.withpeace.withpeace.feature.mypage.navigation.MY_PAGE_ROUTE
 import com.withpeace.withpeace.feature.mypage.navigation.navigateMyPage
-import com.withpeace.withpeace.feature.postlist.navigation.POST_LIST_ROUTE
 import com.withpeace.withpeace.navigation.POST_NESTED_ROUTE
 
 @Composable
@@ -34,19 +33,25 @@ fun MainBottomBar(
     ) {
         BottomTab.entries.forEach { tab ->
             NavigationBarItem(
-                colors = NavigationBarItemDefaults.colors(
-                    selectedTextColor = WithpeaceTheme.colors.SystemBlack,
-                    unselectedTextColor = WithpeaceTheme.colors.SystemGray2,
-                    indicatorColor = WithpeaceTheme.colors.SystemWhite,
-                ),
+                colors =
+                    NavigationBarItemDefaults.colors(
+                        selectedTextColor = WithpeaceTheme.colors.SystemBlack,
+                        unselectedTextColor = WithpeaceTheme.colors.SystemGray2,
+                        indicatorColor = WithpeaceTheme.colors.SystemWhite,
+                    ),
                 selected = currentDestination.route == tab.route,
                 onClick = { navController.navigateToTabScreen(tab) },
                 icon = {
                     Image(
-                        painter = painterResource(
-                            id = if (currentDestination.route == tab.route) tab.iconSelectedResId
-                            else tab.iconUnSelectedResId,
-                        ),
+                        painter =
+                            painterResource(
+                                id =
+                                    if (currentDestination.route == tab.route) {
+                                        tab.iconSelectedResId
+                                    } else {
+                                        tab.iconUnSelectedResId
+                                    },
+                            ),
                         contentDescription = context.getString(tab.contentDescription),
                     )
                 },
@@ -96,7 +101,8 @@ enum class BottomTab(
         iconSelectedResId = R.drawable.ic_bottom_my_page_select,
         contentDescription = R.string.my_page,
         MY_PAGE_ROUTE,
-    );
+    ),
+    ;
 
     companion object {
         operator fun contains(route: String): Boolean {

@@ -1,18 +1,19 @@
 package com.withpeace.withpeace.core.domain.usecase
 
+import com.withpeace.withpeace.core.domain.model.SignUpInfo
+import com.withpeace.withpeace.core.domain.model.WithPeaceError
 import com.withpeace.withpeace.core.domain.repository.TokenRepository
+import com.withpeace.withpeace.core.domain.repository.UserRepository
 import javax.inject.Inject
 
 class SignUpUseCase @Inject constructor(
-    private val tokenRepository: TokenRepository,
+    private val userRepository: UserRepository,
 ) {
     suspend operator fun invoke(
-        email: String,
-        nickname: String,
-        onError: (String) -> Unit,
-    ) = tokenRepository.signUp(
-        email = email,
-        nickname = nickname,
+        signUpInfo: SignUpInfo,
+        onError: suspend (WithPeaceError) -> Unit,
+    ) = userRepository.signUp(
+        signUpInfo,
         onError = onError,
     )
 }

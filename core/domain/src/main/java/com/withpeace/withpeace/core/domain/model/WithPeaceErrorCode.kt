@@ -1,0 +1,28 @@
+package com.withpeace.withpeace.core.domain.model
+
+enum class WithPeaceErrorCode(val code: Int) {
+    /* Server 401 */
+    EXPIRED_TOKEN_ERROR(40100),
+    INVALID_TOKEN_ERROR(40101),
+    TOKEN_MALFORMED_ERROR(40102),
+    TOKEN_TYPE_ERROR(40103),
+    TOKEN_UNSUPPORTED_ERROR(40104),
+    TOKEN_GENERATION_ERROR(40105),
+    FAILURE_LOGIN(40106),
+    FAILURE_LOGOUT(40107),
+    TOKEN_UNKNOWN_ERROR(40106),
+
+    /* Server 403 */
+    ACCESS_DENIED_ERROR(40300),
+
+    /* Server 404 */
+    NOT_FOUND_USER(40401),
+    NOT_FOUND_POST(40402),
+
+    /* Server 500 */
+    SERVER_ERROR(50000),
+    AUTH_SERVER_USER_INFO_ERROR(50001),
+
+    /* Client Code (1 ~ 10000) */
+    NICKNAME_VALIDATION_ERROR(1)
+}
