@@ -31,8 +31,11 @@ interface UserRepository {
     ): Flow<Unit>
 
     fun logout(onError: suspend (WithPeaceError) -> Unit): Flow<Unit>
+
     suspend fun signUp(
         signUpInfo: SignUpInfo,
         onError: suspend (WithPeaceError) -> Unit
     ): Flow<Unit>
+
+    suspend fun getCurrentUserId(): Long
 }

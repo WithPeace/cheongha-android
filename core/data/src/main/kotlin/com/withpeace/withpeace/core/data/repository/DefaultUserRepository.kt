@@ -21,8 +21,11 @@ import com.withpeace.withpeace.core.network.di.common.getErrorBody
 import com.withpeace.withpeace.core.network.di.request.NicknameRequest
 import com.withpeace.withpeace.core.network.di.service.UserService
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -85,6 +88,10 @@ class DefaultUserRepository @Inject constructor(
         }.suspendOnException {
             onError(WithPeaceError.GeneralError(message = messageOrNull))
         }
+    }
+
+    override suspend fun getCurrentUserId(): Long = withContext(Dispatchers.IO) {
+        userPreferenceDataSource.userId.firstOrNull() ?: throw IllegalStateException("로그인 되있지 않아요")
     }
 
     override fun updateProfile(

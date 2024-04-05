@@ -1,9 +1,9 @@
 package com.withpeace.withpeace.feature.postdetail
 
-import com.withpeace.withpeace.core.domain.model.post.PostDetail
+import com.withpeace.withpeace.core.ui.post.PostDetailUiModel
 
 sealed interface PostDetailUiState {
     data object Loading : PostDetailUiState
-    data class Success(val postDetail: PostDetail) : PostDetailUiState
+    data class Success(val postDetail: PostDetailUiModel) : PostDetailUiState
     data object Fail : PostDetailUiState
 }
