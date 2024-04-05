@@ -2,42 +2,75 @@ package com.withpeace.withpeace.feature.postlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.withpeace.withpeace.core.domain.model.date.Date
-import com.withpeace.withpeace.core.domain.model.post.Post
-import com.withpeace.withpeace.core.domain.model.post.PostTopic
+import androidx.paging.Pager
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
+import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.usecase.GetPostsUseCase
+import com.withpeace.withpeace.core.ui.PostTopicUiState
+import com.withpeace.withpeace.core.ui.post.PostUiModel
+import com.withpeace.withpeace.core.ui.post.toPostUiModel
+import com.withpeace.withpeace.core.ui.toDomain
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class PostListViewModel @Inject constructor() : ViewModel() {
+@HiltViewModel
+class PostListViewModel @Inject constructor(
+    private val getPostsUseCase: GetPostsUseCase,
+) : ViewModel() {
+    private val _uiEvent = Channel<PostListUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
-    private val _currentTopic = MutableStateFlow(PostTopic.FREEDOM)
+    private val _currentTopic = MutableStateFlow(PostTopicUiState.FREE)
     val currentTopic = _currentTopic.asStateFlow()
 
-    val postList = currentTopic.map {
-        getPost(it)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    private val _postListPagingFlow = MutableStateFlow(PagingData.empty<PostUiModel>())
+    val postListPagingFlow = _postListPagingFlow.asStateFlow()
 
-    fun onTopicChanged(postTopic: PostTopic) {
-        _currentTopic.update { postTopic }
+    init {
+        fetchPostList(currentTopic.value)
     }
 
-    // API 나오기 전까지 임시로 이렇게 하겠습니다!
-    private fun getPost(postTopic: PostTopic) = List(10) {
-        Post(
-            postId = it.toLong(),
-            title = postTopic.toString(),
-            content = postTopic.toString()+"아아아아아아아아아아아아아아아아아아아아아아아아아아아아아아아",
-            postTopic = postTopic,
-            createDate = Date(LocalDateTime.now()),
-            postImageUrl = null,
-        )
+    fun onTopicChanged(postTopic: PostTopicUiState) {
+        _currentTopic.update { postTopic }
+        fetchPostList(postTopic)
+    }
+
+    private fun fetchPostList(postTopic: PostTopicUiState) {
+        viewModelScope.launch {
+            val pagingData =
+                getPostsUseCase(
+                    postTopic = postTopic.toDomain(),
+                    pageSize = PAGE_SIZE,
+                    onError = {
+                        when (it) {
+                            is WithPeaceError.GeneralError -> _uiEvent.send(PostListUiEvent.NetworkError)
+                            is WithPeaceError.UnAuthorized -> _uiEvent.send(PostListUiEvent.UnAuthorizedError)
+                        }
+                        throw IllegalStateException() // LoadStateError를 내보내기 위함
+                    },
+                )
+            _postListPagingFlow.update {
+                Pager(
+                    config = pagingData.pagingConfig,
+                    pagingSourceFactory = { pagingData.pagingSource },
+                ).flow.map {
+                    it.map { it.toPostUiModel() }
+                }.cachedIn(viewModelScope).firstOrNull() ?: PagingData.empty()
+            }
+        }
+    }
+
+    companion object {
+        private const val PAGE_SIZE = 7
     }
 }
