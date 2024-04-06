@@ -53,6 +53,7 @@ import com.withpeace.withpeace.core.ui.R
 import com.withpeace.withpeace.core.ui.post.PostDetailUiModel
 import com.withpeace.withpeace.core.ui.post.PostUserUiModel
 import com.withpeace.withpeace.core.ui.toRelativeString
+import com.withpeace.withpeace.feature.postdetail.R.drawable
 import java.time.Duration
 import java.time.LocalDateTime
 
@@ -145,7 +146,10 @@ fun PostDetailScreen(
                 )
             }
             if (showBottomSheet) {
-
+                PostDetailBottomSheet(
+                    isMyPost = postUiState.postDetail.isMyPost,
+                    onDismissRequest = { showBottomSheet = false },
+                )
             }
         }
         }
@@ -163,12 +167,67 @@ fun PostDetailBottomSheet(
         dragHandle = {},
         containerColor = WithpeaceTheme.colors.SystemWhite,
         onDismissRequest = onDismissRequest,
-        sheetState = bottomSheetState
+        sheetState = bottomSheetState,
+        shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
     ) {
         if(isMyPost){
-
+            Column(
+                modifier = Modifier.padding(
+                    start = WithpeaceTheme.padding.BasicHorizontalPadding,
+                    end = WithpeaceTheme.padding.BasicHorizontalPadding,
+                    top = 24.dp,
+                ),
+            ) {
+                Row(
+                    modifier = Modifier.padding(vertical = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        painter = painterResource(id = drawable.ic_edit),
+                        contentDescription = "수정하기 아이콘",
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "수정하기", style = WithpeaceTheme.typography.body)
+                }
+                HorizontalDivider(color = WithpeaceTheme.colors.SystemGray3)
+                Row(
+                    modifier = Modifier.padding(vertical = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        painter = painterResource(id = drawable.ic_delete),
+                        contentDescription = "삭제하기 아이콘",
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "삭제하기", style = WithpeaceTheme.typography.body)
+                }
+            }
         } else {
-
+            Column(modifier = Modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding)) {
+                Row(
+                    modifier = Modifier.padding(vertical = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        painter = painterResource(id = drawable.ic_complain),
+                        contentDescription = "신고하기 아이콘",
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "신고하기", style = WithpeaceTheme.typography.body)
+                }
+                HorizontalDivider()
+                Row(
+                    modifier = Modifier.padding(vertical = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        painter = painterResource(id = drawable.ic_hide),
+                        contentDescription = "사용자 글 안보기 아이콘",
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "이 사용자의 글 보지 않기", style = WithpeaceTheme.typography.body)
+                }
+            }
         }
     }
 }

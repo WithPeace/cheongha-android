@@ -19,5 +19,5 @@ fun PostDetailResponse.toDomain() = PostDetail(
     content = PostContent(content),
     postTopic = type.toDomain(),
     imageUrls = postImageUrls,
-    createDate = Date(LocalDateTime.now()),
+    createDate = Date(createDate.toLocalDateTime()),
 )

@@ -28,6 +28,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
@@ -324,6 +325,7 @@ fun RegisterPostTopic(
             windowInsets = WindowInsets(
                 bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
             ),
+            shape = RoundedCornerShape(topStart = 20.dp,topEnd = 20.dp),
         ) {
             TopicBottomSheetContent(
                 currentTopic = topic,
