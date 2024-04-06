@@ -35,4 +35,9 @@ interface PostService {
         @Query("pageIndex") pageIndex: Int,
         @Query("pageSize") pageSize: Int,
     ): ApiResponse<BaseResponse<List<PostResponse>>>
+
+    @POST("/api/v1/posts/{postId}")
+    suspend fun deletePost(
+        @Path("postId") postId: Long,
+    ): ApiResponse<BaseResponse<Boolean>>
 }
