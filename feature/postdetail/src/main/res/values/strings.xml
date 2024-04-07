@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_icon_content_description">수정하기 아이콘</string>
+    <string name="edit_post">수정하기</string>
+    <string name="delete_icon_content_description">삭제하기 아이콘</string>
+    <string name="delete_post">삭제하기</string>
+    <string name="complain_icon_content_description">신고하기 아이콘</string>
+    <string name="complain_post">신고하기</string>
+    <string name="hide_user_posts_icon_content_description">사용자 글 안보기 아이콘</string>
+    <string name="hide_user_posts">이 사용자의 글 보지 않기</string>
+    <string name="netwokr_error_message_text">네트워크 상태를 확인해주세요</string>
+    <string name="not_found_post">게시글이 존재하지 않습니다.</string>
+    <string name="delete_cancel">취소하기</string>
+    <string name="delete_post_dialog_title">게시글을 삭제할까요?</string>
+    <string name="delete_post_dialog_description">게시글을 삭제하면 모든 데이터가\n삭제되고 다시 볼 수 없어요.</string>
+</resources>

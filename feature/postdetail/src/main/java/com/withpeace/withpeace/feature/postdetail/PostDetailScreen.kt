@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.feature.postdetail
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
@@ -20,6 +22,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -40,8 +44,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.landscapist.glide.GlideImage
@@ -49,13 +55,14 @@ import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.ui.DateUiModel
 import com.withpeace.withpeace.core.ui.DurationFromNowUiModel
-import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 import com.withpeace.withpeace.core.ui.R
 import com.withpeace.withpeace.core.ui.post.PostDetailUiModel
+import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 import com.withpeace.withpeace.core.ui.post.PostUserUiModel
 import com.withpeace.withpeace.core.ui.post.RegisterPostUiModel
 import com.withpeace.withpeace.core.ui.toRelativeString
 import com.withpeace.withpeace.feature.postdetail.R.drawable
+import com.withpeace.withpeace.feature.postdetail.R.string
 import java.time.Duration
 import java.time.LocalDateTime
 
@@ -100,6 +107,9 @@ fun PostDetailScreen(
     var showBottomSheet by rememberSaveable {
         mutableStateOf(false)
     }
+    var showDeleteDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
     val lazyListState = rememberLazyListState()
     Column {
         WithPeaceBackButtonTopAppBar(
@@ -122,7 +132,7 @@ fun PostDetailScreen(
             PostDetailUiState.FailByNetwork ->
                 Box(modifier = Modifier.fillMaxSize()) {
                     Text(
-                        text = "네트워크 상태를 확인해주세요",
+                        text = stringResource(string.netwokr_error_message_text),
                         modifier = Modifier.align(Alignment.Center),
                     )
                 }
@@ -130,7 +140,7 @@ fun PostDetailScreen(
             PostDetailUiState.NotFound ->
                 Box(modifier = Modifier.fillMaxSize()) {
                     Text(
-                        text = "게시글이 존재하지 않습니다.",
+                        text = stringResource(string.not_found_post),
                         modifier = Modifier.align(Alignment.Center),
                     )
                 }
@@ -182,7 +192,7 @@ fun PostDetailScreen(
                     PostDetailBottomSheet(
                         isMyPost = postUiState.postDetail.isMyPost,
                         onDismissRequest = { showBottomSheet = false },
-                        onClickDeleteButton = onClickDeleteButton,
+                        onClickDeleteButton = { showDeleteDialog = true },
                         onClickEditButton = {
                             onClickEditButton(
                                 RegisterPostUiModel(
@@ -196,10 +206,80 @@ fun PostDetailScreen(
                         },
                     )
                 }
+
+                if (showDeleteDialog) {
+                    DeletePostDialog(
+                        onDismissRequest = { showDeleteDialog = false },
+                        onClickConfirmButton = onClickDeleteButton,
+                    )
+                }
             }
         }
     }
 }
+
+@Composable
+fun DeletePostDialog(
+    onDismissRequest: () -> Unit,
+    onClickConfirmButton: () -> Unit,
+) {
+    Dialog(onDismissRequest = onDismissRequest) {
+        Column(
+            modifier = Modifier
+                .background(
+                    WithpeaceTheme.colors.SystemWhite,
+                    RoundedCornerShape(10.dp),
+                )
+                .wrapContentSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                modifier = Modifier.padding(top = 24.dp, bottom = 16.dp),
+                text = stringResource(string.delete_post_dialog_title),
+                style = WithpeaceTheme.typography.title2,
+            )
+            Text(
+                modifier = Modifier.padding(bottom = 16.dp),
+                text = stringResource(string.delete_post_dialog_description),
+                style = WithpeaceTheme.typography.body,
+                textAlign = TextAlign.Center,
+            )
+            Row {
+                Button(
+                    modifier = Modifier
+                        .padding(start = 16.dp, end = 4.dp)
+                        .weight(1f),
+                    onClick = { onDismissRequest() },
+                    shape = RoundedCornerShape(10.dp),
+                    border = BorderStroke(width = 1.dp, color = WithpeaceTheme.colors.MainPink),
+                    colors = ButtonDefaults.buttonColors(containerColor = WithpeaceTheme.colors.SystemWhite),
+                ) {
+                    Text(
+                        text = stringResource(string.delete_cancel),
+                        style = WithpeaceTheme.typography.caption,
+                        color = WithpeaceTheme.colors.MainPink,
+                    )
+                }
+                Button(
+                    modifier = Modifier
+                        .padding(start = 4.dp, end = 16.dp)
+                        .weight(1f),
+                    onClick = { onClickConfirmButton() },
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = WithpeaceTheme.colors.MainPink),
+                ) {
+                    Text(
+                        text = stringResource(id = string.delete_post),
+                        style = WithpeaceTheme.typography.caption,
+                        color = WithpeaceTheme.colors.SystemWhite,
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -236,10 +316,13 @@ fun PostDetailBottomSheet(
                 ) {
                     Icon(
                         painter = painterResource(id = drawable.ic_edit),
-                        contentDescription = "수정하기 아이콘",
+                        contentDescription = stringResource(string.edit_icon_content_description),
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "수정하기", style = WithpeaceTheme.typography.body)
+                    Text(
+                        text = stringResource(string.edit_post),
+                        style = WithpeaceTheme.typography.body,
+                    )
                 }
                 HorizontalDivider(color = WithpeaceTheme.colors.SystemGray3)
                 Row(
@@ -253,10 +336,13 @@ fun PostDetailBottomSheet(
                 ) {
                     Icon(
                         painter = painterResource(id = drawable.ic_delete),
-                        contentDescription = "삭제하기 아이콘",
+                        contentDescription = stringResource(string.delete_icon_content_description),
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "삭제하기", style = WithpeaceTheme.typography.body)
+                    Text(
+                        text = stringResource(string.delete_post),
+                        style = WithpeaceTheme.typography.body,
+                    )
                 }
             }
         } else {
@@ -267,10 +353,13 @@ fun PostDetailBottomSheet(
                 ) {
                     Icon(
                         painter = painterResource(id = drawable.ic_complain),
-                        contentDescription = "신고하기 아이콘",
+                        contentDescription = stringResource(string.complain_icon_content_description),
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "신고하기", style = WithpeaceTheme.typography.body)
+                    Text(
+                        text = stringResource(string.complain_post),
+                        style = WithpeaceTheme.typography.body,
+                    )
                 }
                 HorizontalDivider()
                 Row(
@@ -279,10 +368,13 @@ fun PostDetailBottomSheet(
                 ) {
                     Icon(
                         painter = painterResource(id = drawable.ic_hide),
-                        contentDescription = "사용자 글 안보기 아이콘",
+                        contentDescription = stringResource(string.hide_user_posts_icon_content_description),
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "이 사용자의 글 보지 않기", style = WithpeaceTheme.typography.body)
+                    Text(
+                        text = stringResource(string.hide_user_posts),
+                        style = WithpeaceTheme.typography.body,
+                    )
                 }
             }
         }
