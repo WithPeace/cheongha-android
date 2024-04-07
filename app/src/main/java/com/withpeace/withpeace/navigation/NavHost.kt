@@ -17,12 +17,14 @@ import com.withpeace.withpeace.feature.login.navigation.navigateLogin
 import com.withpeace.withpeace.feature.mypage.navigation.MY_PAGE_CHANGED_IMAGE_ARGUMENT
 import com.withpeace.withpeace.feature.mypage.navigation.MY_PAGE_CHANGED_NICKNAME_ARGUMENT
 import com.withpeace.withpeace.feature.mypage.navigation.myPageNavGraph
+import com.withpeace.withpeace.feature.postdetail.navigation.POST_DETAIL_ROUTE
 import com.withpeace.withpeace.feature.postdetail.navigation.navigateToPostDetail
 import com.withpeace.withpeace.feature.postdetail.navigation.postDetailGraph
 import com.withpeace.withpeace.feature.postlist.navigation.POST_LIST_ROUTE
 import com.withpeace.withpeace.feature.postlist.navigation.postListGraph
 import com.withpeace.withpeace.feature.registerpost.navigation.IMAGE_LIST_ARGUMENT
 import com.withpeace.withpeace.feature.registerpost.navigation.REGISTER_POST_ARGUMENT
+import com.withpeace.withpeace.feature.registerpost.navigation.REGISTER_POST_ROUTE
 import com.withpeace.withpeace.feature.registerpost.navigation.navigateToRegisterPost
 import com.withpeace.withpeace.feature.registerpost.navigation.registerPostNavGraph
 import com.withpeace.withpeace.feature.signup.navigation.navigateSignUp
@@ -71,8 +73,16 @@ fun WithpeaceNavHost(
                 navController.navigateToPostDetail(
                     postId,
                     navOptions = navOptions {
-                        popUpTo(POST_LIST_ROUTE) {
-                            inclusive = false
+                        // 수정일 경우 : 이전 화면이 상세화면이다
+                        if(navController.previousBackStackEntry?.destination?.route == POST_DETAIL_ROUTE){
+                            popUpTo(POST_LIST_ROUTE){
+                                inclusive = false
+                            }
+                        } else {
+                            // 새로 등록인 경우
+                            popUpTo(REGISTER_POST_ROUTE){
+                                inclusive = true
+                            }
                         }
                     },
                 )
