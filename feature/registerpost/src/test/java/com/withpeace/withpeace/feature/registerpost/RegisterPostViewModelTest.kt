@@ -2,12 +2,14 @@ package com.withpeace.withpeace.feature.registerpost
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.withpeace.withpeace.core.domain.model.image.LimitedImages
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.image.LimitedImages
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.domain.model.post.RegisterPost
 import com.withpeace.withpeace.core.domain.usecase.RegisterPostUseCase
 import com.withpeace.withpeace.core.testing.MainDispatcherRule
+import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
+import com.withpeace.withpeace.core.ui.post.RegisterPostUiModel
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.slot
@@ -32,56 +34,73 @@ class RegisterPostViewModelTest {
     @Test
     fun `처음 내용은 모두 비어있다`() {
         // when & then
-        assertThat(viewModel.postUiState.value).isEqualTo(
-            RegisterPost(
+        assertThat(viewModel.registerPostUiModel.value).isEqualTo(
+            RegisterPostUiModel(
+                id = null,
                 title = "",
                 content = "",
                 topic = null,
-                images = LimitedImages(emptyList()),
+                imageUrls = emptyList(),
             ),
         )
     }
 
     @Test
-    fun `제목을 바꿀 수 있다`() {
+    fun `제목을 바꿀 수 있다`() = runTest {
         // when
         viewModel.onTitleChanged("제목")
+
         // then
-        assertThat(viewModel.postUiState.value.title).isEqualTo("제목")
+        viewModel.registerPostUiModel.test {
+            val acutal = awaitItem().title
+            assertThat(acutal).isEqualTo("제목")
+        }
     }
 
     @Test
-    fun `내용을 바꿀 수 있다`() {
+    fun `내용을 바꿀 수 있다`() = runTest {
         // when
         viewModel.onContentChanged("내용")
         // then
-        assertThat(viewModel.postUiState.value.content).isEqualTo("내용")
+        viewModel.registerPostUiModel.test {
+            val acutal = awaitItem().content
+            assertThat(acutal).isEqualTo("내용")
+        }
     }
 
     @Test
-    fun `주제를 바꿀 수 있다`() {
+    fun `주제를 바꿀 수 있다`() = runTest {
         // when
-        viewModel.onTopicChanged(PostTopic.FREEDOM)
+        viewModel.onTopicChanged(PostTopicUiModel.FREEDOM)
         // then
-        assertThat(viewModel.postUiState.value.topic).isEqualTo(PostTopic.FREEDOM)
+        viewModel.registerPostUiModel.test {
+            val acutal = awaitItem().topic
+            assertThat(acutal).isEqualTo(PostTopicUiModel.FREEDOM)
+        }
     }
 
     @Test
-    fun `이미지 여러개를 추가할 수 있다`() {
+    fun `이미지 여러개를 추가할 수 있다`() = runTest {
         // when
         viewModel.onImageUrlsAdded(listOf("1", "2"))
         // then
-        assertThat(viewModel.postUiState.value.images.urls).isEqualTo(listOf("1", "2"))
+        viewModel.registerPostUiModel.test {
+            val acutal = awaitItem().imageUrls
+            assertThat(acutal).isEqualTo(listOf("1","2"))
+        }
     }
 
     @Test
-    fun `이미지를 삭제할 수 있다`() {
+    fun `이미지를 삭제할 수 있다`() = runTest {
         // given
         viewModel.onImageUrlsAdded(listOf("1,", "2"))
         // when
         viewModel.onImageUrlDeleted(0)
         // then
-        assertThat(viewModel.postUiState.value.images.urls).isEqualTo(listOf("2"))
+        viewModel.registerPostUiModel.test {
+            val acutal = awaitItem().imageUrls
+            assertThat(acutal).isEqualTo(listOf("2"))
+        }
     }
 
     @Test
@@ -126,11 +145,12 @@ class RegisterPostViewModelTest {
     fun `게시글 내용이 모두 채워졌고, 성공적으로 게시글 등록하면, 등록 성공 이벤트가 발생한다`() = runTest {
         // given
         viewModel.onContentChanged("내용")
-        viewModel.onTopicChanged(PostTopic.FREEDOM)
+        viewModel.onTopicChanged(PostTopicUiModel.FREEDOM)
         viewModel.onTitleChanged("제목")
         coEvery {
             registerPostUseCase(
                 post = RegisterPost(
+                    id = null,
                     title = "제목", content = "내용", topic = PostTopic.FREEDOM,
                     images = LimitedImages(
                         urls = listOf(),
@@ -146,7 +166,7 @@ class RegisterPostViewModelTest {
         // then
         viewModel.uiEvent.test {
             val actual = awaitItem()
-            assertThat(actual).isEqualTo(RegisterPostUiEvent.PostSuccess)
+            assertThat(actual).isEqualTo(RegisterPostUiEvent.RegisterSuccess(1L))
         }
     }
 
@@ -154,7 +174,7 @@ class RegisterPostViewModelTest {
     fun `게시글 내용이 모두 채워졌고, 게시글 등록에 실패하면, 등록 실패 이벤트가 발생한다`() = runTest {
         // given
         viewModel.onContentChanged("내용")
-        viewModel.onTopicChanged(PostTopic.FREEDOM)
+        viewModel.onTopicChanged(PostTopicUiModel.FREEDOM)
         viewModel.onTitleChanged("제목")
         val slot = slot<suspend (WithPeaceError) -> Unit>()
         coEvery {
@@ -168,7 +188,7 @@ class RegisterPostViewModelTest {
         // then
         viewModel.uiEvent.test {
             val actual = awaitItem()
-            assertThat(actual).isEqualTo(RegisterPostUiEvent.PostFail(WithPeaceError.GeneralError()))
+            assertThat(actual).isEqualTo(RegisterPostUiEvent.RegisterFail(WithPeaceError.GeneralError()))
         }
     }
 }

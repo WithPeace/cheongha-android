@@ -12,5 +12,5 @@ class RegisterPostUseCase @Inject constructor(
     operator fun invoke(
         post: RegisterPost,
         onError: suspend (WithPeaceError) -> Unit,
-    ): Flow<Long> = postRepository.registerPost(post, onError = onError)
+    ): Flow<Long> = postRepository.registerPost(post = post, onError = onError)
 }

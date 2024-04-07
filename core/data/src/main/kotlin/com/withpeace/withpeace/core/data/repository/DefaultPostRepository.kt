@@ -67,18 +67,33 @@ class DefaultPostRepository @Inject constructor(
         flow {
             val imageRequestBodies = getImageRequestBodies(post.images.urls)
             val postRequestBodies = getPostRequestBodies(post)
-            postService.registerPost(postRequestBodies, imageRequestBodies)
-                .suspendMapSuccess {
-                    emit(data.postId)
-                }.suspendOnError {
-                    if (statusCode.code == 401) {
-                        onError(UnAuthorized())
-                    } else {
-                        onError(GeneralError(statusCode.code, messageOrNull))
+            if (post.id == null) {
+                postService.registerPost(postRequestBodies, imageRequestBodies)
+                    .suspendMapSuccess {
+                        emit(data.postId)
+                    }.suspendOnError {
+                        if (statusCode.code == 401) {
+                            onError(UnAuthorized())
+                        } else {
+                            onError(GeneralError(statusCode.code, messageOrNull))
+                        }
+                    }.suspendOnException {
+                        onError(GeneralError(message = messageOrNull))
                     }
-                }.suspendOnException {
-                    onError(GeneralError(message = messageOrNull))
-                }
+            } else {
+                postService.editPost(post.id!!, postRequestBodies, imageRequestBodies)
+                    .suspendMapSuccess {
+                        emit(data.postId)
+                    }.suspendOnError {
+                        if (statusCode.code == 401) {
+                            onError(UnAuthorized())
+                        } else {
+                            onError(GeneralError(statusCode.code, messageOrNull))
+                        }
+                    }.suspendOnException {
+                        onError(GeneralError(message = messageOrNull))
+                    }
+            }
         }.flowOn(Dispatchers.IO)
 
     override fun getPostDetail(

@@ -64,12 +64,10 @@ import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.KeyboardAware
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceCompleteButton
-import com.withpeace.withpeace.core.domain.model.image.LimitedImages
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
-import com.withpeace.withpeace.core.domain.model.post.PostTopic
-import com.withpeace.withpeace.core.domain.model.post.RegisterPost
 import com.withpeace.withpeace.core.permission.ImagePermissionHelper
-import com.withpeace.withpeace.core.ui.PostTopicUiState
+import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
+import com.withpeace.withpeace.core.ui.post.RegisterPostUiModel
 import com.withpeace.withpeace.feature.registerpost.R.drawable
 import com.withpeace.withpeace.feature.registerpost.R.string
 import kotlinx.coroutines.launch
@@ -79,37 +77,37 @@ fun RegisterPostRoute(
     viewModel: RegisterPostViewModel = hiltViewModel(),
     onShowSnackBar: (String) -> Unit,
     onClickedBackButton: () -> Unit,
-    onCompleteRegisterPost: () -> Unit,
+    onCompleteRegisterPost: (postId: Long) -> Unit,
     onNavigateToGallery: (imageLimit: Int, imageCount: Int) -> Unit,
 ) {
     val context = LocalContext.current
 
-    val postUiState = viewModel.postUiState.collectAsStateWithLifecycle().value
+    val postUiState = viewModel.registerPostUiModel.collectAsStateWithLifecycle().value
     val showBottomSheet = viewModel.showBottomSheet.collectAsStateWithLifecycle().value
 
     KeyboardAware {
-    RegisterPostScreen(
-        registerPostUiState = postUiState,
-        onClickBackButton = onClickedBackButton,
-        onTitleChanged = viewModel::onTitleChanged,
-        onContentChanged = viewModel::onContentChanged,
-        onTopicChanged = viewModel::onTopicChanged,
-        onCompleteRegisterPost = viewModel::onRegisterPostCompleted,
-        onShowBottomSheetChanged = viewModel::onShowBottomSheetChanged,
-        showBottomSheet = showBottomSheet,
-        onImageUrlDeleted = viewModel::onImageUrlDeleted,
-        onNavigateToGallery = onNavigateToGallery,
-    )
+        RegisterPostScreen(
+            registerPostUiState = postUiState,
+            onClickBackButton = onClickedBackButton,
+            onTitleChanged = viewModel::onTitleChanged,
+            onContentChanged = viewModel::onContentChanged,
+            onTopicChanged = viewModel::onTopicChanged,
+            onCompleteRegisterPost = viewModel::onRegisterPostCompleted,
+            onShowBottomSheetChanged = viewModel::onShowBottomSheetChanged,
+            showBottomSheet = showBottomSheet,
+            onImageUrlDeleted = viewModel::onImageUrlDeleted,
+            onNavigateToGallery = onNavigateToGallery,
+        )
     }
     LaunchedEffect(null) {
         viewModel.uiEvent.collect { event ->
             when (event) {
                 RegisterPostUiEvent.ContentBlank -> onShowSnackBar(context.getString(string.content_blank_error_message))
-                RegisterPostUiEvent.PostSuccess -> {
-                    onCompleteRegisterPost()
-                    onShowSnackBar("게시글 등록 가능")
+                is RegisterPostUiEvent.RegisterSuccess -> {
+                    onCompleteRegisterPost(event.postId)
                 }
-                is RegisterPostUiEvent.PostFail -> {
+
+                is RegisterPostUiEvent.RegisterFail -> {
                     when(val error = event.error){
                         is WithPeaceError.GeneralError -> onShowSnackBar("${error.code}${error.message}")
                         is WithPeaceError.UnAuthorized -> onShowSnackBar("인가 되지 않은 게정이에요")
@@ -125,11 +123,11 @@ fun RegisterPostRoute(
 
 @Composable
 fun RegisterPostScreen(
-    registerPostUiState: RegisterPost,
+    registerPostUiState: RegisterPostUiModel,
     onClickBackButton: () -> Unit = {},
     onTitleChanged: (String) -> Unit = {},
     onContentChanged: (String) -> Unit = {},
-    onTopicChanged: (PostTopic) -> Unit = {},
+    onTopicChanged: (PostTopicUiModel) -> Unit = {},
     onCompleteRegisterPost: () -> Unit,
     onImageUrlDeleted: (Int) -> Unit,
     onShowBottomSheetChanged: (Boolean) -> Unit = {},
@@ -179,7 +177,7 @@ fun RegisterPostScreen(
                     )
                 }
                 PostImageList(
-                    imageUrls = registerPostUiState.images.urls,
+                    imageUrls = registerPostUiState.imageUrls,
                     onImageUrlDeleted = onImageUrlDeleted,
                 )
             }
@@ -188,8 +186,8 @@ fun RegisterPostScreen(
             RegisterPostCamera(
                 onNavigateToGallery = {
                     onNavigateToGallery(
-                        registerPostUiState.images.maxCount,
-                        registerPostUiState.images.currentCount,
+                        RegisterPostViewModel.IMAGE_MAX_SIZE,
+                        registerPostUiState.imageUrls.size,
                     )
                 },
             )
@@ -274,8 +272,8 @@ fun RegisterPostTopAppBar(
 @Composable
 fun RegisterPostTopic(
     modifier: Modifier = Modifier,
-    topic: PostTopic?,
-    onTopicChanged: (PostTopic) -> Unit,
+    topic: PostTopicUiModel?,
+    onTopicChanged: (PostTopicUiModel) -> Unit,
     onShowBottomSheetChanged: (Boolean) -> Unit,
     showBottomSheet: Boolean,
 ) {
@@ -292,9 +290,7 @@ fun RegisterPostTopic(
                    stringResource(id = string.topic_hint)
                 } else {
                     stringResource(
-                        id = PostTopicUiState.create(
-                            topic,
-                        ).textResId,
+                        id = topic.textResId,
                     )
                 },
                 modifier = Modifier
@@ -340,8 +336,8 @@ fun RegisterPostTopic(
 
 @Composable
 fun TopicBottomSheetContent(
-    currentTopic: PostTopic?,
-    onClickTopic: (PostTopic) -> Unit,
+    currentTopic: PostTopicUiModel?,
+    onClickTopic: (PostTopicUiModel) -> Unit,
 ) {
     Column {
         Text(
@@ -356,9 +352,9 @@ fun TopicBottomSheetContent(
             verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
             items(
-                items = PostTopicUiState.entries,
+                items = PostTopicUiModel.entries,
             ) { topicUiState ->
-                val color = if (currentTopic == topicUiState.topic) {
+                val color = if (currentTopic == topicUiState) {
                     WithpeaceTheme.colors.MainPink
                 } else {
                     WithpeaceTheme.colors.SystemGray2
@@ -371,7 +367,7 @@ fun TopicBottomSheetContent(
                         modifier = Modifier
                             .fillMaxSize()
                             .clickable {
-                                onClickTopic(topicUiState.topic)
+                                onClickTopic(topicUiState)
                             }
                             .padding(vertical = 12.dp, horizontal = 24.dp)
                             .weight(1f),
@@ -569,7 +565,9 @@ private const val SCROLL_THRESHOLD_LINE = 5
 fun RegisterPostScreenPreview() {
     WithpeaceTheme {
         RegisterPostScreen(
-            registerPostUiState = RegisterPost("", "", PostTopic.INFORMATION, LimitedImages(listOf("", ""))),
+            registerPostUiState = RegisterPostUiModel(
+                imageUrls = listOf("", ""),
+            ),
             onCompleteRegisterPost = {},
             onImageUrlDeleted = {},
             onShowBottomSheetChanged = {},

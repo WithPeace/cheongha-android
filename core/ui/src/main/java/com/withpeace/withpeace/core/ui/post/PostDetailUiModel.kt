@@ -2,7 +2,6 @@ package com.withpeace.withpeace.core.ui.post
 
 import com.withpeace.withpeace.core.domain.model.post.PostDetail
 import com.withpeace.withpeace.core.ui.DateUiModel
-import com.withpeace.withpeace.core.ui.PostTopicUiState
 import com.withpeace.withpeace.core.ui.toUiModel
 
 data class PostDetailUiModel(
@@ -10,7 +9,7 @@ data class PostDetailUiModel(
     val id: Long,
     val title: String,
     val content: String,
-    val postTopic: PostTopicUiState,
+    val postTopic: PostTopicUiModel,
     val imageUrls: List<String>,
     val createDate: DateUiModel,
     val isMyPost: Boolean,
@@ -31,7 +30,7 @@ fun PostDetail.toUiModel(currentUserId: Long): PostDetailUiModel = PostDetailUiM
     id = id,
     title = title.value,
     content = content.value,
-    postTopic = PostTopicUiState.create(postTopic),
+    postTopic = postTopic.toUi(),
     imageUrls = imageUrls,
     createDate = createDate.toUiModel(),
     isMyPost = user.id == currentUserId,

@@ -8,10 +8,10 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
 import com.withpeace.withpeace.core.domain.usecase.GetPostsUseCase
-import com.withpeace.withpeace.core.ui.PostTopicUiState
+import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 import com.withpeace.withpeace.core.ui.post.PostUiModel
 import com.withpeace.withpeace.core.ui.post.toPostUiModel
-import com.withpeace.withpeace.core.ui.toDomain
+import com.withpeace.withpeace.core.ui.post.toDomain
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +30,7 @@ class PostListViewModel @Inject constructor(
     private val _uiEvent = Channel<PostListUiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    private val _currentTopic = MutableStateFlow(PostTopicUiState.FREE)
+    private val _currentTopic = MutableStateFlow(PostTopicUiModel.FREEDOM)
     val currentTopic = _currentTopic.asStateFlow()
 
     private val _postListPagingFlow = MutableStateFlow(PagingData.empty<PostUiModel>())
@@ -40,12 +40,12 @@ class PostListViewModel @Inject constructor(
         fetchPostList(currentTopic.value)
     }
 
-    fun onTopicChanged(postTopic: PostTopicUiState) {
+    fun onTopicChanged(postTopic: PostTopicUiModel) {
         _currentTopic.update { postTopic }
         fetchPostList(postTopic)
     }
 
-    private fun fetchPostList(postTopic: PostTopicUiState) {
+    private fun fetchPostList(postTopic: PostTopicUiModel) {
         viewModelScope.launch {
             val pagingData =
                 getPostsUseCase(

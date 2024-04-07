@@ -49,10 +49,11 @@ import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.ui.DateUiModel
 import com.withpeace.withpeace.core.ui.DurationFromNowUiModel
-import com.withpeace.withpeace.core.ui.PostTopicUiState
+import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 import com.withpeace.withpeace.core.ui.R
 import com.withpeace.withpeace.core.ui.post.PostDetailUiModel
 import com.withpeace.withpeace.core.ui.post.PostUserUiModel
+import com.withpeace.withpeace.core.ui.post.RegisterPostUiModel
 import com.withpeace.withpeace.core.ui.toRelativeString
 import com.withpeace.withpeace.feature.postdetail.R.drawable
 import java.time.Duration
@@ -63,12 +64,14 @@ fun PostDetailRoute(
     viewModel: PostDetailViewModel = hiltViewModel(),
     onShowSnackBar: (String) -> Unit,
     onClickBackButton: () -> Unit,
+    onClickEditButton: (RegisterPostUiModel) -> Unit,
 ) {
     val postUiState = viewModel.postUiState.collectAsStateWithLifecycle().value
     PostDetailScreen(
         postUiState = postUiState,
         onClickBackButton = onClickBackButton,
         onClickDeleteButton = viewModel::deletePost,
+        onClickEditButton = onClickEditButton,
     )
 
     LaunchedEffect(null) {
@@ -92,6 +95,7 @@ fun PostDetailScreen(
     onClickBackButton: () -> Unit = {},
     onClickDeleteButton: () -> Unit = {},
     postUiState: PostDetailUiState,
+    onClickEditButton: (RegisterPostUiModel) -> Unit = {},
 ) {
     var showBottomSheet by rememberSaveable {
         mutableStateOf(false)
@@ -179,6 +183,17 @@ fun PostDetailScreen(
                         isMyPost = postUiState.postDetail.isMyPost,
                         onDismissRequest = { showBottomSheet = false },
                         onClickDeleteButton = onClickDeleteButton,
+                        onClickEditButton = {
+                            onClickEditButton(
+                                RegisterPostUiModel(
+                                    id = postUiState.postDetail.id,
+                                    title = postUiState.postDetail.title,
+                                    content = postUiState.postDetail.content,
+                                    topic = postUiState.postDetail.postTopic,
+                                    imageUrls = postUiState.postDetail.imageUrls,
+                                ),
+                            )
+                        },
                     )
                 }
             }
@@ -192,6 +207,7 @@ fun PostDetailBottomSheet(
     isMyPost: Boolean,
     onDismissRequest: () -> Unit,
     onClickDeleteButton: () -> Unit,
+    onClickEditButton: () -> Unit,
 ) {
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
@@ -211,6 +227,10 @@ fun PostDetailBottomSheet(
             ) {
                 Row(
                     modifier = Modifier
+                        .clickable {
+                            onClickEditButton()
+                            onDismissRequest()
+                        }
                         .padding(vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -269,10 +289,6 @@ fun PostDetailBottomSheet(
     }
 }
 
-@Composable
-fun MyPostBottomSheet() {
-
-}
 fun LazyListScope.PostImages(
     imageUrls: List<String>,
 ) {
@@ -317,7 +333,7 @@ fun PostContent(
 @Composable
 fun PostTopic(
     modifier: Modifier = Modifier,
-    postTopic: PostTopicUiState,
+    postTopic: PostTopicUiModel,
 ) {
     Box(
         modifier = modifier
@@ -396,7 +412,7 @@ private fun PostDetailScreenPreview() {
                     id = 1529,
                     title = "일찌기 나는 아무것도 아니었다.",
                     content = "돌아가는 팽이를 보고 싶어서, 그 팽이가 온전히 내 팽이이고 싶어서, 내 속도를 그대로 빼닮은 팽이의 회전을 여유롭게 관찰하고 싶어서, 그러니까 문방구에서 막상 팽이를 사오긴 했는데 요즘 누가 팽이 돌리나 눈치 보다 땅에다가는 못 풀고 눈으로 푸는 마음, 그 눈에서 돌아가는 팽이의 마음, 그거 같다",
-                    postTopic = PostTopicUiState.FREE,
+                    postTopic = PostTopicUiModel.FREEDOM,
                     imageUrls = listOf("", "", ""),
                     createDate = DateUiModel(
                         LocalDateTime.now(),

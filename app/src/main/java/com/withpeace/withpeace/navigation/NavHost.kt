@@ -5,7 +5,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
-import androidx.navigation.navigation
 import com.app.profileeditor.navigation.navigateProfileEditor
 import com.app.profileeditor.navigation.profileEditorNavGraph
 import com.withpeace.withpeace.feature.gallery.navigation.galleryNavGraph
@@ -23,6 +22,8 @@ import com.withpeace.withpeace.feature.postdetail.navigation.postDetailGraph
 import com.withpeace.withpeace.feature.postlist.navigation.POST_LIST_ROUTE
 import com.withpeace.withpeace.feature.postlist.navigation.postListGraph
 import com.withpeace.withpeace.feature.registerpost.navigation.IMAGE_LIST_ARGUMENT
+import com.withpeace.withpeace.feature.registerpost.navigation.REGISTER_POST_ARGUMENT
+import com.withpeace.withpeace.feature.registerpost.navigation.navigateToRegisterPost
 import com.withpeace.withpeace.feature.registerpost.navigation.registerPostNavGraph
 import com.withpeace.withpeace.feature.signup.navigation.navigateSignUp
 import com.withpeace.withpeace.feature.signup.navigation.signUpNavGraph
@@ -66,7 +67,16 @@ fun WithpeaceNavHost(
         )
         registerPostNavGraph(
             onShowSnackBar = onShowSnackBar,
-            onCompleteRegisterPost = {},
+            onCompleteRegisterPost = { postId ->
+                navController.navigateToPostDetail(
+                    postId,
+                    navOptions = navOptions {
+                        popUpTo(POST_LIST_ROUTE) {
+                            inclusive = false
+                        }
+                    },
+                )
+            },
             onClickBackButton = navController::popBackStack,
             onNavigateToGallery = { imageLimit, imageCount ->
                 navController.navigateToGallery(
@@ -74,6 +84,9 @@ fun WithpeaceNavHost(
                     currentImageCount = imageCount,
                 )
             },
+            originPost = navController.previousBackStackEntry?.savedStateHandle?.get(
+                REGISTER_POST_ARGUMENT,
+            ),
         )
         galleryNavGraph(
             onClickBackButton = {
@@ -93,16 +106,21 @@ fun WithpeaceNavHost(
             onShowSnackBar = onShowSnackBar,
         )
         homeNavGraph(onShowSnackBar)
-        navigation(startDestination = POST_LIST_ROUTE, POST_NESTED_ROUTE) {
-            postDetailGraph(
-                onShowSnackBar = onShowSnackBar,
-                onClickBackButton = navController::popBackStack,
-            )
-            postListGraph(
-                onShowSnackBar = onShowSnackBar,
-                navigateToPostDetail = navController::navigateToPostDetail,
-            )
-        }
+        postDetailGraph(
+            onShowSnackBar = onShowSnackBar,
+            onClickBackButton = navController::popBackStack,
+            onClickEditButton = {
+                navController.currentBackStackEntry?.savedStateHandle?.set(
+                    key = REGISTER_POST_ARGUMENT,
+                    value = it,
+                )
+                navController.navigateToRegisterPost()
+            },
+        )
+        postListGraph(
+            onShowSnackBar = onShowSnackBar,
+            navigateToPostDetail = navController::navigateToPostDetail,
+        )
         myPageNavGraph(
             onShowSnackBar = onShowSnackBar,
             onEditProfile = { nickname, profileImageUrl ->
@@ -142,5 +160,3 @@ fun WithpeaceNavHost(
         postListGraph(onShowSnackBar, navigateToPostDetail = navController::navigateToPostDetail)
     }
 }
-
-const val POST_NESTED_ROUTE = "post_nested_route"
