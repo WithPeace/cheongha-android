@@ -7,6 +7,7 @@ import com.withpeace.withpeace.core.network.di.response.post.PostIdResponse
 import com.withpeace.withpeace.core.network.di.response.post.PostResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -36,7 +37,7 @@ interface PostService {
         @Query("pageSize") pageSize: Int,
     ): ApiResponse<BaseResponse<List<PostResponse>>>
 
-    @POST("/api/v1/posts/{postId}")
+    @DELETE("/api/v1/posts/{postId}")
     suspend fun deletePost(
         @Path("postId") postId: Long,
     ): ApiResponse<BaseResponse<Boolean>>

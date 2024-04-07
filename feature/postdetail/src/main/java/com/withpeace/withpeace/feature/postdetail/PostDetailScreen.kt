@@ -28,6 +28,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -67,12 +68,29 @@ fun PostDetailRoute(
     PostDetailScreen(
         postUiState = postUiState,
         onClickBackButton = onClickBackButton,
+        onClickDeleteButton = viewModel::deletePost,
     )
+
+    LaunchedEffect(null) {
+        viewModel.postUiEvent.collect {
+            when (it) {
+                PostDetailUiEvent.DeleteFailByNetworkError -> onShowSnackBar("삭제에 실패하였습니다. 네트워크를 확인해주세요")
+
+                PostDetailUiEvent.DeleteFailByAuthorizationError -> onShowSnackBar("계정에 문제가 있습니다. 로그아웃 후 다시 진행해주세요")
+
+                PostDetailUiEvent.DeleteSuccess -> {
+                    onShowSnackBar("게시글이 삭제되었습니다.")
+                    onClickBackButton()
+                }
+            }
+        }
+    }
 }
 
 @Composable
 fun PostDetailScreen(
     onClickBackButton: () -> Unit = {},
+    onClickDeleteButton: () -> Unit = {},
     postUiState: PostDetailUiState,
 ) {
     var showBottomSheet by rememberSaveable {
@@ -97,61 +115,73 @@ fun PostDetailScreen(
             },
         )
         when (postUiState) {
-        PostDetailUiState.Fail -> Box(modifier = Modifier.fillMaxSize()) {
-            Text(
-                text = "네트워크 상태를 확인해주세요",
-                modifier = Modifier.align(Alignment.Center),
-            )
-        }
-
-        PostDetailUiState.Loading -> Box(modifier = Modifier.fillMaxSize()) {
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center),
-                color = WithpeaceTheme.colors.MainPink,
-            )
-        }
-
-        is PostDetailUiState.Success -> {
-            LazyColumn(state = lazyListState) {
-                item {
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .height(1.dp)
-                            .fillMaxWidth()
-                            .padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
-                        color = WithpeaceTheme.colors.SystemGray3,
+            PostDetailUiState.FailByNetwork ->
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Text(
+                        text = "네트워크 상태를 확인해주세요",
+                        modifier = Modifier.align(Alignment.Center),
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    PostTopic(postTopic = postUiState.postDetail.postTopic)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    UserProfile(
-                        modifier = Modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
-                        user = postUiState.postDetail.postUser,
-                        createDate = postUiState.postDetail.createDate,
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    PostTitle(
-                        modifier = Modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
-                        title = postUiState.postDetail.title,
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    PostContent(
-                        modifier = Modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
-                        content = postUiState.postDetail.content,
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
                 }
-                PostImages(
-                    imageUrls = postUiState.postDetail.imageUrls,
-                )
+
+            PostDetailUiState.NotFound ->
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Text(
+                        text = "게시글이 존재하지 않습니다.",
+                        modifier = Modifier.align(Alignment.Center),
+                    )
+                }
+
+            PostDetailUiState.Loading ->
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        color = WithpeaceTheme.colors.MainPink,
+                    )
+                }
+
+            is PostDetailUiState.Success -> {
+                LazyColumn(state = lazyListState) {
+                    item {
+                        HorizontalDivider(
+                            modifier = Modifier
+                                .height(1.dp)
+                                .fillMaxWidth()
+                                .padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
+                            color = WithpeaceTheme.colors.SystemGray3,
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        PostTopic(postTopic = postUiState.postDetail.postTopic)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        UserProfile(
+                            modifier = Modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
+                            user = postUiState.postDetail.postUser,
+                            createDate = postUiState.postDetail.createDate,
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        PostTitle(
+                            modifier = Modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
+                            title = postUiState.postDetail.title,
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        PostContent(
+                            modifier = Modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
+                            content = postUiState.postDetail.content,
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                    PostImages(
+                        imageUrls = postUiState.postDetail.imageUrls,
+                    )
+                }
+
+                if (showBottomSheet) {
+                    PostDetailBottomSheet(
+                        isMyPost = postUiState.postDetail.isMyPost,
+                        onDismissRequest = { showBottomSheet = false },
+                        onClickDeleteButton = onClickDeleteButton,
+                    )
+                }
             }
-            if (showBottomSheet) {
-                PostDetailBottomSheet(
-                    isMyPost = postUiState.postDetail.isMyPost,
-                    onDismissRequest = { showBottomSheet = false },
-                )
-            }
-        }
         }
     }
 }
@@ -161,6 +191,7 @@ fun PostDetailScreen(
 fun PostDetailBottomSheet(
     isMyPost: Boolean,
     onDismissRequest: () -> Unit,
+    onClickDeleteButton: () -> Unit,
 ) {
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
@@ -179,7 +210,8 @@ fun PostDetailBottomSheet(
                 ),
             ) {
                 Row(
-                    modifier = Modifier.padding(vertical = 16.dp),
+                    modifier = Modifier
+                        .padding(vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
@@ -191,7 +223,12 @@ fun PostDetailBottomSheet(
                 }
                 HorizontalDivider(color = WithpeaceTheme.colors.SystemGray3)
                 Row(
-                    modifier = Modifier.padding(vertical = 16.dp),
+                    modifier = Modifier
+                        .clickable {
+                            onClickDeleteButton()
+                            onDismissRequest()
+                        }
+                        .padding(vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
@@ -232,6 +269,10 @@ fun PostDetailBottomSheet(
     }
 }
 
+@Composable
+fun MyPostBottomSheet() {
+
+}
 fun LazyListScope.PostImages(
     imageUrls: List<String>,
 ) {
