@@ -21,15 +21,18 @@ import com.withpeace.withpeace.feature.mypage.navigation.MY_PAGE_ROUTE
 import com.withpeace.withpeace.feature.mypage.navigation.navigateMyPage
 import com.withpeace.withpeace.feature.postlist.navigation.POST_LIST_ROUTE
 import com.withpeace.withpeace.feature.postlist.navigation.navigateToPostList
+import com.withpeace.withpeace.feature.registerpost.navigation.REGISTER_POST_ROUTE
+import com.withpeace.withpeace.feature.registerpost.navigation.navigateToRegisterPost
 
 @Composable
 fun MainBottomBar(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     currentDestination: NavDestination,
     navController: NavHostController,
 ) {
     val context = LocalContext.current
     NavigationBar(
+        modifier = modifier,
         containerColor = WithpeaceTheme.colors.SystemWhite,
     ) {
         BottomTab.entries.forEach { tab ->
@@ -76,6 +79,7 @@ private fun NavController.navigateToTabScreen(bottomTab: BottomTab) {
         BottomTab.HOME -> navigateHome(tabNavOptions)
         BottomTab.POST -> navigateToPostList(tabNavOptions)
         BottomTab.MY_PAGE -> navigateMyPage(tabNavOptions)
+        BottomTab.REGISTER_POST -> navigateToRegisterPost()
     }
 }
 
@@ -97,6 +101,12 @@ enum class BottomTab(
         contentDescription = R.string.post,
         POST_LIST_ROUTE,
     ),
+    REGISTER_POST(
+        iconUnSelectedResId = R.drawable.ic_upload,
+        iconSelectedResId = R.drawable.ic_upload,
+        contentDescription = R.string.register,
+        REGISTER_POST_ROUTE,
+    ),
     MY_PAGE(
         iconUnSelectedResId = R.drawable.ic_bottom_my_page,
         iconSelectedResId = R.drawable.ic_bottom_my_page_select,
@@ -107,6 +117,7 @@ enum class BottomTab(
 
     companion object {
         operator fun contains(route: String): Boolean {
+            if (route == REGISTER_POST_ROUTE) return false
             return entries.map { it.route }.contains(route)
         }
     }

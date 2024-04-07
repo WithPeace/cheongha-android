@@ -40,7 +40,6 @@ fun WithpeaceApp(
                 BottomTab.contains(parentDestination?.route ?: currentDestination?.route ?: "")
             ) {
                 MainBottomBar(
-                    modifier = Modifier.height(56.dp),
                     currentDestination = if (parentDestination?.route == null) {
                         currentDestination ?: return@Scaffold
                     } else parentDestination,
