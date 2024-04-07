@@ -1,8 +1,8 @@
 package com.withpeace.withpeace.core.domain.usecase
 
 import com.google.common.truth.Truth.assertThat
-import com.withpeace.withpeace.core.domain.model.image.LimitedImages
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.image.LimitedImages
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.domain.model.post.RegisterPost
 import com.withpeace.withpeace.core.domain.repository.PostRepository
@@ -30,7 +30,10 @@ class RegisterPostUseCaseTest {
     fun `게시글을 등록을 성공하면, 게시글 아이디를 반환한다`() = runTest {
         // given
         val testRegisterPost = RegisterPost(
-            title = "title", content = "content", topic = PostTopic.ECONOMY,
+            id = null,
+            title = "title",
+            content = "content",
+            topic = PostTopic.ECONOMY,
             images = LimitedImages(
                 urls = listOf(),
                 maxCount = 9536,
@@ -65,7 +68,10 @@ class RegisterPostUseCaseTest {
     }
 
     private val testRegisterPost = RegisterPost(
-        title = "title", content = "content", topic = PostTopic.ECONOMY,
+        id = null,
+        title = "title",
+        content = "content",
+        topic = PostTopic.ECONOMY,
         images = LimitedImages(
             urls = listOf(),
             maxCount = 9536,
