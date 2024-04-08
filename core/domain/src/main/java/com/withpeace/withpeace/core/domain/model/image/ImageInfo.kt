@@ -3,7 +3,7 @@ package com.withpeace.withpeace.core.domain.model.image
 data class ImageInfo(
     val uri: String,
     val mimeType: String,
-    val size: Long,
+    val byteSize: Long,
 ) {
     fun isUploadType(): Boolean {
         val imageMimeType = mimeType.split("/").last().lowercase() // image/png
@@ -11,11 +11,11 @@ data class ImageInfo(
     }
 
     fun isSizeOver(): Boolean {
-        return bytesToMegabytes(size) > TEN_MEGA_BYTE
+        return byteSize.bytesToMegabytes() > MAX_MEGA_BYTE_SIZE
     }
 
-    private fun bytesToMegabytes(bytes: Long): Double {
-        return bytes / (BYTE_TO_KB_UNIT * KB_TO_MB_UNIT)
+    private fun Long.bytesToMegabytes(): Double {
+        return this / (BYTE_TO_KB_UNIT * KB_TO_MB_UNIT)
     }
 
     companion object {
@@ -24,6 +24,6 @@ data class ImageInfo(
         )
         private const val BYTE_TO_KB_UNIT = 1024.0
         private const val KB_TO_MB_UNIT = 1024.0
-        private const val TEN_MEGA_BYTE = 10
+        private const val MAX_MEGA_BYTE_SIZE = 10
     }
 }

@@ -7,6 +7,6 @@ fun ImageInfoEntity.toDomain(): ImageInfo {
     return ImageInfo(
         uri = imageUri.toString(),
         mimeType = mimeType,
-        size = size,
+        byteSize = byteSize,
     )
 }
