@@ -41,6 +41,7 @@ import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceCompleteButton
 import com.withpeace.withpeace.core.domain.model.image.ImageFolder
+import com.withpeace.withpeace.core.domain.model.image.ImageInfo
 import com.withpeace.withpeace.core.domain.model.image.LimitedImages
 import com.withpeace.withpeace.feature.gallery.R.drawable
 import com.withpeace.withpeace.feature.gallery.R.string
@@ -83,7 +84,9 @@ fun GalleryRoute(
     LaunchedEffect(key1 = null) {
         viewModel.sideEffect.collectLatest {
             when (it) {
-                GallerySideEffect.SelectImageFail -> onShowSnackBar(noMoreImageMessage)
+                GallerySideEffect.SelectImageNoMore -> onShowSnackBar(noMoreImageMessage)
+                GallerySideEffect.SelectImageNoApplyType -> onShowSnackBar("지원하지 않는 파일 형식입니다.")
+                GallerySideEffect.SelectImageOverSize -> onShowSnackBar("10MB 이하의 이미지만 업로드 가능합니다.")
             }
         }
     }
@@ -95,8 +98,8 @@ fun GalleryScreen(
     onCompleteRegisterImages: (List<String>) -> Unit = {},
     allFolders: List<ImageFolder>,
     onSelectFolder: (ImageFolder?) -> Unit = {},
-    onSelectImage: (String) -> Unit = {},
-    pagingImages: LazyPagingItems<String>,
+    onSelectImage: (ImageInfo) -> Unit = {},
+    pagingImages: LazyPagingItems<ImageInfo>,
     selectedImageList: LimitedImages,
     selectedFolder: ImageFolder?,
 ) {
@@ -217,9 +220,9 @@ fun FolderList(
 @Composable
 fun ImageList(
     modifier: Modifier = Modifier,
-    pagingImages: LazyPagingItems<String>,
+    pagingImages: LazyPagingItems<ImageInfo>,
     selectedImageList: LimitedImages,
-    onSelectImage: (String) -> Unit,
+    onSelectImage: (ImageInfo) -> Unit,
 ) {
     LazyVerticalGrid(
         modifier = modifier,
@@ -230,22 +233,22 @@ fun ImageList(
         items(
             pagingImages.itemCount,
         ) { index ->
-            val uriString = pagingImages[index] ?: throw IllegalStateException("uri가 존재하지 않음")
+            val imageInfo = pagingImages[index] ?: throw IllegalStateException("uri가 존재하지 않음")
 
             Box(
                 modifier = Modifier
                     .aspectRatio(1f)
                     .clickable {
-                        onSelectImage(uriString)
+                        onSelectImage(imageInfo)
                     },
             ) {
                 GlideImage(
                     modifier = Modifier.align(Alignment.Center),
-                    imageModel = { Uri.parse(uriString) },
+                    imageModel = { Uri.parse(imageInfo.uri) },
                     imageOptions = ImageOptions(contentScale = ContentScale.Crop),
                     previewPlaceholder = R.drawable.ic_backarrow_right,
                 )
-                if (selectedImageList.contains(uriString)) {
+                if (selectedImageList.contains(imageInfo.uri)) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -279,7 +282,7 @@ private fun GalleryScreenPreview() {
             },
             pagingImages = flowOf(
                 PagingData.from(
-                    List(10) { "" },
+                    List(10) { ImageInfo("", "", 1L) },
                     sourceLoadStates =
                     LoadStates(
                         refresh = LoadState.NotLoading(false),

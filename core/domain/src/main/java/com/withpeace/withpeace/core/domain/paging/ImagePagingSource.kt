@@ -2,14 +2,15 @@ package com.withpeace.withpeace.core.domain.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.withpeace.withpeace.core.domain.model.image.ImageInfo
 import com.withpeace.withpeace.core.domain.repository.ImageRepository
 
 data class ImagePagingSource(
     private val imageRepository: ImageRepository,
     private val folderName: String?,
-) : PagingSource<Int, String>() {
+) : PagingSource<Int, ImageInfo>() {
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, String> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ImageInfo> {
         return try {
             val currentPage = params.key ?: STARTING_PAGE_INDEX
             val data = imageRepository.getImages(
@@ -27,7 +28,7 @@ data class ImagePagingSource(
         }
     }
 
-    override fun getRefreshKey(state: PagingState<Int, String>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, ImageInfo>): Int? {
         return state.anchorPosition?.let { achorPosition ->
             state.closestPageToPosition(achorPosition)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(achorPosition)?.nextKey?.minus(1)

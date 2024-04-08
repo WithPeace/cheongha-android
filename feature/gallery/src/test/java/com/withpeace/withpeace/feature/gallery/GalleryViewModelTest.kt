@@ -7,6 +7,7 @@ import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.withpeace.withpeace.core.domain.model.image.ImageFolder
+import com.withpeace.withpeace.core.domain.model.image.ImageInfo
 import com.withpeace.withpeace.core.domain.model.image.ImagePagingInfo
 import com.withpeace.withpeace.core.domain.model.image.LimitedImages
 import com.withpeace.withpeace.core.domain.usecase.GetAlbumImagesUseCase
@@ -101,7 +102,7 @@ class GalleryViewModelTest {
         } returns ImagePagingInfo(
             pageSize = 30,
             enablePlaceholders = false,
-            pagingSource = emptyList<String>().asPagingSourceFactory().invoke(),
+            pagingSource = emptyList<ImageInfo>().asPagingSourceFactory().invoke(),
         )
         // when & then
         val actual = viewModel.images.getFullScrollItems()
@@ -118,7 +119,9 @@ class GalleryViewModelTest {
             representativeImageUri = "test",
             imageCount = 10,
         )
-        val testImages = List(100) { "testUri" }
+        val testImages = List(100) { ImageInfo(
+            "uri","type",0L
+        )}
         coEvery {
             getAlbumImagesUseCase(testFolder.folderName)
         } returns ImagePagingInfo(
@@ -140,11 +143,13 @@ class GalleryViewModelTest {
         // given
         savedStateHandle = SavedStateHandle()
         viewModel = viewModel()
-        val testImage = "test"
+        val testImage = ImageInfo(
+            "uri","images/png",10
+        )
         // when
         viewModel.onSelectImage(testImage)
         // then
-        val actual = viewModel.selectedImages.value.contains(testImage)
+        val actual = viewModel.selectedImages.value.contains(testImage.uri)
         assertThat(actual).isTrue()
     }
 
@@ -153,12 +158,14 @@ class GalleryViewModelTest {
         // given
         savedStateHandle = SavedStateHandle()
         viewModel = viewModel()
-        val testImage = "test"
+        val testImage = ImageInfo(
+            "uri","type",0L
+        )
         // when
         viewModel.onSelectImage(testImage)
         viewModel.onSelectImage(testImage)
         // then
-        val actual = viewModel.selectedImages.value.contains(testImage)
+        val actual = viewModel.selectedImages.value.contains(testImage.uri)
         assertThat(actual).isFalse()
     }
 
@@ -169,12 +176,14 @@ class GalleryViewModelTest {
             mapOf(GALLERY_IMAGE_LIMIT_ARGUMENT to 0), //최대 이미지 개수 0
         )
         viewModel = viewModel()
-        val testImage = "test"
+        val testImage = ImageInfo(
+            "uri","type",0L
+        )
         // when && then
         viewModel.sideEffect.test {
             viewModel.onSelectImage(testImage)
             val actual = awaitItem()
-            assertThat(actual).isEqualTo(GallerySideEffect.SelectImageFail)
+            assertThat(actual).isEqualTo(GallerySideEffect.SelectImageNoMore)
         }
     }
 }

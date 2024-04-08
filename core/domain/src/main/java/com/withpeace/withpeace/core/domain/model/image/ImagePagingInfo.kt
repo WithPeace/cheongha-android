@@ -6,7 +6,7 @@ import androidx.paging.PagingSource
 data class ImagePagingInfo(
     val pageSize: Int,
     val enablePlaceholders: Boolean = true,
-    val pagingSource: PagingSource<Int, String>,
+    val pagingSource: PagingSource<Int, ImageInfo>,
 ) {
     val pagingConfig = PagingConfig(
         pageSize = pageSize,

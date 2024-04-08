@@ -7,6 +7,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.withpeace.withpeace.core.domain.model.image.ImageFolder
+import com.withpeace.withpeace.core.domain.model.image.ImageInfo
 import com.withpeace.withpeace.core.domain.model.image.LimitedImages
 import com.withpeace.withpeace.core.domain.usecase.GetAlbumImagesUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetAllFoldersUseCase
@@ -61,7 +62,7 @@ class GalleryViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getImagePagingData(folderName:String):PagingData<String>{
+    private suspend fun getImagePagingData(folderName:String):PagingData<ImageInfo>{
         val imagePagingInfo = getAlbumImagesUseCase(folderName)
         return Pager(
             config = imagePagingInfo.pagingConfig,
@@ -75,14 +76,25 @@ class GalleryViewModel @Inject constructor(
         _selectedFolder.value = imageFolder
     }
 
-    fun onSelectImage(uriString: String) {
+    fun onSelectImage(imageInfo: ImageInfo) {
         when {
-            selectedImages.value.contains(uriString) -> _selectedImages.update {
-                it.deleteImage(uriString)
+            selectedImages.value.contains(imageInfo.uri) -> _selectedImages.update {
+                it.deleteImage(imageInfo.uri)
             }
 
-            selectedImages.value.canAddImage() -> _selectedImages.update { it.addImage(uriString) }
-            else -> viewModelScope.launch { _sideEffect.send(GallerySideEffect.SelectImageFail) }
+            selectedImages.value.canAddImage() -> {
+                if (!imageInfo.isUploadType()) {
+                    viewModelScope.launch { _sideEffect.send(GallerySideEffect.SelectImageNoApplyType) }
+                    return
+                }
+                if (imageInfo.isSizeOver()) {
+                    viewModelScope.launch { _sideEffect.send(GallerySideEffect.SelectImageOverSize) }
+                    return
+                }
+                _selectedImages.update { it.addImage(imageInfo.uri) }
+            }
+
+            else -> viewModelScope.launch { _sideEffect.send(GallerySideEffect.SelectImageNoMore) }
         }
     }
 

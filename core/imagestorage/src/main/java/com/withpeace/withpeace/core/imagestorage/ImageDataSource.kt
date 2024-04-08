@@ -7,7 +7,7 @@ interface ImageDataSource {
         page: Int,
         loadSize: Int,
         folder: String?,
-    ):List<Uri>
+    ):List<ImageInfoEntity>
 
     suspend fun getFolders(): List<ImageFolderEntity>
 }
