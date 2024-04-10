@@ -173,7 +173,7 @@ fun ProfileEditorScreen(
             )
 
         }
-        EditCompletedButton(onClick = { onEditCompleted() })
+        EditCompletedButton(onClick = { onEditCompleted() },isChanged = isChanged, nicknameValidUiState = nicknameValidStatus)
     }
 }
 
@@ -181,10 +181,16 @@ fun ProfileEditorScreen(
 private fun EditCompletedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    isChanged: Boolean,
+    nicknameValidUiState: ProfileNicknameValidUiState,
 ) {
+    val isClickable =
+        isChanged and (nicknameValidUiState is ProfileNicknameValidUiState.Valid)
     Button(
         onClick = {
-            onClick()
+            if (isClickable) {
+                onClick()
+            }
         },
         contentPadding = PaddingValues(0.dp),
         modifier = modifier
@@ -194,7 +200,7 @@ private fun EditCompletedButton(
                 start = WithpeaceTheme.padding.BasicHorizontalPadding,
             )
             .fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(containerColor = WithpeaceTheme.colors.MainPink),
+        colors = ButtonDefaults.buttonColors(containerColor = if (isClickable) WithpeaceTheme.colors.MainPink else WithpeaceTheme.colors.SystemGray2),
         shape = RoundedCornerShape(9.dp),
     ) {
         Text(
