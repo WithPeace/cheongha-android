@@ -6,37 +6,31 @@ import java.time.LocalDateTime
 sealed class DurationFromNow(
     val value: Duration,
 ) {
-    data class LessThanOneMinute(val duration: Duration) : DurationFromNow(duration)
-    data class OneMinuteToOneHour(val duration: Duration) : DurationFromNow(duration)
-    data class OneHourToOneDay(val duration: Duration) : DurationFromNow(duration)
-    data class OneDayToSevenDay(val duration: Duration) : DurationFromNow(duration)
-    data class SevenDayToOneYear(val duration: Duration) : DurationFromNow(duration)
-    data class OverOneYear(val duration: Duration) : DurationFromNow(duration)
-
-    val seconds = value.seconds
-    val minutes = value.toMinutes()
-    val hours = value.toHours()
-    val days = value.toDays()
-    val years = value.toDays() / DAYS_FOR_YEAR
+     class LessThanOneMinute(duration: Duration) : DurationFromNow(duration)
+     class OneMinuteToOneHour(duration: Duration) : DurationFromNow(duration)
+     class OneHourToOneDay(duration: Duration) : DurationFromNow(duration)
+     class OneDayToSevenDay(duration: Duration) : DurationFromNow(duration)
+     class SevenDayToOneYear(duration: Duration) : DurationFromNow(duration)
+     class OverOneYear(duration: Duration) : DurationFromNow(duration)
 
     companion object {
         fun from(date: LocalDateTime): DurationFromNow {
             val duration = Duration.between(date, LocalDateTime.now())
             return when {
-                duration.isLessThanOneMinute() -> LessThanOneMinute(duration)
-                duration.isLessThanOneHour() -> OneMinuteToOneHour(duration)
-                duration.isLessThanOneDay() -> OneHourToOneDay(duration)
-                duration.isLessThanWeekDays() -> OneDayToSevenDay(duration)
-                duration.isLessOneYear() -> SevenDayToOneYear(duration)
-                else -> OverOneYear(duration)
+                duration.isOverOneYear() -> OverOneYear(duration)
+                duration.isOverWeekDays() -> SevenDayToOneYear(duration)
+                duration.isOverOneDay() -> OneDayToSevenDay(duration)
+                duration.isOverOneHour() -> OneHourToOneDay(duration)
+                duration.isOverOneMinute() -> OneMinuteToOneHour(duration)
+                else -> LessThanOneMinute(duration)
             }
         }
 
-        private fun Duration.isLessThanOneMinute() = toMinutes() < 1
-        private fun Duration.isLessThanOneHour() = toHours() < 1
-        private fun Duration.isLessThanOneDay() = toDays() < 1
-        private fun Duration.isLessThanWeekDays() = toDays() < DAYS_FOR_WEEK
-        private fun Duration.isLessOneYear() = toDays() < DAYS_FOR_YEAR
+        private fun Duration.isOverOneMinute() = toMinutes() >= 1
+        private fun Duration.isOverOneHour() = toHours() >= 1
+        private fun Duration.isOverOneDay() = toDays() >= 1
+        private fun Duration.isOverWeekDays() = toDays() > DAYS_FOR_WEEK
+        private fun Duration.isOverOneYear() = toDays() > DAYS_FOR_YEAR
 
         private const val DAYS_FOR_YEAR = 365
         private const val DAYS_FOR_WEEK = 7

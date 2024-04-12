@@ -15,14 +15,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
-import com.withpeace.withpeace.core.domain.model.post.PostTopic
-import com.withpeace.withpeace.core.ui.PostTopicUiState
+import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 
 @Composable
 fun TopicTabs(
-    currentTopic: PostTopicUiState,
+    currentTopic: PostTopicUiModel,
     tabPosition: Int,
-    onClick: (PostTopicUiState) -> Unit,
+    onClick: (PostTopicUiModel) -> Unit,
 ) {
     TabRow(
         modifier = Modifier.wrapContentSize(),
@@ -37,23 +36,23 @@ fun TopicTabs(
             )
         },
     ) {
-        PostTopicUiState.entries.forEachIndexed { index, postTopicUiState ->
-            val color = if (currentTopic == postTopicUiState) WithpeaceTheme.colors.MainPink
+        PostTopicUiModel.entries.forEachIndexed { index, postTopic ->
+            val color = if (currentTopic == postTopic) WithpeaceTheme.colors.MainPink
             else WithpeaceTheme.colors.SystemGray2
             Tab(
-                selected = postTopicUiState == currentTopic,
-                onClick = { onClick(postTopicUiState) },
+                selected = postTopic == currentTopic,
+                onClick = { onClick(postTopic) },
                 text = {
                     Text(
-                        text = stringResource(id = postTopicUiState.textResId),
+                        text = stringResource(id = postTopic.textResId),
                         color = color,
                     )
                 },
                 icon = {
                     Icon(
                         modifier = Modifier.size(28.dp),
-                        painter = painterResource(id = postTopicUiState.iconResId),
-                        contentDescription = stringResource(id = postTopicUiState.textResId),
+                        painter = painterResource(id = postTopic.iconResId),
+                        contentDescription = stringResource(id = postTopic.textResId),
                         tint = color,
                     )
                 },

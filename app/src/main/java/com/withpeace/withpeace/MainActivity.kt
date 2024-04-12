@@ -13,6 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.feature.home.navigation.HOME_ROUTE
 import com.withpeace.withpeace.feature.login.navigation.LOGIN_ROUTE
+import com.withpeace.withpeace.feature.registerpost.navigation.REGISTER_POST_ROUTE
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

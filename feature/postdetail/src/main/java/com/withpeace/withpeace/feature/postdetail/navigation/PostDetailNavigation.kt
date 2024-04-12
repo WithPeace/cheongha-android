@@ -6,6 +6,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.withpeace.withpeace.core.ui.post.RegisterPostUiModel
 import com.withpeace.withpeace.feature.postdetail.PostDetailRoute
 
 const val POST_DETAIL_ROUTE = "post_detail_route"
@@ -21,6 +22,7 @@ fun NavController.navigateToPostDetail(
 fun NavGraphBuilder.postDetailGraph(
     onShowSnackBar: (String) -> Unit,
     onClickBackButton: () -> Unit,
+    onClickEditButton: (RegisterPostUiModel) -> Unit,
 ) {
     composable(
         route = POST_DETAIL_ROUTE_WITH_ARGUMENT,
@@ -28,6 +30,10 @@ fun NavGraphBuilder.postDetailGraph(
             navArgument(POST_DETAIL_ID_ARGUMENT) { type = NavType.LongType },
         ),
     ) {
-        PostDetailRoute(onShowSnackBar = onShowSnackBar, onClickBackButton = onClickBackButton)
+        PostDetailRoute(
+            onShowSnackBar = onShowSnackBar,
+            onClickBackButton = onClickBackButton,
+            onClickEditButton = onClickEditButton,
+        )
     }
 }

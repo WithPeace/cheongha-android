@@ -2,6 +2,8 @@ plugins {
     id("com.android.library")
     id("convention.android.base")
     id("convention.android.compose")
+    alias(libs.plugins.kotlin.serialization)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -14,4 +16,5 @@ dependencies {
     implementation(project(":core:designsystem"))
     implementation(libs.skydoves.landscapist.glide)
     implementation(libs.skydoves.landscapist.bom)
+    implementation(libs.kotlinx.serialization.json)
 }

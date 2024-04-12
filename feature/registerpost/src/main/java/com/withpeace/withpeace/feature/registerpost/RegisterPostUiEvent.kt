@@ -6,6 +6,6 @@ sealed interface RegisterPostUiEvent {
     data object TitleBlank : RegisterPostUiEvent
     data object ContentBlank : RegisterPostUiEvent
     data object TopicBlank : RegisterPostUiEvent
-    data object PostSuccess: RegisterPostUiEvent
-    data class  PostFail(val error:WithPeaceError):RegisterPostUiEvent
+    data class RegisterSuccess(val postId: Long) : RegisterPostUiEvent
+    data class RegisterFail(val error: WithPeaceError) : RegisterPostUiEvent
 }

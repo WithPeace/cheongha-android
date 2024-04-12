@@ -1,16 +1,19 @@
 package com.withpeace.withpeace.core.domain.usecase
 
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
-import com.withpeace.withpeace.core.domain.model.post.RegisterPost
+import com.withpeace.withpeace.core.domain.model.post.PostDetail
 import com.withpeace.withpeace.core.domain.repository.PostRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class RegisterPostUseCase @Inject constructor(
+class GetPostDetailUseCase @Inject constructor(
     private val postRepository: PostRepository,
 ) {
     operator fun invoke(
-        post: RegisterPost,
+        postId: Long,
         onError: suspend (WithPeaceError) -> Unit,
-    ): Flow<Long> = postRepository.registerPost(post = post, onError = onError)
+    ): Flow<PostDetail> = postRepository.getPostDetail(
+        postId,
+        onError,
+    )
 }

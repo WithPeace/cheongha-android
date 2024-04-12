@@ -4,5 +4,7 @@ plugins {
     id("convention.android.hilt")
     id("convention.test.library")
     id("convention.coroutine")
+    id("kotlin-parcelize")
+    id ("kotlin-kapt")
 }
 

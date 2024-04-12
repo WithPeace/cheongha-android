@@ -5,6 +5,8 @@ plugins {
     id("convention.coroutine")
     id("convention.android.compose")
     id("convention.android.hilt")
+    id("kotlin-parcelize")
+    id ("kotlin-kapt")
 }
 
 dependencies{

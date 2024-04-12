@@ -48,6 +48,7 @@ dependencies {
     implementation(project(":feature:gallery"))
     implementation(project(":feature:postdetail"))
     implementation(project(":feature:profileeditor"))
+    implementation(project(":core:ui"))
     implementation(project(":core:interceptor"))
     implementation(project(":core:data"))
     implementation(project(":core:network"))

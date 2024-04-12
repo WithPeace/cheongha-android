@@ -41,13 +41,15 @@ import com.skydoves.landscapist.glide.GlideImage
 import com.withpeace.withpeace.core.designsystem.theme.PretendardFont
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.WithpeaceCard
-import com.withpeace.withpeace.core.domain.model.date.Date
-import com.withpeace.withpeace.core.ui.PostTopicUiState
+import com.withpeace.withpeace.core.ui.DateUiModel
+import com.withpeace.withpeace.core.ui.DurationFromNowUiModel
+import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 import com.withpeace.withpeace.core.ui.R
 import com.withpeace.withpeace.core.ui.post.PostUiModel
 import com.withpeace.withpeace.core.ui.toRelativeString
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOf
+import java.time.Duration
 import java.time.LocalDateTime
 
 @Composable
@@ -77,9 +79,9 @@ fun PostListRoute(
 
 @Composable
 fun PostListScreen(
-    currentTopic: PostTopicUiState,
+    currentTopic: PostTopicUiModel,
     postListPagingData: LazyPagingItems<PostUiModel>,
-    onTopicChanged: (PostTopicUiState) -> Unit = {},
+    onTopicChanged: (PostTopicUiModel) -> Unit = {},
     navigateToDetail: (postId: Long) -> Unit = {},
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -202,7 +204,7 @@ fun PostListItems(
 private fun PostListScreenPreview() {
     WithpeaceTheme {
         PostListScreen(
-            currentTopic = PostTopicUiState.ECONOMY,
+            currentTopic = PostTopicUiModel.ECONOMY,
             postListPagingData =
                 flowOf(
                     PagingData.from(
@@ -211,8 +213,13 @@ private fun PostListScreenPreview() {
                                 postId = 6724,
                                 title = "fugit",
                                 content = "varius",
-                                postTopic = PostTopicUiState.ECONOMY,
-                                createDate = Date(date = LocalDateTime.now()),
+                                postTopic = PostTopicUiModel.ECONOMY,
+                                createDate = DateUiModel(
+                                    date = LocalDateTime.now(),
+                                    durationFromNow = DurationFromNowUiModel.LessThanOneMinute(
+                                        Duration.ZERO,
+                                    ),
+                                ),
                                 postImageUrl = null,
                             )
                         },
