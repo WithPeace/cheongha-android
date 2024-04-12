@@ -128,7 +128,7 @@ class DefaultPostRepository @Inject constructor(
     private fun getImageRequestBodies(
         imageUris: List<String>,
     ): List<MultipartBody.Part> {
-        val imageFiles = imageUris.map { Uri.parse(it).convertToFile(context) }
+        val imageFiles = imageUris.map { it.convertToFile(context) }
         return imageFiles.map { file ->
             val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
             MultipartBody.Part.createFormData(
@@ -154,6 +154,6 @@ class DefaultPostRepository @Inject constructor(
         const val TITLE_COLUMN = "title"
         const val CONTENT_COLUMN = "content"
         const val TYPE_COLUMN = "type"
-        const val IMAGES_COLUMN = "images"
+        const val IMAGES_COLUMN = "imageFiles"
     }
 }

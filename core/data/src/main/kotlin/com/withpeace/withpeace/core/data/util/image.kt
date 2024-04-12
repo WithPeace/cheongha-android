@@ -4,8 +4,29 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.webkit.URLUtil
 import java.io.File
 import java.io.FileOutputStream
+import java.net.URL
+
+
+fun String.convertToFile(context: Context): File {
+    return if (URLUtil.isHttpUrl(this)) {
+        return URL(this).convertToFile(context)
+    } else {
+        Uri.parse(this).convertToFile(context)
+    }
+}
+
+fun URL.convertToFile(context: Context): File {
+    val bitmap = convertToBitmap()
+    return bitmap.convertToFile(context)
+}
+
+fun URL.convertToBitmap(): Bitmap {
+    val stream = openStream()
+    return BitmapFactory.decodeStream(stream)
+}
 
 fun Uri.convertToFile(context: Context): File {
     val bitmap = convertToBitmap(context)
