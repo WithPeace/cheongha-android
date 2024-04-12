@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
+import androidx.navigation.navigation
 import com.app.profileeditor.navigation.navigateProfileEditor
 import com.app.profileeditor.navigation.profileEditorNavGraph
 import com.withpeace.withpeace.feature.gallery.navigation.galleryNavGraph
@@ -16,6 +17,7 @@ import com.withpeace.withpeace.feature.login.navigation.loginNavGraph
 import com.withpeace.withpeace.feature.login.navigation.navigateLogin
 import com.withpeace.withpeace.feature.mypage.navigation.MY_PAGE_CHANGED_IMAGE_ARGUMENT
 import com.withpeace.withpeace.feature.mypage.navigation.MY_PAGE_CHANGED_NICKNAME_ARGUMENT
+import com.withpeace.withpeace.feature.mypage.navigation.MY_PAGE_ROUTE
 import com.withpeace.withpeace.feature.mypage.navigation.myPageNavGraph
 import com.withpeace.withpeace.feature.postdetail.navigation.POST_DETAIL_ROUTE_WITH_ARGUMENT
 import com.withpeace.withpeace.feature.postdetail.navigation.navigateToPostDetail
@@ -116,6 +118,42 @@ fun WithpeaceNavHost(
             onShowSnackBar = onShowSnackBar,
         )
         homeNavGraph(onShowSnackBar)
+        navigation(startDestination = MY_PAGE_ROUTE, MY_PAGE_NESTED_ROUTE) {
+            myPageNavGraph(
+                onShowSnackBar = onShowSnackBar,
+                onEditProfile = { nickname, profileImageUrl ->
+                    navController.navigateProfileEditor(
+                        nickname = nickname,
+                        profileImageUrl = profileImageUrl,
+                    )
+                },
+                onLogoutSuccess = {
+                    navController.navigateLogin(
+                        navOptions = navOptions {
+                            popUpTo(navController.graph.id) {
+                                inclusive = true
+                            }
+                        },
+                    )
+                },
+                onWithdrawClick = {},
+            )
+            profileEditorNavGraph(
+                onShowSnackBar = onShowSnackBar,
+                onClickBackButton = {
+                    navController.popBackStack()
+                },
+                onNavigateToGallery = {
+                    navController.navigateToGallery(imageLimit = 1)
+                },
+            ) { nickname, imageUrl ->
+                navController.previousBackStackEntry?.savedStateHandle?.apply {
+                    set(MY_PAGE_CHANGED_NICKNAME_ARGUMENT, nickname)
+                    set(MY_PAGE_CHANGED_IMAGE_ARGUMENT, imageUrl)
+                }
+                navController.popBackStack()
+            }
+        }
         postDetailGraph(
             onShowSnackBar = onShowSnackBar,
             onClickBackButton = navController::popBackStack,
@@ -131,42 +169,8 @@ fun WithpeaceNavHost(
             onShowSnackBar = onShowSnackBar,
             navigateToPostDetail = navController::navigateToPostDetail,
         )
-        myPageNavGraph(
-            onShowSnackBar = onShowSnackBar,
-            onEditProfile = { nickname, profileImageUrl ->
-                navController.navigateProfileEditor(
-                    nickname = nickname,
-                    profileImageUrl = profileImageUrl,
-                )
-            },
-            onLogoutSuccess = {
-                navController.navigateLogin(
-                    navOptions =
-                        navOptions {
-                            popUpTo(navController.graph.id) {
-                                inclusive = true
-                            }
-                        },
-                )
-            },
-            onWithdrawClick = {},
-        )
-        profileEditorNavGraph(
-            onShowSnackBar = onShowSnackBar,
-            onClickBackButton = {
-                navController.popBackStack()
-            },
-            onNavigateToGallery = {
-                navController.navigateToGallery(imageLimit = 1)
-            },
-            onUpdateSuccess = { nickname, imageUrl ->
-                navController.previousBackStackEntry?.savedStateHandle?.apply {
-                    set(MY_PAGE_CHANGED_NICKNAME_ARGUMENT, nickname)
-                    set(MY_PAGE_CHANGED_IMAGE_ARGUMENT, imageUrl)
-                }
-                navController.popBackStack()
-            },
-        )
-        postListGraph(onShowSnackBar, navigateToPostDetail = navController::navigateToPostDetail)
     }
 }
+
+const val POST_NESTED_ROUTE = "post_nested_route"
+const val MY_PAGE_NESTED_ROUTE = "my_page_nested_route"
