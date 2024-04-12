@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -86,15 +86,18 @@ fun NickNameEditor(
                 ),
             )
         }
-        Divider(
-            color = if (nicknameValidStatus is ProfileNicknameValidUiState.Valid || isChanged.not()) WithpeaceTheme.colors.SystemBlack
-            else WithpeaceTheme.colors.SystemError,
+        // isChanged: 닉네임이 변경되지 않은 경우, ProfileNicknameValidUiState.Valid: 닉네임이 검증 된 경우
+        HorizontalDivider(
             modifier = modifier
                 .width(140.dp)
                 .height(1.dp),
+            color = if (nicknameValidStatus is ProfileNicknameValidUiState.UnVerified
+                || nicknameValidStatus is ProfileNicknameValidUiState.Valid || isChanged.not()
+            ) WithpeaceTheme.colors.SystemBlack
+            else WithpeaceTheme.colors.SystemError,
         )
     }
-    if (nicknameValidStatus !is ProfileNicknameValidUiState.Valid && isChanged) {
+    if (!(nicknameValidStatus is ProfileNicknameValidUiState.UnVerified || nicknameValidStatus is ProfileNicknameValidUiState.Valid || isChanged.not())) {
         Text(
             text = if (nicknameValidStatus is ProfileNicknameValidUiState.InValidDuplicated) stringResource(
                 R.string.nickname_duplicated,

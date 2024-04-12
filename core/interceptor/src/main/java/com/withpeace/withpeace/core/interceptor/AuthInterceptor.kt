@@ -49,7 +49,7 @@ class AuthInterceptor @Inject constructor(
         onFail: () -> Unit,
     ) {
         runBlocking {
-            authService.refreshAccessToken(refreshToken)
+            authService.refreshAccessToken(TOKEN_FORMAT.format(refreshToken))
                 .suspendMapSuccess {
                     onSuccess(data)
                 }.suspendOnError {

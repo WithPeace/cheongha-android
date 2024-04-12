@@ -54,6 +54,7 @@ class ProfileEditorViewModel @Inject constructor(
     }
 
     fun onNickNameChanged(nickname: String) {
+        _profileNicknameValidUiState.update { ProfileNicknameValidUiState.UnVerified }
         _profileEditUiState.update {
             return@update it.toDomain().copy(nickname = nickname).toUiModel(baseProfileInfo)
         }
