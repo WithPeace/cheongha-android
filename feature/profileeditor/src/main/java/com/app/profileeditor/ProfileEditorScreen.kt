@@ -1,5 +1,6 @@
 package com.app.profileeditor
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -52,7 +53,11 @@ fun ProfileEditorRoute(
 ) {
     var showAlertDialog by remember { mutableStateOf(false) }
     val profileInfo: ProfileUiModel by viewModel.profileEditUiState.collectAsStateWithLifecycle()
-
+    BackHandler {
+        if (profileInfo.isChanged) {
+            showAlertDialog = true
+        }
+    }
     if (showAlertDialog) {
         ModifySaveDialog(
             onClickSave = {

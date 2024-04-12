@@ -91,11 +91,13 @@ fun NickNameEditor(
             modifier = modifier
                 .width(140.dp)
                 .height(1.dp),
-            color = if (nicknameValidStatus is ProfileNicknameValidUiState.Changing || nicknameValidStatus is ProfileNicknameValidUiState.Valid || isChanged.not()) WithpeaceTheme.colors.SystemBlack
+            color = if (nicknameValidStatus is ProfileNicknameValidUiState.UnVerified
+                || nicknameValidStatus is ProfileNicknameValidUiState.Valid || isChanged.not()
+            ) WithpeaceTheme.colors.SystemBlack
             else WithpeaceTheme.colors.SystemError,
         )
     }
-    if (!(nicknameValidStatus is ProfileNicknameValidUiState.Changing || nicknameValidStatus is ProfileNicknameValidUiState.Valid || isChanged.not())) {
+    if (!(nicknameValidStatus is ProfileNicknameValidUiState.UnVerified || nicknameValidStatus is ProfileNicknameValidUiState.Valid || isChanged.not())) {
         Text(
             text = if (nicknameValidStatus is ProfileNicknameValidUiState.InValidDuplicated) stringResource(
                 R.string.nickname_duplicated,
