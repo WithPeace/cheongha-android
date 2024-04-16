@@ -2,7 +2,7 @@ package com.withpeace.withpeace.core.domain.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import com.withpeace.withpeace.core.domain.model.post.Post
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.domain.repository.PostRepository
@@ -12,7 +12,7 @@ data class PostPagingSource(
     private val postRepository: PostRepository,
     private val postTopic: PostTopic,
     private val pageSize: Int,
-    private val onError: suspend (WithPeaceError) -> Unit,
+    private val onError: suspend (CheonghaError) -> Unit,
 ) : PagingSource<Int, Post>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Post> {

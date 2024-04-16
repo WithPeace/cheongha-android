@@ -14,11 +14,13 @@ fun NavController.navigateToPostList(navOptions: NavOptions? = null) =
 fun NavGraphBuilder.postListGraph(
     onShowSnackBar: (String) -> Unit,
     navigateToPostDetail: (postId: Long) -> Unit,
+    onAuthExpired: () -> Unit,
 ) {
     composable(POST_LIST_ROUTE) {
         PostListRoute(
             onShowSnackBar = onShowSnackBar,
             navigateToDetail = navigateToPostDetail,
+            onAuthExpired = onAuthExpired
         )
     }
 }

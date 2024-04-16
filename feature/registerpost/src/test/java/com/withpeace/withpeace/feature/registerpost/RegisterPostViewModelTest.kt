@@ -2,7 +2,7 @@ package com.withpeace.withpeace.feature.registerpost
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import com.withpeace.withpeace.core.domain.model.image.LimitedImages
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.domain.model.post.RegisterPost
@@ -176,19 +176,19 @@ class RegisterPostViewModelTest {
         viewModel.onContentChanged("내용")
         viewModel.onTopicChanged(PostTopicUiModel.FREEDOM)
         viewModel.onTitleChanged("제목")
-        val slot = slot<suspend (WithPeaceError) -> Unit>()
+        val slot = slot<suspend (CheonghaError) -> Unit>()
         coEvery {
             registerPostUseCase(
                 post = any(),
                 onError = capture(slot),
             )
-        } returns flow { slot.captured.invoke(WithPeaceError.GeneralError()) }
+        } returns flow { slot.captured.invoke(CheonghaError.GeneralError()) }
         // when
         viewModel.onRegisterPostCompleted()
         // then
         viewModel.uiEvent.test {
             val actual = awaitItem()
-            assertThat(actual).isEqualTo(RegisterPostUiEvent.RegisterFail(WithPeaceError.GeneralError()))
+            assertThat(actual).isEqualTo(RegisterPostUiEvent.RegisterFail(CheonghaError.GeneralError()))
         }
     }
 }

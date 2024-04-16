@@ -1,6 +1,6 @@
 package com.withpeace.withpeace.core.domain.usecase
 
-import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import com.withpeace.withpeace.core.domain.repository.PostRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -10,6 +10,6 @@ class DeletePostUseCase @Inject constructor(
 ) {
     operator fun invoke(
         postId: Long,
-        onError: suspend (WithPeaceError) -> Unit,
+        onError: suspend (CheonghaError) -> Unit,
     ): Flow<Boolean> = postRepository.deletePost(postId, onError)
 }

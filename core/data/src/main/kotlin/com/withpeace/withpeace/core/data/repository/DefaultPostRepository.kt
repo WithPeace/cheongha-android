@@ -1,16 +1,11 @@
 package com.withpeace.withpeace.core.data.repository
 
 import android.content.Context
-import android.net.Uri
-import com.skydoves.sandwich.messageOrNull
 import com.skydoves.sandwich.suspendMapSuccess
-import com.skydoves.sandwich.suspendOnError
-import com.skydoves.sandwich.suspendOnException
 import com.withpeace.withpeace.core.data.mapper.toDomain
 import com.withpeace.withpeace.core.data.util.convertToFile
-import com.withpeace.withpeace.core.domain.model.WithPeaceError
-import com.withpeace.withpeace.core.domain.model.WithPeaceError.GeneralError
-import com.withpeace.withpeace.core.domain.model.WithPeaceError.UnAuthorized
+import com.withpeace.withpeace.core.data.util.handleApiFailure
+import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import com.withpeace.withpeace.core.domain.model.post.Post
 import com.withpeace.withpeace.core.domain.model.post.PostDetail
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
@@ -34,9 +29,10 @@ class DefaultPostRepository @Inject constructor(
     private val postService: PostService,
 ) : PostRepository {
     override fun getPosts(
-        postTopic: PostTopic, pageIndex: Int,
+        postTopic: PostTopic,
+        pageIndex: Int,
         pageSize: Int,
-        onError: suspend (WithPeaceError) -> Unit,
+        onError: suspend (CheonghaError) -> Unit,
     ): Flow<List<Post>> =
         flow {
             postService.getPosts(
@@ -44,25 +40,12 @@ class DefaultPostRepository @Inject constructor(
                 pageIndex = pageIndex, pageSize = pageSize,
             ).suspendMapSuccess {
                 emit(data.map { it.toDomain() })
-            }.suspendOnError {
-                if (statusCode.code == 401) {
-                    onError(
-                        UnAuthorized(
-                            statusCode.code,
-                            message = null,
-                        ),
-                    )
-                } else {
-                    onError(GeneralError(statusCode.code, messageOrNull))
-                }
-            }.suspendOnException {
-                onError(GeneralError(message = messageOrNull))
-            }
-        }.flowOn(Dispatchers.IO)
+            }.handleApiFailure(onError)
+        }
 
     override fun registerPost(
         post: RegisterPost,
-        onError: suspend (WithPeaceError) -> Unit,
+        onError: suspend (CheonghaError) -> Unit,
     ): Flow<Long> =
         flow {
             val imageRequestBodies = getImageRequestBodies(post.images.urls)
@@ -71,58 +54,32 @@ class DefaultPostRepository @Inject constructor(
                 postService.registerPost(postRequestBodies, imageRequestBodies)
                     .suspendMapSuccess {
                         emit(data.postId)
-                    }.suspendOnError {
-                        if (statusCode.code == 401) {
-                            onError(UnAuthorized())
-                        } else {
-                            onError(GeneralError(statusCode.code, messageOrNull))
-                        }
-                    }.suspendOnException {
-                        onError(GeneralError(message = messageOrNull))
-                    }
+                    }.handleApiFailure(onError)
             } else {
                 postService.editPost(post.id!!, postRequestBodies, imageRequestBodies)
                     .suspendMapSuccess {
                         emit(data.postId)
-                    }.suspendOnError {
-                        if (statusCode.code == 401) {
-                            onError(UnAuthorized())
-                        } else {
-                            onError(GeneralError(statusCode.code, messageOrNull))
-                        }
-                    }.suspendOnException {
-                        onError(GeneralError(message = messageOrNull))
-                    }
+                    }.handleApiFailure(onError)
             }
         }.flowOn(Dispatchers.IO)
 
     override fun getPostDetail(
         postId: Long,
-        onError: suspend (WithPeaceError) -> Unit,
+        onError: suspend (CheonghaError) -> Unit,
     ): Flow<PostDetail> = flow {
         postService.getPost(postId)
             .suspendMapSuccess {
                 emit(data.toDomain())
-            }.suspendOnError {
-                if (statusCode.code == 401) onError(UnAuthorized())
-                else onError(GeneralError(statusCode.code, messageOrNull))
-            }.suspendOnException {
-                onError(GeneralError(message = messageOrNull))
-            }
+            }.handleApiFailure(onError)
     }
 
     override fun deletePost(
         postId: Long,
-        onError: suspend (WithPeaceError) -> Unit,
+        onError: suspend (CheonghaError) -> Unit,
     ): Flow<Boolean> = flow {
         postService.deletePost(postId).suspendMapSuccess {
             emit(data)
-        }.suspendOnError {
-            if (statusCode.code == 401) onError(UnAuthorized())
-            else onError(GeneralError(statusCode.code, messageOrNull))
-        }.suspendOnException {
-            onError(GeneralError(message = messageOrNull))
-        }
+        }.handleApiFailure(onError)
     }
 
     private fun getImageRequestBodies(

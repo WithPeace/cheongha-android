@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.core.domain.repository
 
+import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import com.withpeace.withpeace.core.domain.model.role.Role
 import kotlinx.coroutines.flow.Flow
 
@@ -8,6 +9,6 @@ interface TokenRepository {
 
     fun getTokenByGoogle(
         idToken: String,
-        onError: (String) -> Unit,
+        onError: suspend (CheonghaError) -> Unit,
     ): Flow<Role>
 }

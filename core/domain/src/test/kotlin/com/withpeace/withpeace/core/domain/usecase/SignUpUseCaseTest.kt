@@ -1,8 +1,7 @@
 package com.withpeace.withpeace.core.domain.usecase
 
 import com.withpeace.withpeace.core.domain.model.SignUpInfo
-import com.withpeace.withpeace.core.domain.model.WithPeaceError
-import com.withpeace.withpeace.core.domain.repository.TokenRepository
+import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import com.withpeace.withpeace.core.domain.repository.UserRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -41,7 +40,7 @@ class SignUpUseCaseTest {
     @Test
     fun `회원가입에 실패하면, 메세지가 담긴 실패응답을 반환한다`() = runTest {
         // given
-        val errorMock = mockk<(WithPeaceError) -> Unit>(relaxed = true)
+        val errorMock = mockk<(CheonghaError) -> Unit>(relaxed = true)
         coEvery {
             userRepository.signUp(
                 SignUpInfo(
@@ -50,7 +49,7 @@ class SignUpUseCaseTest {
                 ),
                 onError = errorMock,
             )
-        } returns flow { errorMock(WithPeaceError.UnAuthorized()) }
+        } returns flow { errorMock(CheonghaError.UnAuthorized()) }
         signUpUseCase = initialize()
         // when
         signUpUseCase(
@@ -61,6 +60,6 @@ class SignUpUseCaseTest {
             onError = errorMock,
         ).collect()
         // then
-        coVerify { errorMock(WithPeaceError.UnAuthorized()) }
+        coVerify { errorMock(CheonghaError.UnAuthorized()) }
     }
 }

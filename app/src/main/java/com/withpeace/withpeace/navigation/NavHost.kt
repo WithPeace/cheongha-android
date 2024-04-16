@@ -77,12 +77,12 @@ fun WithpeaceNavHost(
                     navOptions = navOptions {
                         // 수정일 경우 : 이전 화면이 상세화면이다
                         if (navController.previousBackStackEntry?.destination?.route == POST_DETAIL_ROUTE_WITH_ARGUMENT) {
-                            popUpTo(POST_LIST_ROUTE){
+                            popUpTo(POST_LIST_ROUTE) {
                                 inclusive = false
                             }
                         } else {
                             // 새로 등록인 경우
-                            popUpTo(REGISTER_POST_ROUTE){
+                            popUpTo(REGISTER_POST_ROUTE) {
                                 inclusive = true
                             }
                         }
@@ -99,6 +99,15 @@ fun WithpeaceNavHost(
             originPost = navController.previousBackStackEntry?.savedStateHandle?.get(
                 REGISTER_POST_ARGUMENT,
             ),
+            onLogoutSuccess = {
+                navController.navigateLogin(
+                    navOptions = navOptions {
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                    },
+                )
+            },
         )
         galleryNavGraph(
             onClickBackButton = {
@@ -164,13 +173,33 @@ fun WithpeaceNavHost(
                 )
                 navController.navigateToRegisterPost()
             },
+            onAuthExpired = {
+                navController.navigateLogin(
+                    navOptions = navOptions {
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                    },
+                )
+            },
         )
         postListGraph(
             onShowSnackBar = onShowSnackBar,
             navigateToPostDetail = navController::navigateToPostDetail,
+            onAuthExpired = {
+                navController.navigateLogin(
+                    navOptions = navOptions {
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                    },
+                )
+            },
         )
     }
 }
+
+// TODO("onLogoutSuccess 중복 코드 제거")
 
 const val POST_NESTED_ROUTE = "post_nested_route"
 const val MY_PAGE_NESTED_ROUTE = "my_page_nested_route"

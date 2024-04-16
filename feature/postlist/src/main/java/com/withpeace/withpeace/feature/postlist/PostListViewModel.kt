@@ -6,12 +6,12 @@ import androidx.paging.Pager
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
-import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.error.ClientError
 import com.withpeace.withpeace.core.domain.usecase.GetPostsUseCase
 import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 import com.withpeace.withpeace.core.ui.post.PostUiModel
-import com.withpeace.withpeace.core.ui.post.toPostUiModel
 import com.withpeace.withpeace.core.ui.post.toDomain
+import com.withpeace.withpeace.core.ui.post.toPostUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,8 +53,8 @@ class PostListViewModel @Inject constructor(
                     pageSize = PAGE_SIZE,
                     onError = {
                         when (it) {
-                            is WithPeaceError.GeneralError -> _uiEvent.send(PostListUiEvent.NetworkError)
-                            is WithPeaceError.UnAuthorized -> _uiEvent.send(PostListUiEvent.UnAuthorizedError)
+                            ClientError.AuthExpired -> _uiEvent.send(PostListUiEvent.UnAuthorizedError)
+                            else -> _uiEvent.send(PostListUiEvent.NetworkError)
                         }
                         throw IllegalStateException() // LoadStateError를 내보내기 위함
                     },

@@ -48,11 +48,11 @@ fun MyPageRoute(
         viewModel.myPageUiEvent.collect {
             when (it) {
                 MyPageUiEvent.UnAuthorizedError -> {
-                    onShowSnackBar("인증에 실패했습니다")
+                    viewModel.logout()
                 }
 
-                MyPageUiEvent.GeneralError -> {
-                    onShowSnackBar("서버와의 오류가 발생했습니다. 다시 시도해주세요.")
+                MyPageUiEvent.ResponseError -> {
+                    onShowSnackBar("서버 통신 중 오류가 발생했습니다. 다시 시도해주세요.")
                 }
 
                 MyPageUiEvent.Logout -> onLogoutSuccess()

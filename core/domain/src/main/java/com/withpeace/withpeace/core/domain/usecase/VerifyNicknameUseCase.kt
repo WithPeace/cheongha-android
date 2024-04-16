@@ -1,12 +1,11 @@
 package com.withpeace.withpeace.core.domain.usecase
 
-import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.error.CheonghaError
+import com.withpeace.withpeace.core.domain.model.error.ClientError
 import com.withpeace.withpeace.core.domain.model.profile.Nickname
 import com.withpeace.withpeace.core.domain.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class VerifyNicknameUseCase @Inject constructor(
@@ -14,10 +13,10 @@ class VerifyNicknameUseCase @Inject constructor(
 ) {
     operator fun invoke(
         nickname: String,
-        onError: suspend (WithPeaceError) -> Unit,
+        onError: suspend (CheonghaError) -> Unit,
     ): Flow<Unit> {
         if (!Nickname.verifyFormat(nickname)) {
-            return flow { onError(WithPeaceError.GeneralError(code = 1)) }
+            return flow { onError(ClientError.NicknameError.FormatInvalid) }
         }
         return userRepository.verifyNicknameDuplicated(Nickname(nickname), onError = onError)
     }

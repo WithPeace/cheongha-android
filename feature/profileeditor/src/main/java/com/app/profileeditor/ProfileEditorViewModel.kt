@@ -7,7 +7,8 @@ import com.app.profileeditor.navigation.PROFILE_IMAGE_URL_ARGUMENT
 import com.app.profileeditor.navigation.PROFILE_NICKNAME_ARGUMENT
 import com.app.profileeditor.uistate.ProfileEditUiEvent
 import com.app.profileeditor.uistate.ProfileUiModel
-import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.error.ClientError
+import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.usecase.UpdateProfileUseCase
 import com.withpeace.withpeace.core.domain.usecase.VerifyNicknameUseCase
 import com.withpeace.withpeace.core.ui.profile.ProfileNicknameValidUiState
@@ -68,12 +69,11 @@ class ProfileEditorViewModel @Inject constructor(
             verifyNicknameUseCase(
                 onError = { error ->
                     when (error) {
-                        is WithPeaceError.GeneralError -> {
-                            when (error.code) {
-                                1 -> _profileNicknameValidUiState.update { ProfileNicknameValidUiState.InValidFormat }
-                                2 -> _profileNicknameValidUiState.update { ProfileNicknameValidUiState.InValidDuplicated }
-                            }
-                        }
+                        ClientError.NicknameError.FormatInvalid ->
+                            _profileNicknameValidUiState.update { ProfileNicknameValidUiState.InValidFormat }
+
+                        ClientError.NicknameError.Duplicated ->
+                            _profileNicknameValidUiState.update { ProfileNicknameValidUiState.InValidDuplicated }
 
                         else -> _profileEditUiEvent.send(ProfileEditUiEvent.UpdateFailure)
                     }
@@ -93,16 +93,11 @@ class ProfileEditorViewModel @Inject constructor(
                 onError = {
                     _profileEditUiEvent.send(
                         when (it) {
-                            is WithPeaceError.GeneralError -> {
-                                when (it.code) {
-                                    3 -> ProfileEditUiEvent.ProfileUnchanged
-                                    40001 -> ProfileEditUiEvent.NicknameInvalidFormat
-                                    40007 -> ProfileEditUiEvent.NicknameDuplicated
-                                    else -> ProfileEditUiEvent.UpdateFailure
-                                }
-                            }
-
-                            is WithPeaceError.UnAuthorized -> ProfileEditUiEvent.UnAuthorized
+                            ResponseError.INVALID_ARGUMENT -> ProfileEditUiEvent.NicknameInvalidFormat
+                            ResponseError.DUPLICATE_RESOURCE -> ProfileEditUiEvent.NicknameDuplicated
+                            ClientError.ProfileNotChanged -> ProfileEditUiEvent.ProfileUnchanged
+                            ClientError.AuthExpired -> ProfileEditUiEvent.UnAuthorized
+                            else -> ProfileEditUiEvent.UpdateFailure
                         },
                     )
                 },

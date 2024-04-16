@@ -1,7 +1,7 @@
 package com.withpeace.withpeace.core.domain.usecase
 
 import com.google.common.truth.Truth.assertThat
-import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import com.withpeace.withpeace.core.domain.model.image.LimitedImages
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.domain.model.post.RegisterPost
@@ -54,17 +54,17 @@ class RegisterPostUseCaseTest {
     @Test
     fun `게시글을 등록을 실패하면, 실패 람다를 실행한다`() = runTest {
         // given
-        val errorMock = mockk<suspend (WithPeaceError) -> Unit>(relaxed = true)
-        val errorSlot = slot<suspend (WithPeaceError) -> Unit>()
+        val errorMock = mockk<suspend (CheonghaError) -> Unit>(relaxed = true)
+        val errorSlot = slot<suspend (CheonghaError) -> Unit>()
         coEvery {
             postRepository.registerPost(
                 testRegisterPost,
                 onError = capture(errorSlot),
             )
-        } returns flow { errorSlot.captured.invoke(WithPeaceError.GeneralError()) }
+        } returns flow { errorSlot.captured.invoke(CheonghaError.GeneralError()) }
         // when
         registerPostUseCase(testRegisterPost) { errorMock.invoke(it) }.toList()
-        coVerify { errorMock.invoke(WithPeaceError.GeneralError()) }
+        coVerify { errorMock.invoke(CheonghaError.GeneralError()) }
     }
 
     private val testRegisterPost = RegisterPost(

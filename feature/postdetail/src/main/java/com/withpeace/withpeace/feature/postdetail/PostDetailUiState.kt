@@ -7,4 +7,5 @@ sealed interface PostDetailUiState {
     data class Success(val postDetail: PostDetailUiModel) : PostDetailUiState
     data object FailByNetwork : PostDetailUiState
     data object NotFound : PostDetailUiState
+    data object UnAuthorized: PostDetailUiState
 }

@@ -2,22 +2,21 @@ package com.withpeace.withpeace.core.data.repository
 
 import android.content.Context
 import android.net.Uri
-import com.skydoves.sandwich.messageOrNull
 import com.skydoves.sandwich.suspendMapSuccess
-import com.skydoves.sandwich.suspendOnError
-import com.skydoves.sandwich.suspendOnException
 import com.withpeace.withpeace.core.data.mapper.toDomain
 import com.withpeace.withpeace.core.data.util.convertToFile
+import com.withpeace.withpeace.core.data.util.handleApiFailure
 import com.withpeace.withpeace.core.datastore.dataStore.token.TokenPreferenceDataSource
 import com.withpeace.withpeace.core.datastore.dataStore.user.UserPreferenceDataSource
 import com.withpeace.withpeace.core.domain.model.SignUpInfo
-import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.error.CheonghaError
+import com.withpeace.withpeace.core.domain.model.error.ClientError
+import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.model.profile.ChangedProfile
 import com.withpeace.withpeace.core.domain.model.profile.Nickname
 import com.withpeace.withpeace.core.domain.model.profile.ProfileInfo
 import com.withpeace.withpeace.core.domain.model.role.Role
 import com.withpeace.withpeace.core.domain.repository.UserRepository
-import com.withpeace.withpeace.core.network.di.common.getErrorBody
 import com.withpeace.withpeace.core.network.di.request.NicknameRequest
 import com.withpeace.withpeace.core.network.di.service.UserService
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -40,25 +39,18 @@ class DefaultUserRepository @Inject constructor(
     private val userPreferenceDataSource: UserPreferenceDataSource,
 ) : UserRepository {
     override fun getProfile(
-        onError: suspend (WithPeaceError) -> Unit,
+        onError: suspend (ResponseError) -> Unit,
     ): Flow<ProfileInfo> = flow {
         userService.getProfile().suspendMapSuccess {
             emit(this.data.toDomain())
-        }.suspendOnError {
-            if (statusCode.code == 401) {
-                onError(WithPeaceError.UnAuthorized())
-            } else {
-                val errorBody = errorBody?.getErrorBody()
-                onError(WithPeaceError.GeneralError(errorBody?.code, errorBody?.message))
-            }
-        }.suspendOnException {
-            onError(WithPeaceError.GeneralError(message = messageOrNull))
+        }.handleApiFailure {
+            onError(it)
         }
     }
 
     override suspend fun signUp(
         signUpInfo: SignUpInfo,
-        onError: suspend (WithPeaceError) -> Unit,
+        onError: suspend (CheonghaError) -> Unit,
     ): Flow<Unit> = flow {
         val nicknameRequestBody =
             signUpInfo.nickname.toRequestBody("text/plain".toMediaTypeOrNull())
@@ -78,16 +70,7 @@ class DefaultUserRepository @Inject constructor(
             tokenPreferenceDataSource.updateAccessToken(data.accessToken)
             tokenPreferenceDataSource.updateRefreshToken(data.refreshToken)
             emit(Unit)
-        }.suspendOnError {
-            if (statusCode.code == 401) {
-                onError(WithPeaceError.UnAuthorized())
-            } else {
-                val errorBody = errorBody?.getErrorBody()
-                onError(WithPeaceError.GeneralError(errorBody?.code, errorBody?.message))
-            }
-        }.suspendOnException {
-            onError(WithPeaceError.GeneralError(message = messageOrNull))
-        }
+        }.handleApiFailure(onError)
     }
 
     override suspend fun getCurrentUserId(): Long = withContext(Dispatchers.IO) {
@@ -97,97 +80,55 @@ class DefaultUserRepository @Inject constructor(
     override fun updateProfile(
         nickname: String,
         profileImage: String,
-        onError: suspend (WithPeaceError) -> Unit,
+        onError: suspend (CheonghaError) -> Unit,
     ): Flow<ChangedProfile> = flow {
         val imagePart = getImagePart(profileImage)
         userService.updateProfile(
             nickname.toRequestBody("text/plain".toMediaTypeOrNull()), imagePart,
         ).suspendMapSuccess {
             emit(this.data.toDomain())
-        }.suspendOnError {
-            if (statusCode.code == 401) {
-                onError(WithPeaceError.UnAuthorized())
-            } else {
-                val errorBody = errorBody?.getErrorBody()
-                onError(WithPeaceError.GeneralError(errorBody?.code, errorBody?.message))
-            }
-        }.suspendOnException {
-            onError(WithPeaceError.GeneralError(message = messageOrNull))
-        }
+        }.handleApiFailure(onError)
     }
 
     override fun updateNickname(
         nickname: String,
-        onError: suspend (WithPeaceError) -> Unit,
+        onError: suspend (CheonghaError) -> Unit,
     ): Flow<ChangedProfile> =
         flow {
             userService.updateNickname(NicknameRequest(nickname)).suspendMapSuccess {
                 emit(ChangedProfile(nickname = Nickname(this.data)))
-            }.suspendOnError {
-                if (statusCode.code == 401) {
-                    onError(WithPeaceError.UnAuthorized())
-                } else {
-                    val errorBody = errorBody?.getErrorBody()
-                    onError(WithPeaceError.GeneralError(errorBody?.code, errorBody?.message))
-                }
-            }.suspendOnException {
-                onError(WithPeaceError.GeneralError(message = messageOrNull))
-            }
+            }.handleApiFailure(onError)
         }
 
     override fun updateProfileImage(
         profileImage: String,
-        onError: suspend (WithPeaceError) -> Unit,
+        onError: suspend (CheonghaError) -> Unit,
     ): Flow<ChangedProfile> = flow {
         val imagePart = getImagePart(profileImage)
         userService.updateImage(imagePart).suspendMapSuccess {
             emit(ChangedProfile(profileImageUrl = this.data))
-        }.suspendOnError {
-            if (statusCode.code == 401) {
-                onError(WithPeaceError.UnAuthorized())
-            } else {
-                val errorBody = errorBody?.getErrorBody()
-                onError(WithPeaceError.GeneralError(errorBody?.code, errorBody?.message))
-            }
-        }.suspendOnException {
-            onError(WithPeaceError.GeneralError(message = messageOrNull))
-        }
+        }.handleApiFailure(onError)
     }
 
     override fun verifyNicknameDuplicated(
         nickname: Nickname,
-        onError: suspend (WithPeaceError) -> Unit,
+        onError: suspend (CheonghaError) -> Unit,
     ): Flow<Unit> = flow {
         userService.isNicknameDuplicate(nickname.value).suspendMapSuccess {
             if (this.data) {
-                onError(WithPeaceError.GeneralError(code = 2))
+                onError(ClientError.NicknameError.Duplicated)
             } else {
                 emit(Unit)
             }
-        }.suspendOnError {
-            onError(WithPeaceError.GeneralError(statusCode.code, messageOrNull))
-        }.suspendOnException {
-            onError(WithPeaceError.GeneralError(message = messageOrNull))
-        }
+        }.handleApiFailure(onError)
     }
 
-
-
-    override fun logout(onError: suspend (WithPeaceError) -> Unit): Flow<Unit> = flow {
+    override fun logout(onError: suspend (CheonghaError) -> Unit): Flow<Unit> = flow {
         userService.logout().suspendMapSuccess {
             tokenPreferenceDataSource.removeAll()
             userPreferenceDataSource.removeAll()
             emit(Unit)
-        }.suspendOnError {
-            if (statusCode.code == 401) {
-                onError(WithPeaceError.UnAuthorized())
-            } else {
-                val errorBody = errorBody?.getErrorBody()
-                onError(WithPeaceError.GeneralError(errorBody?.code, errorBody?.message))
-            }
-        }.suspendOnException {
-            onError(WithPeaceError.GeneralError(message = messageOrNull))
-        }
+        }.handleApiFailure(onError)
     }
 
     private fun getImagePart(profileImage: String): MultipartBody.Part {
