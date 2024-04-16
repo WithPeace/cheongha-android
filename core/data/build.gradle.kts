@@ -10,6 +10,10 @@ android {
     defaultConfig {
         consumerProguardFiles("consumer-rules.pro")
     }
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+        //https://developer.android.com/reference/tools/gradle-api/4.1/com/android/build/api/dsl/UnitTestOptions#isreturndefaultvalues
+    }
     namespace = "com.withpeace.withpeace.core.data"
 }
 

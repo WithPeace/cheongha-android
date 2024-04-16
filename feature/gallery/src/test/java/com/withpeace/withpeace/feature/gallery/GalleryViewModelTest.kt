@@ -99,7 +99,7 @@ class GalleryViewModelTest {
         savedStateHandle = SavedStateHandle()
         viewModel = viewModel()
         coEvery {
-            getAlbumImagesUseCase("")
+            getAlbumImagesUseCase("",30)
         } returns Pager(
             config = PagingConfig(30),
             pagingSourceFactory = emptyList<ImageInfo>().asPagingSourceFactory(),
@@ -123,7 +123,7 @@ class GalleryViewModelTest {
             "uri","type",0L
         )}
         coEvery {
-            getAlbumImagesUseCase(testFolder.folderName)
+            getAlbumImagesUseCase(testFolder.folderName,30)
         } returns Pager(
             config = PagingConfig(30),
             pagingSourceFactory = testImages.asPagingSourceFactory(),

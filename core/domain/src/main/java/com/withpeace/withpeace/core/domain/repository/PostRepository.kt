@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.core.domain.repository
 
+import androidx.paging.PagingData
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
 import com.withpeace.withpeace.core.domain.model.post.Post
 import com.withpeace.withpeace.core.domain.model.post.PostDetail
@@ -10,10 +11,9 @@ import kotlinx.coroutines.flow.Flow
 interface PostRepository {
     fun getPosts(
         postTopic: PostTopic,
-        pageIndex: Int,
         pageSize: Int,
         onError: suspend (WithPeaceError) -> Unit,
-    ): Flow<List<Post>>
+    ): Flow<PagingData<Post>>
 
     fun registerPost(
         post: RegisterPost,

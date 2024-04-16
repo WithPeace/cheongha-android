@@ -4,6 +4,10 @@ plugins {
 
 android {
     namespace = "com.withpeace.withpeace.feature.postlist"
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+        //https://developer.android.com/reference/tools/gradle-api/4.1/com/android/build/api/dsl/UnitTestOptions#isreturndefaultvalues
+    }
 }
 
 dependencies {

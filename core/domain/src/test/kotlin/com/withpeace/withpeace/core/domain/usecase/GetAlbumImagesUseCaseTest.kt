@@ -17,8 +17,8 @@ class GetAlbumImagesUseCaseTest {
         // given
         getAlbumImagesUseCase = GetAlbumImagesUseCase(imageRepository)
         // when
-        getAlbumImagesUseCase("test")
+        getAlbumImagesUseCase("test",20)
         // then
-        verify { imageRepository.getImages("test") }
+        verify { imageRepository.getImages("test",20) }
     }
 }

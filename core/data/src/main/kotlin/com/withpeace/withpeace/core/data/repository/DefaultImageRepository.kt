@@ -29,19 +29,16 @@ class DefaultImageRepository @Inject constructor(
 
     override fun getImages(
         folderName: String?,
+        pageSize: Int,
     ): Flow<PagingData<ImageInfo>> =
         Pager(
-            config = PagingConfig(PAGE_SIZE),
+            config = PagingConfig(pageSize),
             pagingSourceFactory = {
                 ImagePagingSource(
                     imageDataSource = imageDataSource,
                     folderName = folderName,
-                    pageSize = PAGE_SIZE,
+                    pageSize = pageSize,
                 )
             },
         ).flow
-
-    companion object {
-        private const val PAGE_SIZE = 30
-    }
 }

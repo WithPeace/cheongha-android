@@ -1,12 +1,15 @@
 package com.withpeace.withpeace.core.data.repository
 
 import android.content.Context
-import android.net.Uri
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.skydoves.sandwich.messageOrNull
 import com.skydoves.sandwich.suspendMapSuccess
 import com.skydoves.sandwich.suspendOnError
 import com.skydoves.sandwich.suspendOnException
 import com.withpeace.withpeace.core.data.mapper.toDomain
+import com.withpeace.withpeace.core.data.paging.PostPagingSource
 import com.withpeace.withpeace.core.data.util.convertToFile
 import com.withpeace.withpeace.core.domain.model.WithPeaceError
 import com.withpeace.withpeace.core.domain.model.WithPeaceError.GeneralError
@@ -34,31 +37,20 @@ class DefaultPostRepository @Inject constructor(
     private val postService: PostService,
 ) : PostRepository {
     override fun getPosts(
-        postTopic: PostTopic, pageIndex: Int,
+        postTopic: PostTopic,
         pageSize: Int,
         onError: suspend (WithPeaceError) -> Unit,
-    ): Flow<List<Post>> =
-        flow {
-            postService.getPosts(
-                postTopic = postTopic.name,
-                pageIndex = pageIndex, pageSize = pageSize,
-            ).suspendMapSuccess {
-                emit(data.map { it.toDomain() })
-            }.suspendOnError {
-                if (statusCode.code == 401) {
-                    onError(
-                        UnAuthorized(
-                            statusCode.code,
-                            message = null,
-                        ),
-                    )
-                } else {
-                    onError(GeneralError(statusCode.code, messageOrNull))
-                }
-            }.suspendOnException {
-                onError(GeneralError(message = messageOrNull))
-            }
-        }.flowOn(Dispatchers.IO)
+    ): Flow<PagingData<Post>> = Pager(
+        config = PagingConfig(pageSize),
+        pagingSourceFactory = {
+            PostPagingSource(
+                postService = postService,
+                postTopic = postTopic,
+                pageSize = pageSize,
+                onError = onError,
+            )
+        },
+    ).flow
 
     override fun registerPost(
         post: RegisterPost,

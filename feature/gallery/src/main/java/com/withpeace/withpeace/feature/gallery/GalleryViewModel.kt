@@ -62,7 +62,7 @@ class GalleryViewModel @Inject constructor(
     }
 
     private suspend fun getImagePagingData(folderName:String):PagingData<ImageInfo>{
-        return getAlbumImagesUseCase(folderName)
+        return getAlbumImagesUseCase(folderName,PAGE_SIZE)
             .cachedIn(viewModelScope) // Paging 정보를 화면 회전에도 날라가지 않게 하기 위함
             .firstOrNull() ?: PagingData.empty()
     }
@@ -96,5 +96,6 @@ class GalleryViewModel @Inject constructor(
     companion object {
         private const val DEFAULT_MAX_SELECTABLE_COUNT = 5
         private const val DEFAULT__CURRENT_IMAGE_COUNT = 0
+        private const val PAGE_SIZE = 30
     }
 }

@@ -10,45 +10,34 @@ import java.time.format.DateTimeFormatter
 data class DateUiModel(
     val date: LocalDateTime,
     val durationFromNow: DurationFromNowUiModel,
-)
-
-sealed class DurationFromNowUiModel(
-    val duration: Duration,
 ) {
-    class LessThanOneMinute(duration: Duration) : DurationFromNowUiModel(duration)
-    class OneMinuteToOneHour(duration: Duration) : DurationFromNowUiModel(duration)
-    class OneHourToOneDay(duration: Duration) : DurationFromNowUiModel(duration)
-    class OneDayToSevenDay(duration: Duration) : DurationFromNowUiModel(duration)
-    class SevenDayToOneYear(duration: Duration) : DurationFromNowUiModel(duration)
-    class OverOneYear(duration: Duration) : DurationFromNowUiModel(duration)
+    val duration: Duration
+        get() = Duration.between(date, LocalDateTime.now())
+}
+
+sealed class DurationFromNowUiModel {
+    data object LessThanOneMinute : DurationFromNowUiModel()
+    data object OneMinuteToOneHour : DurationFromNowUiModel()
+    data object OneHourToOneDay : DurationFromNowUiModel()
+    data object OneDayToSevenDay : DurationFromNowUiModel()
+    data object SevenDayToOneYear : DurationFromNowUiModel()
+    data object OverOneYear : DurationFromNowUiModel()
 }
 
 fun Date.toUiModel(): DateUiModel = DateUiModel(
     date = date,
     durationFromNow = when (durationFromNow) {
-        is DurationFromNow.LessThanOneMinute -> DurationFromNowUiModel.LessThanOneMinute(
-            durationFromNow.value,
-        )
+        is DurationFromNow.LessThanOneMinute -> DurationFromNowUiModel.LessThanOneMinute
 
-        is DurationFromNow.OneDayToSevenDay -> DurationFromNowUiModel.OneDayToSevenDay(
-            durationFromNow.value,
-        )
+        is DurationFromNow.OneDayToSevenDay -> DurationFromNowUiModel.OneDayToSevenDay
 
-        is DurationFromNow.OneHourToOneDay -> DurationFromNowUiModel.OneHourToOneDay(
-            durationFromNow.value,
-        )
+        is DurationFromNow.OneHourToOneDay -> DurationFromNowUiModel.OneHourToOneDay
 
-        is DurationFromNow.OneMinuteToOneHour -> DurationFromNowUiModel.OneMinuteToOneHour(
-            durationFromNow.value,
-        )
+        is DurationFromNow.OneMinuteToOneHour -> DurationFromNowUiModel.OneMinuteToOneHour
 
-        is DurationFromNow.OverOneYear -> DurationFromNowUiModel.OverOneYear(
-            durationFromNow.value,
-        )
+        is DurationFromNow.OverOneYear -> DurationFromNowUiModel.OverOneYear
 
-        is DurationFromNow.SevenDayToOneYear -> DurationFromNowUiModel.SevenDayToOneYear(
-            durationFromNow.value,
-        )
+        is DurationFromNow.SevenDayToOneYear -> DurationFromNowUiModel.SevenDayToOneYear
     },
 )
 
@@ -57,23 +46,23 @@ fun DateUiModel.toRelativeString(context: Context): String {
         is DurationFromNowUiModel.LessThanOneMinute -> {
             context.getString(
                 R.string.second_format,
-                durationFromNow.duration.seconds,
+                duration.seconds,
             )
         }
 
         is DurationFromNowUiModel.OneMinuteToOneHour -> context.getString(
             R.string.minute_format,
-            durationFromNow.duration.toMinutes(),
+            duration.toMinutes(),
         )
 
         is DurationFromNowUiModel.OneHourToOneDay -> context.getString(
             R.string.hour_format,
-            durationFromNow.duration.toHours(),
+            duration.toHours(),
         )
 
         is DurationFromNowUiModel.OneDayToSevenDay -> context.getString(
             R.string.day_format,
-            durationFromNow.duration.toDays(),
+            duration.toDays(),
         )
 
         is DurationFromNowUiModel.SevenDayToOneYear -> date.format(
@@ -84,10 +73,10 @@ fun DateUiModel.toRelativeString(context: Context): String {
 
         is DurationFromNowUiModel.OverOneYear -> context.getString(
             R.string.years_format,
-            durationFromNow.duration.toDays() / DAYS_FOR_YEAR,
+            duration.toDays() / DAYS_FOR_YEAR,
         )
     }
 }
 
-private const val DATE_FORMAT = "MM월 DD일"
+private const val DATE_FORMAT = "MM월 dd일"
 private const val DAYS_FOR_YEAR = 365

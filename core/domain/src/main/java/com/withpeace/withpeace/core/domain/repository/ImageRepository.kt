@@ -11,5 +11,6 @@ interface ImageRepository {
 
     fun getImages(
         folderName: String?,
+        pageSize: Int,
     ): Flow<PagingData<ImageInfo>>
 }

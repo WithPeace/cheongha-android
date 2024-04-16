@@ -9,6 +9,6 @@ import javax.inject.Inject
 class GetAlbumImagesUseCase @Inject constructor(
     private val imageRepository: ImageRepository,
 ) {
-    operator fun invoke(selectedFolderName: String): Flow<PagingData<ImageInfo>> =
-        imageRepository.getImages(selectedFolderName)
+    operator fun invoke(selectedFolderName: String,pageSize:Int): Flow<PagingData<ImageInfo>> =
+        imageRepository.getImages(selectedFolderName,pageSize)
 }

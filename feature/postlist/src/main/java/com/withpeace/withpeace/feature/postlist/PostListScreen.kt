@@ -37,6 +37,7 @@ import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.skydoves.landscapist.glide.GlideImage
 import com.withpeace.withpeace.core.designsystem.theme.PretendardFont
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
@@ -131,7 +132,8 @@ fun PostListItems(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(
-            postListPagingData.itemCount,
+            count = postListPagingData.itemCount,
+            key = postListPagingData.itemKey { it.postId }
         ) {
             val post = postListPagingData[it] ?: throw IllegalStateException()
             WithpeaceCard(
@@ -216,9 +218,7 @@ private fun PostListScreenPreview() {
                                 postTopic = PostTopicUiModel.ECONOMY,
                                 createDate = DateUiModel(
                                     date = LocalDateTime.now(),
-                                    durationFromNow = DurationFromNowUiModel.LessThanOneMinute(
-                                        Duration.ZERO,
-                                    ),
+                                    durationFromNow = DurationFromNowUiModel.LessThanOneMinute
                                 ),
                                 postImageUrl = null,
                             )

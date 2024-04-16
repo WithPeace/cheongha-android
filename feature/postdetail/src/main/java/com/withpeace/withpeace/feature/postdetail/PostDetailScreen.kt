@@ -508,9 +508,7 @@ private fun PostDetailScreenPreview() {
                     imageUrls = listOf("", "", ""),
                     createDate = DateUiModel(
                         LocalDateTime.now(),
-                        DurationFromNowUiModel.LessThanOneMinute(
-                            Duration.ZERO,
-                        ),
+                        DurationFromNowUiModel.LessThanOneMinute
                     ),
                     isMyPost = false,
                 ),
