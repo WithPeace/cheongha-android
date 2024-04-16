@@ -42,13 +42,14 @@ fun MyPageRoute(
     onEditProfile: (nickname: String, profileImageUrl: String) -> Unit,
     onLogoutSuccess: () -> Unit,
     onWithdrawClick: () -> Unit,
+    onAuthExpired: () -> Unit,
 ) {
     val profileInfo by viewModel.myPageUiState.collectAsStateWithLifecycle()
     LaunchedEffect(viewModel.myPageUiEvent) {
         viewModel.myPageUiEvent.collect {
             when (it) {
                 MyPageUiEvent.UnAuthorizedError -> {
-                    viewModel.logout()
+                    onAuthExpired()
                 }
 
                 MyPageUiEvent.ResponseError -> {

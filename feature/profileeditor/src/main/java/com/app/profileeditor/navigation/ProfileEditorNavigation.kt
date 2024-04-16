@@ -33,6 +33,7 @@ fun NavGraphBuilder.profileEditorNavGraph(
     onClickBackButton: () -> Unit,
     onNavigateToGallery: () -> Unit,
     onUpdateSuccess: (nickname: String, imageUrl: String) -> Unit,
+    onAuthExpired: () -> Unit,
 ) {
     composable(
         route = PROFILE_EDITOR_ROUTE_WITH_ARGUMENT,
@@ -53,6 +54,7 @@ fun NavGraphBuilder.profileEditorNavGraph(
             onNavigateToGallery = onNavigateToGallery,
             viewModel = viewModel,
             onUpdateSuccess = onUpdateSuccess,
+            onAuthExpired = onAuthExpired
         )
     }
 }

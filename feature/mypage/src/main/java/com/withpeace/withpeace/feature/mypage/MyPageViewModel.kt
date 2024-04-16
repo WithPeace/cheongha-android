@@ -43,7 +43,7 @@ class MyPageViewModel @Inject constructor(
             getUserInfoUseCase { error ->
                 when (error) {
                     ResponseError.EXPIRED_TOKEN_ERROR -> {
-                       logout()
+                        _myPageUiEvent.send(MyPageUiEvent.UnAuthorizedError)
                     }
                     else -> {
                         _myPageUiEvent.send(MyPageUiEvent.ResponseError)

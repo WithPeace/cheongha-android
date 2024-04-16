@@ -79,7 +79,7 @@ fun RegisterPostRoute(
     onClickedBackButton: () -> Unit,
     onCompleteRegisterPost: (postId: Long) -> Unit,
     onNavigateToGallery: (imageLimit: Int, imageCount: Int) -> Unit,
-    onLogoutSuccess: () -> Unit,
+    onAuthExpired: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -110,7 +110,7 @@ fun RegisterPostRoute(
 
                 is RegisterPostUiEvent.RegisterFail -> {
                     when (event.error) {
-                        is ClientError.AuthExpired -> onLogoutSuccess()
+                        is ClientError.AuthExpired -> onAuthExpired()
                         else -> onShowSnackBar("서버와의 통신 중 오류가 발생했습니다.")
                     }
                 }

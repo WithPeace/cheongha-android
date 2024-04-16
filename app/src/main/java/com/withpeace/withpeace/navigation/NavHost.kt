@@ -99,14 +99,8 @@ fun WithpeaceNavHost(
             originPost = navController.previousBackStackEntry?.savedStateHandle?.get(
                 REGISTER_POST_ARGUMENT,
             ),
-            onLogoutSuccess = {
-                navController.navigateLogin(
-                    navOptions = navOptions {
-                        popUpTo(navController.graph.id) {
-                            inclusive = true
-                        }
-                    },
-                )
+            onAuthExpired = {
+                onAuthExpired(onShowSnackBar, navController)
             },
         )
         galleryNavGraph(
@@ -146,6 +140,9 @@ fun WithpeaceNavHost(
                     )
                 },
                 onWithdrawClick = {},
+                onAuthExpired = {
+                    onAuthExpired(onShowSnackBar, navController)
+                },
             )
             profileEditorNavGraph(
                 onShowSnackBar = onShowSnackBar,
@@ -155,13 +152,18 @@ fun WithpeaceNavHost(
                 onNavigateToGallery = {
                     navController.navigateToGallery(imageLimit = 1)
                 },
-            ) { nickname, imageUrl ->
-                navController.previousBackStackEntry?.savedStateHandle?.apply {
-                    set(MY_PAGE_CHANGED_NICKNAME_ARGUMENT, nickname)
-                    set(MY_PAGE_CHANGED_IMAGE_ARGUMENT, imageUrl)
-                }
-                navController.popBackStack()
-            }
+                onAuthExpired = {
+                    onAuthExpired(onShowSnackBar, navController)
+                },
+                onUpdateSuccess = { nickname, imageUrl ->
+                    navController.previousBackStackEntry?.savedStateHandle?.apply {
+                        set(MY_PAGE_CHANGED_NICKNAME_ARGUMENT, nickname)
+                        set(MY_PAGE_CHANGED_IMAGE_ARGUMENT, imageUrl)
+                    }
+                    navController.popBackStack()
+
+                },
+            )
         }
         postDetailGraph(
             onShowSnackBar = onShowSnackBar,
@@ -174,30 +176,31 @@ fun WithpeaceNavHost(
                 navController.navigateToRegisterPost()
             },
             onAuthExpired = {
-                navController.navigateLogin(
-                    navOptions = navOptions {
-                        popUpTo(navController.graph.id) {
-                            inclusive = true
-                        }
-                    },
-                )
+                onAuthExpired(onShowSnackBar, navController)
             },
         )
         postListGraph(
             onShowSnackBar = onShowSnackBar,
             navigateToPostDetail = navController::navigateToPostDetail,
             onAuthExpired = {
-                onShowSnackBar("")
-                navController.navigateLogin(
-                    navOptions = navOptions {
-                        popUpTo(navController.graph.id) {
-                            inclusive = true
-                        }
-                    },
-                )
+                onAuthExpired(onShowSnackBar, navController)
             },
         )
     }
+}
+
+private fun onAuthExpired(
+    onShowSnackBar: (message: String) -> Unit,
+    navController: NavHostController,
+) {
+    onShowSnackBar("세션이 만료되었습니다. 로그인 후 다시 시도해 주세요.")
+    navController.navigateLogin(
+        navOptions = navOptions {
+            popUpTo(navController.graph.id) {
+                inclusive = true
+            }
+        },
+    )
 }
 
 const val POST_NESTED_ROUTE = "post_nested_route"
