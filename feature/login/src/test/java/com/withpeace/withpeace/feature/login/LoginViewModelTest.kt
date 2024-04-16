@@ -2,6 +2,8 @@ package com.withpeace.withpeace.feature.login
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import com.withpeace.withpeace.core.domain.model.error.CheonghaError
+import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.model.role.Role
 import com.withpeace.withpeace.core.domain.usecase.GoogleLoginUseCase
 import com.withpeace.withpeace.core.testing.MainDispatcherRule
@@ -91,13 +93,13 @@ class LoginViewModelTest {
     @Test
     fun `구글 로그인에 실패하면 로그인 실패 이벤트를 발생한다`() = runTest {
         // given
-        val onFailSlot = slot<(String) -> Unit>()
+        val onFailSlot = slot<suspend (CheonghaError) -> Unit>()
         coEvery {
             googleLoginUseCase(
                 "test",
                 onError = capture(onFailSlot),
             )
-        } returns flow { onFailSlot.captured("test") }
+        } returns flow { onFailSlot.captured(ResponseError.UNKNOWN_ERROR) }
 
         viewModel = initialize()
         // when & then
