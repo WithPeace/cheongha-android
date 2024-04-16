@@ -39,12 +39,12 @@ class DefaultUserRepository @Inject constructor(
     private val userPreferenceDataSource: UserPreferenceDataSource,
 ) : UserRepository {
     override fun getProfile(
-        onError: suspend (ResponseError) -> Unit,
+        onError: suspend (CheonghaError) -> Unit,
     ): Flow<ProfileInfo> = flow {
         userService.getProfile().suspendMapSuccess {
             emit(this.data.toDomain())
         }.handleApiFailure {
-            onError(it)
+            onErrorWithAuthExpired(it, onError)
         }
     }
 
@@ -87,7 +87,9 @@ class DefaultUserRepository @Inject constructor(
             nickname.toRequestBody("text/plain".toMediaTypeOrNull()), imagePart,
         ).suspendMapSuccess {
             emit(this.data.toDomain())
-        }.handleApiFailure(onError)
+        }.handleApiFailure {
+            onErrorWithAuthExpired(it, onError)
+        }
     }
 
     override fun updateNickname(
@@ -97,7 +99,9 @@ class DefaultUserRepository @Inject constructor(
         flow {
             userService.updateNickname(NicknameRequest(nickname)).suspendMapSuccess {
                 emit(ChangedProfile(nickname = Nickname(this.data)))
-            }.handleApiFailure(onError)
+            }.handleApiFailure {
+                onErrorWithAuthExpired(it, onError)
+            }
         }
 
     override fun updateProfileImage(
@@ -107,7 +111,9 @@ class DefaultUserRepository @Inject constructor(
         val imagePart = getImagePart(profileImage)
         userService.updateImage(imagePart).suspendMapSuccess {
             emit(ChangedProfile(profileImageUrl = this.data))
-        }.handleApiFailure(onError)
+        }.handleApiFailure {
+            onErrorWithAuthExpired(it, onError)
+        }
     }
 
     override fun verifyNicknameDuplicated(
@@ -120,7 +126,9 @@ class DefaultUserRepository @Inject constructor(
             } else {
                 emit(Unit)
             }
-        }.handleApiFailure(onError)
+        }.handleApiFailure {
+            onErrorWithAuthExpired(it, onError)
+        }
     }
 
     override fun logout(onError: suspend (CheonghaError) -> Unit): Flow<Unit> = flow {
@@ -139,5 +147,18 @@ class DefaultUserRepository @Inject constructor(
             requestFile.name,
             imageRequestBody,
         )
+    }
+
+    private suspend fun onErrorWithAuthExpired(
+        it: ResponseError,
+        onError: suspend (CheonghaError) -> Unit,
+    ) {
+        if (it == ResponseError.INVALID_TOKEN_ERROR) {
+            logout(onError).collect {
+                onError(ClientError.AuthExpired)
+            }
+        } else {
+            onError(it)
+        }
     }
 }

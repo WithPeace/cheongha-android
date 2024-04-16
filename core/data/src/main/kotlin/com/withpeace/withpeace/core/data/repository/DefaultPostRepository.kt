@@ -6,11 +6,14 @@ import com.withpeace.withpeace.core.data.mapper.toDomain
 import com.withpeace.withpeace.core.data.util.convertToFile
 import com.withpeace.withpeace.core.data.util.handleApiFailure
 import com.withpeace.withpeace.core.domain.model.error.CheonghaError
+import com.withpeace.withpeace.core.domain.model.error.ClientError
+import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.model.post.Post
 import com.withpeace.withpeace.core.domain.model.post.PostDetail
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.domain.model.post.RegisterPost
 import com.withpeace.withpeace.core.domain.repository.PostRepository
+import com.withpeace.withpeace.core.domain.repository.UserRepository
 import com.withpeace.withpeace.core.network.di.service.PostService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +30,7 @@ import javax.inject.Inject
 class DefaultPostRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val postService: PostService,
+    private val userRepository: UserRepository,
 ) : PostRepository {
     override fun getPosts(
         postTopic: PostTopic,
@@ -40,7 +44,9 @@ class DefaultPostRepository @Inject constructor(
                 pageIndex = pageIndex, pageSize = pageSize,
             ).suspendMapSuccess {
                 emit(data.map { it.toDomain() })
-            }.handleApiFailure(onError)
+            }.handleApiFailure {
+                onErrorWithAuthExpired(it, onError)
+            }
         }
 
     override fun registerPost(
@@ -54,12 +60,16 @@ class DefaultPostRepository @Inject constructor(
                 postService.registerPost(postRequestBodies, imageRequestBodies)
                     .suspendMapSuccess {
                         emit(data.postId)
-                    }.handleApiFailure(onError)
+                    }.handleApiFailure {
+                        onErrorWithAuthExpired(it, onError)
+                    }
             } else {
                 postService.editPost(post.id!!, postRequestBodies, imageRequestBodies)
                     .suspendMapSuccess {
                         emit(data.postId)
-                    }.handleApiFailure(onError)
+                    }.handleApiFailure {
+                        onErrorWithAuthExpired(it, onError)
+                    }
             }
         }.flowOn(Dispatchers.IO)
 
@@ -70,7 +80,9 @@ class DefaultPostRepository @Inject constructor(
         postService.getPost(postId)
             .suspendMapSuccess {
                 emit(data.toDomain())
-            }.handleApiFailure(onError)
+            }.handleApiFailure {
+                onErrorWithAuthExpired(it, onError)
+            }
     }
 
     override fun deletePost(
@@ -79,7 +91,9 @@ class DefaultPostRepository @Inject constructor(
     ): Flow<Boolean> = flow {
         postService.deletePost(postId).suspendMapSuccess {
             emit(data)
-        }.handleApiFailure(onError)
+        }.handleApiFailure {
+            onErrorWithAuthExpired(it, onError)
+        }
     }
 
     private fun getImageRequestBodies(
@@ -104,6 +118,19 @@ class DefaultPostRepository @Inject constructor(
             )
             set(TITLE_COLUMN, post.title.toRequestBody("application/json".toMediaTypeOrNull()))
             set(CONTENT_COLUMN, post.content.toRequestBody("application/json".toMediaTypeOrNull()))
+        }
+    }
+
+    private suspend fun onErrorWithAuthExpired(
+        it: ResponseError,
+        onError: suspend (CheonghaError) -> Unit,
+    ) {
+        if (it == ResponseError.INVALID_TOKEN_ERROR) {
+            userRepository.logout(onError).collect {
+                onError(ClientError.AuthExpired)
+            }
+        } else {
+            onError(it)
         }
     }
 

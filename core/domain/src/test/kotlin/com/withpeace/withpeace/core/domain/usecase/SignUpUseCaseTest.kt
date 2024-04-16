@@ -2,6 +2,7 @@ package com.withpeace.withpeace.core.domain.usecase
 
 import com.withpeace.withpeace.core.domain.model.SignUpInfo
 import com.withpeace.withpeace.core.domain.model.error.CheonghaError
+import com.withpeace.withpeace.core.domain.model.error.ClientError
 import com.withpeace.withpeace.core.domain.repository.UserRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -49,7 +50,7 @@ class SignUpUseCaseTest {
                 ),
                 onError = errorMock,
             )
-        } returns flow { errorMock(CheonghaError.UnAuthorized()) }
+        } returns flow { errorMock(ClientError.AuthExpired) }
         signUpUseCase = initialize()
         // when
         signUpUseCase(
@@ -60,6 +61,6 @@ class SignUpUseCaseTest {
             onError = errorMock,
         ).collect()
         // then
-        coVerify { errorMock(CheonghaError.UnAuthorized()) }
+        coVerify { errorMock(ClientError.AuthExpired) }
     }
 }

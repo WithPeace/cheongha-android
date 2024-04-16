@@ -2,6 +2,7 @@ package com.withpeace.withpeace.core.domain.usecase
 
 import com.google.common.truth.Truth.assertThat
 import com.withpeace.withpeace.core.domain.model.error.CheonghaError
+import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.model.image.LimitedImages
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.domain.model.post.RegisterPost
@@ -61,10 +62,10 @@ class RegisterPostUseCaseTest {
                 testRegisterPost,
                 onError = capture(errorSlot),
             )
-        } returns flow { errorSlot.captured.invoke(CheonghaError.GeneralError()) }
+        } returns flow { errorSlot.captured.invoke(ResponseError.UNKNOWN_ERROR) }
         // when
         registerPostUseCase(testRegisterPost) { errorMock.invoke(it) }.toList()
-        coVerify { errorMock.invoke(CheonghaError.GeneralError()) }
+        coVerify { errorMock.invoke(ResponseError.UNKNOWN_ERROR) }
     }
 
     private val testRegisterPost = RegisterPost(

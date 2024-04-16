@@ -187,6 +187,7 @@ fun WithpeaceNavHost(
             onShowSnackBar = onShowSnackBar,
             navigateToPostDetail = navController::navigateToPostDetail,
             onAuthExpired = {
+                onShowSnackBar("")
                 navController.navigateLogin(
                     navOptions = navOptions {
                         popUpTo(navController.graph.id) {
@@ -198,8 +199,6 @@ fun WithpeaceNavHost(
         )
     }
 }
-
-// TODO("onLogoutSuccess 중복 코드 제거")
 
 const val POST_NESTED_ROUTE = "post_nested_route"
 const val MY_PAGE_NESTED_ROUTE = "my_page_nested_route"

@@ -3,6 +3,7 @@ package com.withpeace.withpeace.feature.registerpost
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.withpeace.withpeace.core.domain.model.error.CheonghaError
+import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.model.image.LimitedImages
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.domain.model.post.RegisterPost
@@ -182,13 +183,13 @@ class RegisterPostViewModelTest {
                 post = any(),
                 onError = capture(slot),
             )
-        } returns flow { slot.captured.invoke(CheonghaError.GeneralError()) }
+        } returns flow { slot.captured.invoke(ResponseError.UNKNOWN_ERROR) }
         // when
         viewModel.onRegisterPostCompleted()
         // then
         viewModel.uiEvent.test {
             val actual = awaitItem()
-            assertThat(actual).isEqualTo(RegisterPostUiEvent.RegisterFail(CheonghaError.GeneralError()))
+            assertThat(actual).isEqualTo(RegisterPostUiEvent.RegisterFail(ResponseError.UNKNOWN_ERROR))
         }
     }
 }

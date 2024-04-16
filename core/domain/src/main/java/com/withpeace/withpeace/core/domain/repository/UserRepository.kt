@@ -9,7 +9,7 @@ import com.withpeace.withpeace.core.domain.model.profile.ProfileInfo
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
-    fun getProfile(onError: suspend (ResponseError) -> Unit): Flow<ProfileInfo>
+    fun getProfile(onError: suspend (CheonghaError) -> Unit): Flow<ProfileInfo>
 
     fun updateProfileImage(
         profileImage: String,
