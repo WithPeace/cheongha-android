@@ -1,15 +1,15 @@
 package com.withpeace.withpeace.core.domain.repository
 
+import androidx.paging.PagingData
 import com.withpeace.withpeace.core.domain.model.image.ImageFolder
 import com.withpeace.withpeace.core.domain.model.image.ImageInfo
+import kotlinx.coroutines.flow.Flow
 
 interface ImageRepository {
 
     suspend fun getFolders(): List<ImageFolder>
 
-    suspend fun getImages(
-        page: Int,
-        loadSize: Int,
+    fun getImages(
         folderName: String?,
-    ): List<ImageInfo>
+    ): Flow<PagingData<ImageInfo>>
 }

@@ -1,30 +1,24 @@
 package com.withpeace.withpeace.core.domain.usecase
 
-import com.google.common.truth.Truth.assertThat
-import com.withpeace.withpeace.core.domain.model.image.ImagePagingInfo
-import com.withpeace.withpeace.core.domain.paging.ImagePagingSource
 import com.withpeace.withpeace.core.domain.repository.ImageRepository
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
+
 
 class GetAlbumImagesUseCaseTest {
 
     private lateinit var getAlbumImagesUseCase: GetAlbumImagesUseCase
-    private val imageRepository = mockk<ImageRepository>()
+    private val imageRepository = mockk<ImageRepository>(relaxed = true)
 
     @Test
-    fun `폴더에 따라 이미지들을 불러올 수 있다`() = runTest() {
+    fun `이미지 페이징 정보를 요청한다`() = runTest() {
         // given
         getAlbumImagesUseCase = GetAlbumImagesUseCase(imageRepository)
-        // when && then
-        val actual = getAlbumImagesUseCase("test")
-        assertThat(actual).isEqualTo(
-            ImagePagingInfo(
-                30,
-                true,
-                ImagePagingSource(imageRepository, "test"),
-            ),
-        )
+        // when
+        getAlbumImagesUseCase("test")
+        // then
+        verify { imageRepository.getImages("test") }
     }
 }

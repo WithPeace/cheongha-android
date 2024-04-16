@@ -3,6 +3,7 @@ plugins {
     id("convention.android.base")
     id("convention.android.hilt")
     id("convention.coroutine")
+    id("convention.test.library")
 }
 
 android {
@@ -17,6 +18,8 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:datastore"))
     implementation(project(":core:imagestorage"))
+    implementation(project(":core:testing"))
     implementation(libs.skydoves.sandwich)
     implementation(libs.androidx.paging)
+    testImplementation(libs.androidx.paging.testing)
 }

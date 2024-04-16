@@ -3,7 +3,6 @@ package com.withpeace.withpeace.feature.gallery
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.withpeace.withpeace.core.domain.model.image.ImageFolder
@@ -63,11 +62,7 @@ class GalleryViewModel @Inject constructor(
     }
 
     private suspend fun getImagePagingData(folderName:String):PagingData<ImageInfo>{
-        val imagePagingInfo = getAlbumImagesUseCase(folderName)
-        return Pager(
-            config = imagePagingInfo.pagingConfig,
-            pagingSourceFactory = { imagePagingInfo.pagingSource },
-        ).flow
+        return getAlbumImagesUseCase(folderName)
             .cachedIn(viewModelScope) // Paging 정보를 화면 회전에도 날라가지 않게 하기 위함
             .firstOrNull() ?: PagingData.empty()
     }

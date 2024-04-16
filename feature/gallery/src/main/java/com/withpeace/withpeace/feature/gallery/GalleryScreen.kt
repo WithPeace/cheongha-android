@@ -34,6 +34,7 @@ import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import com.withpeace.withpeace.core.designsystem.R
@@ -231,7 +232,8 @@ fun ImageList(
         columns = GridCells.Fixed(3),
     ) {
         items(
-            pagingImages.itemCount,
+            count = pagingImages.itemCount,
+            key = pagingImages.itemKey { it.uri },
         ) { index ->
             val imageInfo = pagingImages[index] ?: throw IllegalStateException("uri가 존재하지 않음")
 
