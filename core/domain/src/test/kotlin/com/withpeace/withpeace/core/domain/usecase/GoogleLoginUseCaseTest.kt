@@ -1,5 +1,8 @@
 package com.withpeace.withpeace.core.domain.usecase
 
+import com.withpeace.withpeace.core.domain.model.error.CheonghaError
+import com.withpeace.withpeace.core.domain.model.error.ClientError
+import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.repository.TokenRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -19,14 +22,14 @@ class GoogleLoginUseCaseTest {
     @Test
     fun `로그인에 실패하면, 실패 로직이 실행된다`() = runTest {
         // given
-        val onFailure = mockk<(String) -> Unit>(relaxed = true)
+        val onFailure = mockk<(CheonghaError) -> Unit>(relaxed = true)
         coEvery {
             tokenRepository.getTokenByGoogle(
                 "test",
                 onError = onFailure,
             )
         } returns flow {
-            onFailure.invoke("test")
+            onFailure.invoke(ResponseError.FAILURE_LOGIN)
         }
         googleLoginUseCase = initialize()
         // when
@@ -35,7 +38,7 @@ class GoogleLoginUseCaseTest {
             onError = onFailure,
         ).collect()
         // then
-        coVerify { onFailure("test") }
+        coVerify { onFailure(ResponseError.FAILURE_LOGIN) }
     }
 
     @Test

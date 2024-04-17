@@ -2,7 +2,8 @@ package com.withpeace.withpeace.feature.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.error.ClientError
+import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.usecase.SignUpUseCase
 import com.withpeace.withpeace.core.domain.usecase.VerifyNicknameUseCase
 import com.withpeace.withpeace.core.ui.profile.ProfileNicknameValidUiState
@@ -50,12 +51,11 @@ class SignUpViewModel @Inject constructor(
                 nickname = _signUpInfo.value.nickname,
                 onError = { error ->
                     when (error) {
-                        is WithPeaceError.GeneralError -> {
-                            when (error.code) {
-                                1 -> _profileNicknameValidUiState.update { ProfileNicknameValidUiState.InValidFormat }
-                                2 -> _profileNicknameValidUiState.update { ProfileNicknameValidUiState.InValidDuplicated }
-                            }
-                        }
+                        ClientError.NicknameError.FormatInvalid ->
+                            _profileNicknameValidUiState.update { ProfileNicknameValidUiState.InValidFormat }
+
+                        ClientError.NicknameError.Duplicated ->
+                            _profileNicknameValidUiState.update { ProfileNicknameValidUiState.InValidDuplicated }
 
                         else -> _signUpEvent.send(SignUpUiEvent.VerifyFail)
                     }
@@ -83,17 +83,9 @@ class SignUpViewModel @Inject constructor(
                     signUpUiModel.value.toDomain(),
                     onError = {
                         when (it) {
-                            is WithPeaceError.GeneralError -> {
-                                when (it.code) {
-                                    40001 -> SignUpUiEvent.NicknameInValid
-                                    40007 -> SignUpUiEvent.NicknameInValid
-                                    else -> SignUpUiEvent.SignUpFail
-                                }
-                            }
-
-                            is WithPeaceError.UnAuthorized -> {
-                                _signUpEvent.send(SignUpUiEvent.UnAuthorized)
-                            }
+                            ResponseError.INVALID_ARGUMENT -> _signUpEvent.send(SignUpUiEvent.NicknameInValid)
+                            ResponseError.DUPLICATE_RESOURCE -> _signUpEvent.send(SignUpUiEvent.NicknameInValid)
+                            else -> _signUpEvent.send(SignUpUiEvent.SignUpFail)
                         }
                     },
                 ).collect {

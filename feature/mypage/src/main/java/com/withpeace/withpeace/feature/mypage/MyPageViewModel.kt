@@ -2,7 +2,7 @@ package com.withpeace.withpeace.feature.mypage
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.usecase.GetProfileInfoUseCase
 import com.withpeace.withpeace.core.domain.usecase.LogoutUseCase
 import com.withpeace.withpeace.feature.mypage.uistate.MyPageUiEvent
@@ -42,12 +42,11 @@ class MyPageViewModel @Inject constructor(
         viewModelScope.launch {
             getUserInfoUseCase { error ->
                 when (error) {
-                    is WithPeaceError.GeneralError -> {
-                        _myPageUiEvent.send(MyPageUiEvent.GeneralError)
-                    }
-
-                    is WithPeaceError.UnAuthorized -> {
+                    ResponseError.EXPIRED_TOKEN_ERROR -> {
                         _myPageUiEvent.send(MyPageUiEvent.UnAuthorizedError)
+                    }
+                    else -> {
+                        _myPageUiEvent.send(MyPageUiEvent.ResponseError)
                     }
                 }
             }.collect { profileInfo ->
@@ -71,10 +70,7 @@ class MyPageViewModel @Inject constructor(
         viewModelScope.launch {
             logoutUseCase {
                 _myPageUiEvent.send(
-                    when (it) {
-                        is WithPeaceError.GeneralError -> MyPageUiEvent.GeneralError
-                        is WithPeaceError.UnAuthorized -> MyPageUiEvent.UnAuthorizedError
-                    },
+                    MyPageUiEvent.ResponseError
                 )
             }.collect {
                 _myPageUiEvent.send(MyPageUiEvent.Logout)

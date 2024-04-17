@@ -50,6 +50,7 @@ fun ProfileEditorRoute(
     onNavigateToGallery: () -> Unit,
     viewModel: ProfileEditorViewModel,
     onUpdateSuccess: (nickname: String, imageUrl: String) -> Unit,
+    onAuthExpired: () -> Unit,
 ) {
     var showAlertDialog by remember { mutableStateOf(false) }
     val profileInfo: ProfileUiModel by viewModel.profileEditUiState.collectAsStateWithLifecycle()
@@ -90,7 +91,7 @@ fun ProfileEditorRoute(
                     onUpdateSuccess(it.nickname, it.imageUrl)
                 }
 
-                ProfileEditUiEvent.UnAuthorized -> onShowSnackBar("인가 되지 않은 게정이에요")
+                ProfileEditUiEvent.UnAuthorized -> onAuthExpired()
 
             }
         }

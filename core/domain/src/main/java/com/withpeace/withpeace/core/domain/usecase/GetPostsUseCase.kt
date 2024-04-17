@@ -1,6 +1,6 @@
 package com.withpeace.withpeace.core.domain.usecase
 
-import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import com.withpeace.withpeace.core.domain.model.post.PostPageInfo
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.domain.paging.PostPagingSource
@@ -13,7 +13,7 @@ class GetPostsUseCase @Inject constructor(
     operator fun invoke(
         postTopic: PostTopic,
         pageSize: Int,
-        onError: suspend (WithPeaceError) -> Unit,
+        onError: suspend (CheonghaError) -> Unit,
     ): PostPageInfo = PostPageInfo(
         pageSize = pageSize,
         pagingSource = PostPagingSource(

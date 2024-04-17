@@ -64,7 +64,7 @@ import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.KeyboardAware
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceCompleteButton
-import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.error.ClientError
 import com.withpeace.withpeace.core.permission.ImagePermissionHelper
 import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 import com.withpeace.withpeace.core.ui.post.RegisterPostUiModel
@@ -79,6 +79,7 @@ fun RegisterPostRoute(
     onClickedBackButton: () -> Unit,
     onCompleteRegisterPost: (postId: Long) -> Unit,
     onNavigateToGallery: (imageLimit: Int, imageCount: Int) -> Unit,
+    onAuthExpired: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -108,9 +109,9 @@ fun RegisterPostRoute(
                 }
 
                 is RegisterPostUiEvent.RegisterFail -> {
-                    when(val error = event.error){
-                        is WithPeaceError.GeneralError -> onShowSnackBar("${error.code}${error.message}")
-                        is WithPeaceError.UnAuthorized -> onShowSnackBar("인가 되지 않은 게정이에요")
+                    when (event.error) {
+                        is ClientError.AuthExpired -> onAuthExpired()
+                        else -> onShowSnackBar("서버와의 통신 중 오류가 발생했습니다.")
                     }
                 }
 

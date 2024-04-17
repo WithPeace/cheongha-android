@@ -77,12 +77,12 @@ fun WithpeaceNavHost(
                     navOptions = navOptions {
                         // 수정일 경우 : 이전 화면이 상세화면이다
                         if (navController.previousBackStackEntry?.destination?.route == POST_DETAIL_ROUTE_WITH_ARGUMENT) {
-                            popUpTo(POST_LIST_ROUTE){
+                            popUpTo(POST_LIST_ROUTE) {
                                 inclusive = false
                             }
                         } else {
                             // 새로 등록인 경우
-                            popUpTo(REGISTER_POST_ROUTE){
+                            popUpTo(REGISTER_POST_ROUTE) {
                                 inclusive = true
                             }
                         }
@@ -99,6 +99,9 @@ fun WithpeaceNavHost(
             originPost = navController.previousBackStackEntry?.savedStateHandle?.get(
                 REGISTER_POST_ARGUMENT,
             ),
+            onAuthExpired = {
+                onAuthExpired(onShowSnackBar, navController)
+            },
         )
         galleryNavGraph(
             onClickBackButton = {
@@ -137,6 +140,9 @@ fun WithpeaceNavHost(
                     )
                 },
                 onWithdrawClick = {},
+                onAuthExpired = {
+                    onAuthExpired(onShowSnackBar, navController)
+                },
             )
             profileEditorNavGraph(
                 onShowSnackBar = onShowSnackBar,
@@ -146,13 +152,18 @@ fun WithpeaceNavHost(
                 onNavigateToGallery = {
                     navController.navigateToGallery(imageLimit = 1)
                 },
-            ) { nickname, imageUrl ->
-                navController.previousBackStackEntry?.savedStateHandle?.apply {
-                    set(MY_PAGE_CHANGED_NICKNAME_ARGUMENT, nickname)
-                    set(MY_PAGE_CHANGED_IMAGE_ARGUMENT, imageUrl)
-                }
-                navController.popBackStack()
-            }
+                onAuthExpired = {
+                    onAuthExpired(onShowSnackBar, navController)
+                },
+                onUpdateSuccess = { nickname, imageUrl ->
+                    navController.previousBackStackEntry?.savedStateHandle?.apply {
+                        set(MY_PAGE_CHANGED_NICKNAME_ARGUMENT, nickname)
+                        set(MY_PAGE_CHANGED_IMAGE_ARGUMENT, imageUrl)
+                    }
+                    navController.popBackStack()
+
+                },
+            )
         }
         postDetailGraph(
             onShowSnackBar = onShowSnackBar,
@@ -164,12 +175,32 @@ fun WithpeaceNavHost(
                 )
                 navController.navigateToRegisterPost()
             },
+            onAuthExpired = {
+                onAuthExpired(onShowSnackBar, navController)
+            },
         )
         postListGraph(
             onShowSnackBar = onShowSnackBar,
             navigateToPostDetail = navController::navigateToPostDetail,
+            onAuthExpired = {
+                onAuthExpired(onShowSnackBar, navController)
+            },
         )
     }
+}
+
+private fun onAuthExpired(
+    onShowSnackBar: (message: String) -> Unit,
+    navController: NavHostController,
+) {
+    onShowSnackBar("세션이 만료되었습니다. 로그인 후 다시 시도해 주세요.")
+    navController.navigateLogin(
+        navOptions = navOptions {
+            popUpTo(navController.graph.id) {
+                inclusive = true
+            }
+        },
+    )
 }
 
 const val POST_NESTED_ROUTE = "post_nested_route"
