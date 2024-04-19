@@ -1,7 +1,7 @@
 package com.withpeace.withpeace.core.data.paging
 
 import androidx.paging.PagingConfig
-import androidx.paging.PagingSource.LoadResult
+import androidx.paging.PagingSource
 import androidx.paging.testing.TestPager
 import com.google.common.truth.Truth.assertThat
 import com.skydoves.sandwich.ApiResponse
@@ -67,7 +67,7 @@ class PostPagingSourceTest {
         )
         // when
         val pager = TestPager(PagingConfig(20), postPagingSource)
-        val result = pager.refresh() as LoadResult.Page
+        val result = pager.refresh() as PagingSource.LoadResult.Page
         // then
         assertThat(result.data).containsExactlyElementsIn(
             List(20) {
@@ -82,6 +82,10 @@ class PostPagingSourceTest {
                             LocalDate.of(2024, 4, 12),
                             LocalTime.of(0, 0, 0),
                         ),
+                    ),
+                    nowDate = LocalDateTime.of(
+                        LocalDate.of(2024, 4, 12),
+                        LocalTime.of(0, 0, 0),
                     ),
                 )
             },
@@ -102,7 +106,7 @@ class PostPagingSourceTest {
         var result = listOf<Post>()
         val pager = TestPager(PagingConfig(20), postPagingSource)
         result =
-            result + (pager.refresh() as LoadResult.Page).data + (pager.append() as LoadResult.Page).data
+            result + (pager.refresh() as PagingSource.LoadResult.Page).data + (pager.append() as PagingSource.LoadResult.Page).data
         // then
         assertThat(result).containsExactlyElementsIn(
             List(40) {
@@ -117,6 +121,10 @@ class PostPagingSourceTest {
                             LocalDate.of(2024, 4, 12),
                             LocalTime.of(0, 0, 0),
                         ),
+                    ),
+                    nowDate = LocalDateTime.of(
+                        LocalDate.of(2024, 4, 12),
+                        LocalTime.of(0, 0, 0),
                     ),
                 )
             },
