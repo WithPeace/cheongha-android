@@ -1,8 +1,12 @@
 package com.withpeace.withpeace.core.data.repository
 
 import android.content.Context
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.skydoves.sandwich.suspendMapSuccess
 import com.withpeace.withpeace.core.data.mapper.toDomain
+import com.withpeace.withpeace.core.data.paging.PostPagingSource
 import com.withpeace.withpeace.core.data.util.convertToFile
 import com.withpeace.withpeace.core.data.util.handleApiFailure
 import com.withpeace.withpeace.core.domain.model.error.CheonghaError
@@ -34,20 +38,20 @@ class DefaultPostRepository @Inject constructor(
 ) : PostRepository {
     override fun getPosts(
         postTopic: PostTopic,
-        pageIndex: Int,
         pageSize: Int,
         onError: suspend (CheonghaError) -> Unit,
-    ): Flow<List<Post>> =
-        flow {
-            postService.getPosts(
-                postTopic = postTopic.name,
-                pageIndex = pageIndex, pageSize = pageSize,
-            ).suspendMapSuccess {
-                emit(data.map { it.toDomain() })
-            }.handleApiFailure {
-                onErrorWithAuthExpired(it, onError)
-            }
-        }
+    ): Flow<PagingData<Post>> = Pager(
+        config = PagingConfig(pageSize),
+        pagingSourceFactory = {
+            PostPagingSource(
+                postService = postService,
+                postTopic = postTopic,
+                pageSize = pageSize,
+                onError = onError,
+                userRepository = userRepository,
+            )
+        },
+    ).flow
 
     override fun registerPost(
         post: RegisterPost,

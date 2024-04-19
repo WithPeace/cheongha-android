@@ -1,10 +1,11 @@
 package com.withpeace.withpeace.core.domain.usecase
 
+import androidx.paging.PagingData
 import com.withpeace.withpeace.core.domain.model.error.CheonghaError
-import com.withpeace.withpeace.core.domain.model.post.PostPageInfo
+import com.withpeace.withpeace.core.domain.model.post.Post
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
-import com.withpeace.withpeace.core.domain.paging.PostPagingSource
 import com.withpeace.withpeace.core.domain.repository.PostRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetPostsUseCase @Inject constructor(
@@ -14,13 +15,9 @@ class GetPostsUseCase @Inject constructor(
         postTopic: PostTopic,
         pageSize: Int,
         onError: suspend (CheonghaError) -> Unit,
-    ): PostPageInfo = PostPageInfo(
+    ): Flow<PagingData<Post>> = postRepository.getPosts(
+        postTopic = postTopic,
         pageSize = pageSize,
-        pagingSource = PostPagingSource(
-            postRepository = postRepository,
-            postTopic = postTopic,
-            pageSize = pageSize,
-            onError = onError,
-        ),
+        onError = onError,
     )
 }

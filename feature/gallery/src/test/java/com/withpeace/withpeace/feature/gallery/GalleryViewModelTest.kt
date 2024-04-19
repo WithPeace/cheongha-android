@@ -1,6 +1,8 @@
 package com.withpeace.withpeace.feature.gallery
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.testing.asPagingSourceFactory
 import androidx.paging.testing.asSnapshot
@@ -8,7 +10,6 @@ import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.withpeace.withpeace.core.domain.model.image.ImageFolder
 import com.withpeace.withpeace.core.domain.model.image.ImageInfo
-import com.withpeace.withpeace.core.domain.model.image.ImagePagingInfo
 import com.withpeace.withpeace.core.domain.model.image.LimitedImages
 import com.withpeace.withpeace.core.domain.usecase.GetAlbumImagesUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetAllFoldersUseCase
@@ -98,12 +99,11 @@ class GalleryViewModelTest {
         savedStateHandle = SavedStateHandle()
         viewModel = viewModel()
         coEvery {
-            getAlbumImagesUseCase("")
-        } returns ImagePagingInfo(
-            pageSize = 30,
-            enablePlaceholders = false,
-            pagingSource = emptyList<ImageInfo>().asPagingSourceFactory().invoke(),
-        )
+            getAlbumImagesUseCase("",30)
+        } returns Pager(
+            config = PagingConfig(30),
+            pagingSourceFactory = emptyList<ImageInfo>().asPagingSourceFactory(),
+        ).flow
         // when & then
         val actual = viewModel.images.getFullScrollItems()
         assertThat(actual).isEqualTo(emptyList<String>())
@@ -123,12 +123,11 @@ class GalleryViewModelTest {
             "uri","type",0L
         )}
         coEvery {
-            getAlbumImagesUseCase(testFolder.folderName)
-        } returns ImagePagingInfo(
-            pageSize = 30,
-            enablePlaceholders = false,
-            pagingSource = testImages.asPagingSourceFactory().invoke(),
-        )
+            getAlbumImagesUseCase(testFolder.folderName,30)
+        } returns Pager(
+            config = PagingConfig(30),
+            pagingSourceFactory = testImages.asPagingSourceFactory(),
+        ).flow
         // when
         viewModel.onSelectFolder(testFolder)
         val actual = viewModel.images.getFullScrollItems()

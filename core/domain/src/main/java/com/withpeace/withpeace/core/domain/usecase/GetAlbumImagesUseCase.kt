@@ -1,22 +1,14 @@
 package com.withpeace.withpeace.core.domain.usecase
 
-import com.withpeace.withpeace.core.domain.model.image.ImagePagingInfo
-import com.withpeace.withpeace.core.domain.paging.ImagePagingSource
+import androidx.paging.PagingData
+import com.withpeace.withpeace.core.domain.model.image.ImageInfo
 import com.withpeace.withpeace.core.domain.repository.ImageRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetAlbumImagesUseCase @Inject constructor(
     private val imageRepository: ImageRepository,
 ) {
-    operator fun invoke(selectedFolderName: String): ImagePagingInfo = ImagePagingInfo(
-        pageSize = PAGE_SIZE,
-        pagingSource = ImagePagingSource(
-            imageRepository,
-            selectedFolderName,
-            ),
-    )
-
-    companion object {
-        private const val PAGE_SIZE = 30
-    }
+    operator fun invoke(selectedFolderName: String,pageSize:Int): Flow<PagingData<ImageInfo>> =
+        imageRepository.getImages(selectedFolderName,pageSize)
 }

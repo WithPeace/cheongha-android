@@ -1,6 +1,7 @@
 package com.withpeace.withpeace.core.domain.repository
 
 import com.withpeace.withpeace.core.domain.model.error.CheonghaError
+import androidx.paging.PagingData
 import com.withpeace.withpeace.core.domain.model.post.Post
 import com.withpeace.withpeace.core.domain.model.post.PostDetail
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
@@ -10,10 +11,9 @@ import kotlinx.coroutines.flow.Flow
 interface PostRepository {
     fun getPosts(
         postTopic: PostTopic,
-        pageIndex: Int,
         pageSize: Int,
         onError: suspend (CheonghaError) -> Unit,
-    ): Flow<List<Post>>
+    ): Flow<PagingData<Post>>
 
     fun registerPost(
         post: RegisterPost,

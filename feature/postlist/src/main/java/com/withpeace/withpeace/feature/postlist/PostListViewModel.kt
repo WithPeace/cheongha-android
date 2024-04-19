@@ -2,7 +2,6 @@ package com.withpeace.withpeace.feature.postlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
@@ -47,7 +46,7 @@ class PostListViewModel @Inject constructor(
 
     private fun fetchPostList(postTopic: PostTopicUiModel) {
         viewModelScope.launch {
-            val pagingData =
+            _postListPagingFlow.update {
                 getPostsUseCase(
                     postTopic = postTopic.toDomain(),
                     pageSize = PAGE_SIZE,
@@ -58,12 +57,7 @@ class PostListViewModel @Inject constructor(
                         }
                         throw IllegalStateException() // LoadStateError를 내보내기 위함
                     },
-                )
-            _postListPagingFlow.update {
-                Pager(
-                    config = pagingData.pagingConfig,
-                    pagingSourceFactory = { pagingData.pagingSource },
-                ).flow.map {
+                ).map {
                     it.map { it.toPostUiModel() }
                 }.cachedIn(viewModelScope).firstOrNull() ?: PagingData.empty()
             }
