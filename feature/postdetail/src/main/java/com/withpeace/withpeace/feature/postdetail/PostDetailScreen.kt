@@ -63,7 +63,6 @@ import com.withpeace.withpeace.core.ui.post.RegisterPostUiModel
 import com.withpeace.withpeace.core.ui.toRelativeString
 import com.withpeace.withpeace.feature.postdetail.R.drawable
 import com.withpeace.withpeace.feature.postdetail.R.string
-import java.time.Duration
 import java.time.LocalDateTime
 
 @Composable
@@ -512,13 +511,12 @@ private fun PostDetailScreenPreview() {
                     postTopic = PostTopicUiModel.FREEDOM,
                     imageUrls = listOf("", "", ""),
                     createDate = DateUiModel(
-                        LocalDateTime.now(),
-                        DurationFromNowUiModel.LessThanOneMinute
+                        DurationFromNowUiModel.SevenDayToOneYear(LocalDateTime.now()),
                     ),
                     isMyPost = false,
                 ),
             ),
-            onAuthExpired = {}
+            onAuthExpired = {},
         )
     }
 }

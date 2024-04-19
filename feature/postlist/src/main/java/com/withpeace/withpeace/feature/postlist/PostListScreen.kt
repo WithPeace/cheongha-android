@@ -50,7 +50,6 @@ import com.withpeace.withpeace.core.ui.post.PostUiModel
 import com.withpeace.withpeace.core.ui.toRelativeString
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOf
-import java.time.Duration
 import java.time.LocalDateTime
 
 @Composable
@@ -218,8 +217,8 @@ private fun PostListScreenPreview() {
                                 content = "varius",
                                 postTopic = PostTopicUiModel.ECONOMY,
                                 createDate = DateUiModel(
-                                    date = LocalDateTime.now(),
-                                    durationFromNow = DurationFromNowUiModel.LessThanOneMinute
+                                    durationFromNow = DurationFromNowUiModel.SevenDayToOneYear(
+                                        LocalDateTime.now())
                                 ),
                                 postImageUrl = null,
                             )

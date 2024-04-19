@@ -51,7 +51,6 @@ class PostDetailViewModel @Inject constructor(
                     ClientError.AuthExpired -> _postUiState.update { PostDetailUiState.UnAuthorized }
                     else -> _postUiState.update { PostDetailUiState.FailByNetwork }
                 }
-                _postUiState.update { PostDetailUiState.FailByNetwork }
                 // TODO: 게시글 NotFound 에러 대응
             },
         ).onEach { data ->

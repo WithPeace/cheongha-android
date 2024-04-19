@@ -6,6 +6,7 @@ import java.time.LocalDateTime
 value class Date(
     val date: LocalDateTime,
 ) {
-    val durationFromNow: DurationFromNow
-        get() = DurationFromNow.from(date)
+    fun durationFromNow(now: LocalDateTime): DurationFromNow {
+        return DurationFromNow.from(now, date)
+    }
 }

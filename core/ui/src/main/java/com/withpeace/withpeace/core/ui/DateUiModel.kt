@@ -8,64 +8,62 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 data class DateUiModel(
-    val date: LocalDateTime,
     val durationFromNow: DurationFromNowUiModel,
-) {
-    val duration: Duration
-        get() = Duration.between(date, LocalDateTime.now())
-}
-
-sealed class DurationFromNowUiModel {
-    data object LessThanOneMinute : DurationFromNowUiModel()
-    data object OneMinuteToOneHour : DurationFromNowUiModel()
-    data object OneHourToOneDay : DurationFromNowUiModel()
-    data object OneDayToSevenDay : DurationFromNowUiModel()
-    data object SevenDayToOneYear : DurationFromNowUiModel()
-    data object OverOneYear : DurationFromNowUiModel()
-}
-
-fun Date.toUiModel(): DateUiModel = DateUiModel(
-    date = date,
-    durationFromNow = when (durationFromNow) {
-        is DurationFromNow.LessThanOneMinute -> DurationFromNowUiModel.LessThanOneMinute
-
-        is DurationFromNow.OneDayToSevenDay -> DurationFromNowUiModel.OneDayToSevenDay
-
-        is DurationFromNow.OneHourToOneDay -> DurationFromNowUiModel.OneHourToOneDay
-
-        is DurationFromNow.OneMinuteToOneHour -> DurationFromNowUiModel.OneMinuteToOneHour
-
-        is DurationFromNow.OverOneYear -> DurationFromNowUiModel.OverOneYear
-
-        is DurationFromNow.SevenDayToOneYear -> DurationFromNowUiModel.SevenDayToOneYear
-    },
 )
+
+sealed interface DurationFromNowUiModel {
+    data class LessThanOneMinute(val duration: Duration) : DurationFromNowUiModel
+    data class OneMinuteToOneHour(val duration: Duration) : DurationFromNowUiModel
+    data class OneHourToOneDay(val duration: Duration) : DurationFromNowUiModel
+    data class OneDayToSevenDay(val duration: Duration) : DurationFromNowUiModel
+    data class SevenDayToOneYear(val date: LocalDateTime) : DurationFromNowUiModel
+    data class OverOneYear(val duration: Duration) : DurationFromNowUiModel
+}
+
+fun Date.toDurationFromNowUiModel(nowDateTime: LocalDateTime): DateUiModel {
+    val durationFromNow = durationFromNow(nowDateTime)
+    return DateUiModel(
+        durationFromNow = when (durationFromNow) {
+            is DurationFromNow.LessThanOneMinute -> DurationFromNowUiModel.LessThanOneMinute(durationFromNow.value)
+
+            is DurationFromNow.OneDayToSevenDay -> DurationFromNowUiModel.OneDayToSevenDay(durationFromNow.value)
+
+            is DurationFromNow.OneHourToOneDay -> DurationFromNowUiModel.OneHourToOneDay(durationFromNow.value)
+
+            is DurationFromNow.OneMinuteToOneHour -> DurationFromNowUiModel.OneMinuteToOneHour(durationFromNow.value)
+
+            is DurationFromNow.OverOneYear -> DurationFromNowUiModel.OverOneYear(durationFromNow.value)
+
+            is DurationFromNow.SevenDayToOneYear -> DurationFromNowUiModel.SevenDayToOneYear(this.date)
+        },
+    )
+}
 
 fun DateUiModel.toRelativeString(context: Context): String {
     return when (durationFromNow) {
         is DurationFromNowUiModel.LessThanOneMinute -> {
             context.getString(
                 R.string.second_format,
-                duration.seconds,
+                durationFromNow.duration.seconds,
             )
         }
 
         is DurationFromNowUiModel.OneMinuteToOneHour -> context.getString(
             R.string.minute_format,
-            duration.toMinutes(),
+            durationFromNow.duration.toMinutes(),
         )
 
         is DurationFromNowUiModel.OneHourToOneDay -> context.getString(
             R.string.hour_format,
-            duration.toHours(),
+            durationFromNow.duration.toHours(),
         )
 
         is DurationFromNowUiModel.OneDayToSevenDay -> context.getString(
             R.string.day_format,
-            duration.toDays(),
+            durationFromNow.duration.toDays(),
         )
 
-        is DurationFromNowUiModel.SevenDayToOneYear -> date.format(
+        is DurationFromNowUiModel.SevenDayToOneYear -> durationFromNow.date.format(
             DateTimeFormatter.ofPattern(
                 DATE_FORMAT,
             ),
@@ -73,7 +71,7 @@ fun DateUiModel.toRelativeString(context: Context): String {
 
         is DurationFromNowUiModel.OverOneYear -> context.getString(
             R.string.years_format,
-            duration.toDays() / DAYS_FOR_YEAR,
+            durationFromNow.duration.toDays() / DAYS_FOR_YEAR,
         )
     }
 }

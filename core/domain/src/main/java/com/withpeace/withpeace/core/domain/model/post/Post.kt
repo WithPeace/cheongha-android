@@ -1,6 +1,7 @@
 package com.withpeace.withpeace.core.domain.model.post
 
 import com.withpeace.withpeace.core.domain.model.date.Date
+import java.time.LocalDateTime
 
 data class Post(
     val postId: Long,
@@ -8,5 +9,6 @@ data class Post(
     val content: String,
     val postTopic: PostTopic,
     val createDate: Date,
+    val nowDate: LocalDateTime,
     val postImageUrl: String?,
 )

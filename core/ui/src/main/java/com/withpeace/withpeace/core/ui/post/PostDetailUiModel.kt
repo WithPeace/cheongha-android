@@ -2,7 +2,7 @@ package com.withpeace.withpeace.core.ui.post
 
 import com.withpeace.withpeace.core.domain.model.post.PostDetail
 import com.withpeace.withpeace.core.ui.DateUiModel
-import com.withpeace.withpeace.core.ui.toUiModel
+import com.withpeace.withpeace.core.ui.toDurationFromNowUiModel
 
 data class PostDetailUiModel(
     val postUser: PostUserUiModel,
@@ -32,6 +32,6 @@ fun PostDetail.toUiModel(currentUserId: Long): PostDetailUiModel = PostDetailUiM
     content = content.value,
     postTopic = postTopic.toUi(),
     imageUrls = imageUrls,
-    createDate = createDate.toUiModel(),
+    createDate = DateUiModel(createDate.toDurationFromNowUiModel(nowDate).durationFromNow),
     isMyPost = user.id == currentUserId,
 )

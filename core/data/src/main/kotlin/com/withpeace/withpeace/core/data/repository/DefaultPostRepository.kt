@@ -5,6 +5,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.skydoves.sandwich.suspendMapSuccess
+import com.skydoves.sandwich.suspendOnSuccess
 import com.withpeace.withpeace.core.data.mapper.toDomain
 import com.withpeace.withpeace.core.data.paging.PostPagingSource
 import com.withpeace.withpeace.core.data.util.convertToFile
@@ -82,8 +83,10 @@ class DefaultPostRepository @Inject constructor(
         onError: suspend (CheonghaError) -> Unit,
     ): Flow<PostDetail> = flow {
         postService.getPost(postId)
-            .suspendMapSuccess {
-                emit(data.toDomain())
+            .suspendOnSuccess {
+                val serverCurrentDate = this.headers["Date"].toString()
+                val response = this.data
+                emit(response.data.toDomain(serverCurrentDate = serverCurrentDate))
             }.handleApiFailure {
                 onErrorWithAuthExpired(it, onError)
             }

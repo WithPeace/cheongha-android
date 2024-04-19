@@ -3,6 +3,7 @@ package com.withpeace.withpeace.core.data.paging
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.skydoves.sandwich.suspendMapSuccess
+import com.skydoves.sandwich.suspendOnSuccess
 import com.withpeace.withpeace.core.data.mapper.toDomain
 import com.withpeace.withpeace.core.data.util.handleApiFailure
 import com.withpeace.withpeace.core.domain.model.error.CheonghaError
@@ -59,8 +60,10 @@ class PostPagingSource(
             postService.getPosts(
                 postTopic = postTopic.name,
                 pageIndex = pageIndex, pageSize = pageSize,
-            ).suspendMapSuccess {
-                emit(data.map { it.toDomain() })
+            ).suspendOnSuccess {
+                val serverCurrentDate = this.headers["Date"].toString()
+                val response = this.data
+                emit(response.data.map { it.toDomain(serverCurrentDate) })
             }.handleApiFailure {
                 onErrorWithAuthExpired(it, onError)
             }

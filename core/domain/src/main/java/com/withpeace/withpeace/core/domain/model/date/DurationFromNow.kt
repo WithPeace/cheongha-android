@@ -14,8 +14,8 @@ sealed class DurationFromNow(
      class OverOneYear(duration: Duration) : DurationFromNow(duration)
 
     companion object {
-        fun from(date: LocalDateTime): DurationFromNow {
-            val duration = Duration.between(date, LocalDateTime.now())
+        fun from(now: LocalDateTime,date: LocalDateTime): DurationFromNow {
+            val duration = Duration.between(date, now)
             return when {
                 duration.isOverOneYear() -> OverOneYear(duration)
                 duration.isOverWeekDays() -> SevenDayToOneYear(duration)
