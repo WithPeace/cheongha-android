@@ -154,6 +154,7 @@ fun RegisterPostScreen(
             RegisterPostTopAppBar(
                 onClickBackButton = onClickBackButton,
                 onCompleteRegisterPost = onCompleteRegisterPost,
+                isLoading = isLoading,
             )
             Column(
                 modifier = Modifier
@@ -252,6 +253,7 @@ fun RegisterPostTopAppBar(
     modifier: Modifier = Modifier,
     onClickBackButton: () -> Unit,
     onCompleteRegisterPost: () -> Unit,
+    isLoading: Boolean,
 ) {
     Column {
         WithPeaceBackButtonTopAppBar(
@@ -266,7 +268,7 @@ fun RegisterPostTopAppBar(
             actions = {
                 WithPeaceCompleteButton(
                     onClick = onCompleteRegisterPost,
-                    enabled = true,
+                    enabled = !isLoading,
                 )
             },
         )
