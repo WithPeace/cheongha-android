@@ -1,14 +1,12 @@
 package com.withpeace.withpeace.core.network.di.service
 
 import com.skydoves.sandwich.ApiResponse
-import com.withpeace.withpeace.core.network.di.request.CommentRequest
 import com.withpeace.withpeace.core.network.di.response.BaseResponse
 import com.withpeace.withpeace.core.network.di.response.post.PostDetailResponse
 import com.withpeace.withpeace.core.network.di.response.post.PostIdResponse
 import com.withpeace.withpeace.core.network.di.response.post.PostResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
@@ -56,6 +54,6 @@ interface PostService {
     @POST("/api/v1/posts/{postId}/comments/register")
     suspend fun registerComment(
         @Path("postId") postId: Long,
-        @Body content: CommentRequest,
+        @Query("content") content: String,
     ): ApiResponse<BaseResponse<Boolean>>
 }

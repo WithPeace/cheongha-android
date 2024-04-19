@@ -13,4 +13,9 @@
     <string name="delete_cancel">취소하기</string>
     <string name="delete_post_dialog_title">게시글을 삭제할까요?</string>
     <string name="delete_post_dialog_description">게시글을 삭제하면 모든 데이터가\n삭제되고 다시 볼 수 없어요.</string>
+    <string name="basic_user_profile">기본 유저 이미지</string>
+    <string name="can_not_load_image">사진을 불러올 수 없어요</string>
+    <string name="comment_menu_icon_description">댓글 더보기</string>
+    <string name="comment_register_icon_description">댓글 작성 아이콘</string>
+    <string name="please_type_comment">댓글을 입력해주세요</string>
 </resources>

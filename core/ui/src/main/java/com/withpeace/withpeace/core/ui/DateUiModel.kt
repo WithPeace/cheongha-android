@@ -9,10 +9,12 @@ import java.time.format.DateTimeFormatter
 
 data class DateUiModel(
     val date: LocalDateTime,
-    val durationFromNow: DurationFromNowUiModel,
 ) {
     val duration: Duration
         get() = Duration.between(date, LocalDateTime.now())
+
+    val durationFromNow: DurationFromNowUiModel
+        get() = date.toDurationFromNowUiModel()
 }
 
 sealed class DurationFromNowUiModel {
@@ -26,7 +28,11 @@ sealed class DurationFromNowUiModel {
 
 fun Date.toUiModel(): DateUiModel = DateUiModel(
     date = date,
-    durationFromNow = when (durationFromNow) {
+)
+
+fun LocalDateTime.toDurationFromNowUiModel(): DurationFromNowUiModel {
+    val date = Date(this)
+    return when (date.durationFromNow) {
         is DurationFromNow.LessThanOneMinute -> DurationFromNowUiModel.LessThanOneMinute
 
         is DurationFromNow.OneDayToSevenDay -> DurationFromNowUiModel.OneDayToSevenDay
@@ -38,8 +44,8 @@ fun Date.toUiModel(): DateUiModel = DateUiModel(
         is DurationFromNow.OverOneYear -> DurationFromNowUiModel.OverOneYear
 
         is DurationFromNow.SevenDayToOneYear -> DurationFromNowUiModel.SevenDayToOneYear
-    },
-)
+    }
+}
 
 fun DateUiModel.toRelativeString(context: Context): String {
     return when (durationFromNow) {

@@ -12,6 +12,7 @@ data class PostDetailUiModel(
     val postTopic: PostTopicUiModel,
     val imageUrls: List<String>,
     val createDate: DateUiModel,
+    val comments: List<CommentUiModel>,
     val isMyPost: Boolean,
 )
 
@@ -33,5 +34,6 @@ fun PostDetail.toUiModel(currentUserId: Long): PostDetailUiModel = PostDetailUiM
     postTopic = postTopic.toUi(),
     imageUrls = imageUrls,
     createDate = createDate.toUiModel(),
+    comments = comments.map { it.toUiModel() },
     isMyPost = user.id == currentUserId,
 )
