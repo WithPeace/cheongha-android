@@ -1,7 +1,7 @@
 package com.withpeace.withpeace.core.data.paging
 
 import androidx.paging.PagingConfig
-import androidx.paging.PagingSource
+import androidx.paging.PagingSource.LoadResult
 import androidx.paging.testing.TestPager
 import com.google.common.truth.Truth.assertThat
 import com.skydoves.sandwich.ApiResponse
@@ -16,6 +16,8 @@ import com.withpeace.withpeace.core.network.di.service.PostService
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import okhttp3.Headers
+import okhttp3.internal.addHeaderLenient
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Response
@@ -30,29 +32,35 @@ class PostPagingSourceTest {
 
     @Before
     fun setup() {
+        val headers = Headers.Builder()
+            .add("Date", "Thu, 11 Apr 2024 15:00:00 GMT")
+            .build()
+
+        val response = Response.success(
+            BaseResponse(
+                data = List(20) {
+                    PostResponse(
+                        postId = 0,
+                        title = "title",
+                        content = "content",
+                        type = PostTopicResponse.FREEDOM,
+                        postImageUrl = "null",
+                        createDate = "2024/04/12 00:00:00",
+                    )
+                },
+                error = null,
+            ),
+            headers
+        )
+        val apiResponse = ApiResponse.Success<BaseResponse<List<PostResponse>>>(response)
+
         coEvery {
             postService.getPosts(
                 postTopic = any(),
                 pageIndex = any(),
                 pageSize = any(),
             )
-        } returns ApiResponse.Success<BaseResponse<List<PostResponse>>>(
-            response = Response.success(
-                BaseResponse(
-                    data = List(20) {
-                        PostResponse(
-                            postId = 0,
-                            title = "title",
-                            content = "content",
-                            type = PostTopicResponse.FREEDOM,
-                            postImageUrl = null,
-                            createDate = "2024/04/12 00:00:00",
-                        )
-                    },
-                    error = null,
-                ),
-            ),
-        )
+        } returns apiResponse
     }
 
     @Test
@@ -65,9 +73,11 @@ class PostPagingSourceTest {
             onError = {},
             userRepository = userRepository
         )
+
         // when
         val pager = TestPager(PagingConfig(20), postPagingSource)
-        val result = pager.refresh() as PagingSource.LoadResult.Page
+        val result = pager.refresh() as LoadResult.Page
+
         // then
         assertThat(result.data).containsExactlyElementsIn(
             List(20) {
@@ -76,7 +86,7 @@ class PostPagingSourceTest {
                     title = "title",
                     content = "content",
                     postTopic = PostTopic.FREEDOM,
-                    postImageUrl = null,
+                    postImageUrl = "null",
                     createDate = Date(
                         LocalDateTime.of(
                             LocalDate.of(2024, 4, 12),
@@ -106,7 +116,7 @@ class PostPagingSourceTest {
         var result = listOf<Post>()
         val pager = TestPager(PagingConfig(20), postPagingSource)
         result =
-            result + (pager.refresh() as PagingSource.LoadResult.Page).data + (pager.append() as PagingSource.LoadResult.Page).data
+            result + (pager.refresh() as LoadResult.Page).data + (pager.append() as LoadResult.Page).data
         // then
         assertThat(result).containsExactlyElementsIn(
             List(40) {
@@ -115,7 +125,7 @@ class PostPagingSourceTest {
                     title = "title",
                     content = "content",
                     postTopic = PostTopic.FREEDOM,
-                    postImageUrl = null,
+                    postImageUrl = "null",
                     createDate = Date(
                         LocalDateTime.of(
                             LocalDate.of(2024, 4, 12),
