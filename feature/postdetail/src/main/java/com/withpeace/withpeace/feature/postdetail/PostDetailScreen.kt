@@ -72,6 +72,7 @@ fun PostDetailRoute(
     onShowSnackBar: (String) -> Unit,
     onClickBackButton: () -> Unit,
     onClickEditButton: (RegisterPostUiModel) -> Unit,
+    onAuthExpired: () -> Unit,
 ) {
     val postUiState = viewModel.postUiState.collectAsStateWithLifecycle().value
     PostDetailScreen(
@@ -79,6 +80,7 @@ fun PostDetailRoute(
         onClickBackButton = onClickBackButton,
         onClickDeleteButton = viewModel::deletePost,
         onClickEditButton = onClickEditButton,
+        onAuthExpired = onAuthExpired,
     )
 
     LaunchedEffect(null) {
@@ -86,7 +88,7 @@ fun PostDetailRoute(
             when (it) {
                 PostDetailUiEvent.DeleteFailByNetworkError -> onShowSnackBar("삭제에 실패하였습니다. 네트워크를 확인해주세요")
 
-                PostDetailUiEvent.DeleteFailByAuthorizationError -> onShowSnackBar("계정에 문제가 있습니다. 로그아웃 후 다시 진행해주세요")
+                PostDetailUiEvent.UnAuthorzied -> onAuthExpired()
 
                 PostDetailUiEvent.DeleteSuccess -> {
                     onShowSnackBar("게시글이 삭제되었습니다.")
@@ -103,6 +105,7 @@ fun PostDetailScreen(
     onClickDeleteButton: () -> Unit = {},
     postUiState: PostDetailUiState,
     onClickEditButton: (RegisterPostUiModel) -> Unit = {},
+    onAuthExpired: () -> Unit,
 ) {
     var showBottomSheet by rememberSaveable {
         mutableStateOf(false)
@@ -214,6 +217,8 @@ fun PostDetailScreen(
                     )
                 }
             }
+
+            PostDetailUiState.UnAuthorized -> onAuthExpired()
         }
     }
 }
@@ -513,6 +518,7 @@ private fun PostDetailScreenPreview() {
                     isMyPost = false,
                 ),
             ),
+            onAuthExpired = {}
         )
     }
 }

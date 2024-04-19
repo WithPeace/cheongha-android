@@ -1,7 +1,7 @@
 package com.withpeace.withpeace.core.domain.usecase
 
 import androidx.paging.PagingData
-import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import com.withpeace.withpeace.core.domain.model.post.Post
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.domain.repository.PostRepository
@@ -14,7 +14,7 @@ class GetPostsUseCase @Inject constructor(
     operator fun invoke(
         postTopic: PostTopic,
         pageSize: Int,
-        onError: suspend (WithPeaceError) -> Unit,
+        onError: suspend (CheonghaError) -> Unit,
     ): Flow<PagingData<Post>> = postRepository.getPosts(
         postTopic = postTopic,
         pageSize = pageSize,

@@ -23,6 +23,7 @@ fun NavGraphBuilder.registerPostNavGraph(
     onCompleteRegisterPost: (postId: Long) -> Unit,
     onNavigateToGallery: (imageLimit: Int, imageCount: Int) -> Unit,
     originPost: RegisterPostUiModel?,
+    onAuthExpired: () -> Unit,
 ) {
     composable(route = REGISTER_POST_ROUTE) { entry ->
         val viewModel: RegisterPostViewModel = hiltViewModel()
@@ -41,6 +42,7 @@ fun NavGraphBuilder.registerPostNavGraph(
             onClickedBackButton = onClickBackButton,
             onCompleteRegisterPost = onCompleteRegisterPost,
             onNavigateToGallery = onNavigateToGallery,
+            onAuthExpired = onAuthExpired
         )
     }
 }

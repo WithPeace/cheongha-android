@@ -22,7 +22,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             googleLoginUseCase(
                 idToken = idToken,
-                onError = { launch { _loginUiEvent.send(LoginUiEvent.LoginFail) } },
+                onError = { _loginUiEvent.send(LoginUiEvent.LoginFail) },
             ).collect {
                 launch {
                     when (it) {

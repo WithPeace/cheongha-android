@@ -58,6 +58,7 @@ fun PostListRoute(
     viewModel: PostListViewModel = hiltViewModel(),
     navigateToDetail: (postId: Long) -> Unit,
     onShowSnackBar: (String) -> Unit,
+    onAuthExpired: () -> Unit,
 ) {
     val postListPagingData = viewModel.postListPagingFlow.collectAsLazyPagingItems()
     val currentTopic by viewModel.currentTopic.collectAsStateWithLifecycle()
@@ -72,7 +73,7 @@ fun PostListRoute(
         viewModel.uiEvent.collectLatest {
             when (it) {
                 PostListUiEvent.NetworkError -> onShowSnackBar("네트워크를 확인해 주세요")
-                PostListUiEvent.UnAuthorizedError -> ("인가되지 않은 계정이에요")
+                PostListUiEvent.UnAuthorizedError -> onAuthExpired()
             }
         }
     }

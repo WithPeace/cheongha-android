@@ -1,11 +1,11 @@
 package com.withpeace.withpeace.core.data.repository
 
-import com.skydoves.sandwich.message
 import com.skydoves.sandwich.suspendMapSuccess
-import com.skydoves.sandwich.suspendOnFailure
 import com.withpeace.withpeace.core.data.mapper.roleToDomain
+import com.withpeace.withpeace.core.data.util.handleApiFailure
 import com.withpeace.withpeace.core.datastore.dataStore.token.TokenPreferenceDataSource
 import com.withpeace.withpeace.core.datastore.dataStore.user.UserPreferenceDataSource
+import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import com.withpeace.withpeace.core.domain.model.role.Role
 import com.withpeace.withpeace.core.domain.repository.TokenRepository
 import com.withpeace.withpeace.core.network.di.response.LoginResponse
@@ -30,13 +30,13 @@ class DefaultTokenRepository @Inject constructor(
 
     override fun getTokenByGoogle(
         idToken: String,
-        onError: (String) -> Unit,
+        onError: suspend (CheonghaError) -> Unit,
     ): Flow<Role> = flow {
         authService.googleLogin(AUTHORIZATION_FORMAT.format(idToken)).suspendMapSuccess {
             val data = this.data
             saveLocalLoginInfo(data)
             emit(data.role.roleToDomain())
-        }.suspendOnFailure { onError(message()) }
+        }.handleApiFailure(onError)
     }.flowOn(Dispatchers.IO)
 
     private suspend fun saveLocalLoginInfo(data: LoginResponse) {

@@ -4,21 +4,20 @@ import android.content.Context
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.skydoves.sandwich.messageOrNull
 import com.skydoves.sandwich.suspendMapSuccess
-import com.skydoves.sandwich.suspendOnError
-import com.skydoves.sandwich.suspendOnException
 import com.withpeace.withpeace.core.data.mapper.toDomain
 import com.withpeace.withpeace.core.data.paging.PostPagingSource
 import com.withpeace.withpeace.core.data.util.convertToFile
-import com.withpeace.withpeace.core.domain.model.WithPeaceError
-import com.withpeace.withpeace.core.domain.model.WithPeaceError.GeneralError
-import com.withpeace.withpeace.core.domain.model.WithPeaceError.UnAuthorized
+import com.withpeace.withpeace.core.data.util.handleApiFailure
+import com.withpeace.withpeace.core.domain.model.error.CheonghaError
+import com.withpeace.withpeace.core.domain.model.error.ClientError
+import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.model.post.Post
 import com.withpeace.withpeace.core.domain.model.post.PostDetail
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.domain.model.post.RegisterPost
 import com.withpeace.withpeace.core.domain.repository.PostRepository
+import com.withpeace.withpeace.core.domain.repository.UserRepository
 import com.withpeace.withpeace.core.network.di.service.PostService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -35,11 +34,12 @@ import javax.inject.Inject
 class DefaultPostRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val postService: PostService,
+    private val userRepository: UserRepository,
 ) : PostRepository {
     override fun getPosts(
         postTopic: PostTopic,
         pageSize: Int,
-        onError: suspend (WithPeaceError) -> Unit,
+        onError: suspend (CheonghaError) -> Unit,
     ): Flow<PagingData<Post>> = Pager(
         config = PagingConfig(pageSize),
         pagingSourceFactory = {
@@ -48,13 +48,14 @@ class DefaultPostRepository @Inject constructor(
                 postTopic = postTopic,
                 pageSize = pageSize,
                 onError = onError,
+                userRepository = userRepository,
             )
         },
     ).flow
 
     override fun registerPost(
         post: RegisterPost,
-        onError: suspend (WithPeaceError) -> Unit,
+        onError: suspend (CheonghaError) -> Unit,
     ): Flow<Long> =
         flow {
             val imageRequestBodies = getImageRequestBodies(post.images.urls)
@@ -63,57 +64,39 @@ class DefaultPostRepository @Inject constructor(
                 postService.registerPost(postRequestBodies, imageRequestBodies)
                     .suspendMapSuccess {
                         emit(data.postId)
-                    }.suspendOnError {
-                        if (statusCode.code == 401) {
-                            onError(UnAuthorized())
-                        } else {
-                            onError(GeneralError(statusCode.code, messageOrNull))
-                        }
-                    }.suspendOnException {
-                        onError(GeneralError(message = messageOrNull))
+                    }.handleApiFailure {
+                        onErrorWithAuthExpired(it, onError)
                     }
             } else {
                 postService.editPost(post.id!!, postRequestBodies, imageRequestBodies)
                     .suspendMapSuccess {
                         emit(data.postId)
-                    }.suspendOnError {
-                        if (statusCode.code == 401) {
-                            onError(UnAuthorized())
-                        } else {
-                            onError(GeneralError(statusCode.code, messageOrNull))
-                        }
-                    }.suspendOnException {
-                        onError(GeneralError(message = messageOrNull))
+                    }.handleApiFailure {
+                        onErrorWithAuthExpired(it, onError)
                     }
             }
         }.flowOn(Dispatchers.IO)
 
     override fun getPostDetail(
         postId: Long,
-        onError: suspend (WithPeaceError) -> Unit,
+        onError: suspend (CheonghaError) -> Unit,
     ): Flow<PostDetail> = flow {
         postService.getPost(postId)
             .suspendMapSuccess {
                 emit(data.toDomain())
-            }.suspendOnError {
-                if (statusCode.code == 401) onError(UnAuthorized())
-                else onError(GeneralError(statusCode.code, messageOrNull))
-            }.suspendOnException {
-                onError(GeneralError(message = messageOrNull))
+            }.handleApiFailure {
+                onErrorWithAuthExpired(it, onError)
             }
     }
 
     override fun deletePost(
         postId: Long,
-        onError: suspend (WithPeaceError) -> Unit,
+        onError: suspend (CheonghaError) -> Unit,
     ): Flow<Boolean> = flow {
         postService.deletePost(postId).suspendMapSuccess {
             emit(data)
-        }.suspendOnError {
-            if (statusCode.code == 401) onError(UnAuthorized())
-            else onError(GeneralError(statusCode.code, messageOrNull))
-        }.suspendOnException {
-            onError(GeneralError(message = messageOrNull))
+        }.handleApiFailure {
+            onErrorWithAuthExpired(it, onError)
         }
     }
 
@@ -139,6 +122,19 @@ class DefaultPostRepository @Inject constructor(
             )
             set(TITLE_COLUMN, post.title.toRequestBody("application/json".toMediaTypeOrNull()))
             set(CONTENT_COLUMN, post.content.toRequestBody("application/json".toMediaTypeOrNull()))
+        }
+    }
+
+    private suspend fun onErrorWithAuthExpired(
+        it: ResponseError,
+        onError: suspend (CheonghaError) -> Unit,
+    ) {
+        if (it == ResponseError.INVALID_TOKEN_ERROR) {
+            userRepository.logout(onError).collect {
+                onError(ClientError.AuthExpired)
+            }
+        } else {
+            onError(it)
         }
     }
 

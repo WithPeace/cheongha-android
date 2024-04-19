@@ -1,7 +1,6 @@
 package com.withpeace.withpeace.core.data.paging
 
 import androidx.paging.PagingConfig
-import androidx.paging.PagingSource
 import androidx.paging.PagingSource.LoadResult
 import androidx.paging.testing.TestPager
 import com.google.common.truth.Truth.assertThat
@@ -9,6 +8,7 @@ import com.skydoves.sandwich.ApiResponse
 import com.withpeace.withpeace.core.domain.model.date.Date
 import com.withpeace.withpeace.core.domain.model.post.Post
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
+import com.withpeace.withpeace.core.domain.repository.UserRepository
 import com.withpeace.withpeace.core.network.di.response.BaseResponse
 import com.withpeace.withpeace.core.network.di.response.post.PostResponse
 import com.withpeace.withpeace.core.network.di.response.post.PostTopicResponse
@@ -26,6 +26,7 @@ import java.time.LocalTime
 class PostPagingSourceTest {
     private lateinit var postPagingSource: PostPagingSource
     private val postService = mockk<PostService>()
+    private val userRepository = mockk<UserRepository>(relaxed = true)
 
     @Before
     fun setup() {
@@ -62,6 +63,7 @@ class PostPagingSourceTest {
             postTopic = PostTopic.FREEDOM,
             pageSize = 20,
             onError = {},
+            userRepository = userRepository
         )
         // when
         val pager = TestPager(PagingConfig(20), postPagingSource)
@@ -94,6 +96,7 @@ class PostPagingSourceTest {
             postTopic = PostTopic.FREEDOM,
             pageSize = 20,
             onError = {},
+            userRepository = userRepository
         )
         // when
         var result = listOf<Post>()

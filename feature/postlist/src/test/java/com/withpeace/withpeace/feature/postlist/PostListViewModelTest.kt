@@ -7,8 +7,9 @@ import androidx.paging.testing.asPagingSourceFactory
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.withpeace.withpeace.core.domain.model.WithPeaceError
 import com.withpeace.withpeace.core.domain.model.date.Date
+import com.withpeace.withpeace.core.domain.model.error.CheonghaError
+import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.model.post.Post
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.domain.usecase.GetPostsUseCase
@@ -77,7 +78,7 @@ class PostListViewModelTest {
     @Test
     fun `게시글 목록을 가져올 때, 네트워크에 문제가 있다면 네트워크 에러 이벤트가 발생한다`() = runTest {
         // given
-        val errorSlot = slot<suspend (WithPeaceError) -> Unit>()
+        val errorSlot = slot<suspend (CheonghaError) -> Unit>()
         coEvery {
             getPostsUseCase(
                 postTopic = any(),
@@ -85,7 +86,7 @@ class PostListViewModelTest {
                 onError = capture(errorSlot),
             )
         } returns flow<PagingData<Post>> {
-            errorSlot.captured.invoke(WithPeaceError.GeneralError())
+            errorSlot.captured.invoke(ResponseError.INVALID_TOKEN_ERROR)
         }.catch {  }
         // when
         postListViewModel = PostListViewModel(getPostsUseCase)

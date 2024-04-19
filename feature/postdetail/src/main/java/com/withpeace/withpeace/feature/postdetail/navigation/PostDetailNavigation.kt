@@ -23,6 +23,7 @@ fun NavGraphBuilder.postDetailGraph(
     onShowSnackBar: (String) -> Unit,
     onClickBackButton: () -> Unit,
     onClickEditButton: (RegisterPostUiModel) -> Unit,
+    onAuthExpired: () -> Unit,
 ) {
     composable(
         route = POST_DETAIL_ROUTE_WITH_ARGUMENT,
@@ -34,6 +35,7 @@ fun NavGraphBuilder.postDetailGraph(
             onShowSnackBar = onShowSnackBar,
             onClickBackButton = onClickBackButton,
             onClickEditButton = onClickEditButton,
+            onAuthExpired = onAuthExpired
         )
     }
 }

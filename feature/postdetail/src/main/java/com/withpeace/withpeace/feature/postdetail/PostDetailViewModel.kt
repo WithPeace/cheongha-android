@@ -3,7 +3,8 @@ package com.withpeace.withpeace.feature.postdetail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.withpeace.withpeace.core.domain.model.WithPeaceError
+import com.withpeace.withpeace.core.domain.model.error.ClientError
+import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.usecase.DeletePostUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetCurrentUserIdUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetPostDetailUseCase
@@ -45,6 +46,11 @@ class PostDetailViewModel @Inject constructor(
         getPostDetailUseCase(
             postId,
             onError = {
+                when(it) {
+                    ResponseError.NOT_FOUND_RESOURCE -> _postUiState.update { PostDetailUiState.NotFound }
+                    ClientError.AuthExpired -> _postUiState.update { PostDetailUiState.UnAuthorized }
+                    else -> _postUiState.update { PostDetailUiState.FailByNetwork }
+                }
                 _postUiState.update { PostDetailUiState.FailByNetwork }
                 // TODO: 게시글 NotFound 에러 대응
             },
@@ -61,8 +67,8 @@ class PostDetailViewModel @Inject constructor(
             postId = postId,
             onError = {
                 when (it) {
-                    is WithPeaceError.GeneralError -> _postUiEvent.send(PostDetailUiEvent.DeleteFailByNetworkError)
-                    is WithPeaceError.UnAuthorized -> _postUiEvent.send(PostDetailUiEvent.DeleteFailByAuthorizationError)
+                    ClientError.AuthExpired -> _postUiEvent.send(PostDetailUiEvent.UnAuthorzied)
+                    else -> _postUiEvent.send(PostDetailUiEvent.DeleteFailByNetworkError)
                 }
             },
         ).onEach { _postUiEvent.send(PostDetailUiEvent.DeleteSuccess) }.launchIn(viewModelScope)
