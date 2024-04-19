@@ -26,4 +26,5 @@ dependencies {
     implementation(libs.skydoves.sandwich)
     implementation(libs.androidx.paging)
     testImplementation(libs.androidx.paging.testing)
+    implementation("androidx.exifinterface:exifinterface:1.3.7")
 }
