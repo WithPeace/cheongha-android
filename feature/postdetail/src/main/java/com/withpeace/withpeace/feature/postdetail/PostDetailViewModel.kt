@@ -8,6 +8,7 @@ import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.usecase.DeletePostUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetCurrentUserIdUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetPostDetailUseCase
+import com.withpeace.withpeace.core.domain.usecase.RegisterCommentUseCase
 import com.withpeace.withpeace.core.ui.post.toUiModel
 import com.withpeace.withpeace.feature.postdetail.navigation.POST_DETAIL_ID_ARGUMENT
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +28,7 @@ class PostDetailViewModel @Inject constructor(
     private val getPostDetailUseCase: GetPostDetailUseCase,
     private val getCurrentUserIdUseCase: GetCurrentUserIdUseCase,
     private val deletePostUseCase: DeletePostUseCase,
+    private val registerCommentUseCase: RegisterCommentUseCase,
 ) : ViewModel() {
 
     private val postId =
@@ -52,7 +54,6 @@ class PostDetailViewModel @Inject constructor(
                     else -> _postUiState.update { PostDetailUiState.FailByNetwork }
                 }
                 _postUiState.update { PostDetailUiState.FailByNetwork }
-                // TODO: 게시글 NotFound 에러 대응
             },
         ).onEach { data ->
             val currentUserId = getCurrentUserIdUseCase()

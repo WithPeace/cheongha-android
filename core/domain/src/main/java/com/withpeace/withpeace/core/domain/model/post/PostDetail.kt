@@ -10,6 +10,7 @@ data class PostDetail(
     val postTopic: PostTopic,
     val imageUrls: List<String>,
     val createDate: Date,
+    val comments: List<Comment>,
 )
 
 data class PostUser(
