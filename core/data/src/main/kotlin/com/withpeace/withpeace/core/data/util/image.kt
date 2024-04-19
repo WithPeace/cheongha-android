@@ -21,7 +21,9 @@ fun String.convertToFile(context: Context): File {
 
 fun URL.convertToFile(context: Context): File {
     val bitmap = convertToBitmap()
-    return bitmap.convertToFile(context)
+    val file = bitmap.convertToFile(context)
+    file.updateExifOrientation(this)
+    return file
 }
 
 fun URL.convertToBitmap(): Bitmap {
@@ -53,6 +55,17 @@ private fun Bitmap.convertToFile(context: Context): File {
 
 private fun File.updateExifOrientation(context: Context, uri: Uri) {
     context.contentResolver.openInputStream(uri)?.use {
+        val exif = ExifInterface(it)
+        exif.getAttribute(ExifInterface.TAG_ORIENTATION)?.let { attribute ->
+            val newExif = ExifInterface(absolutePath)
+            newExif.setAttribute(ExifInterface.TAG_ORIENTATION, attribute)
+            newExif.saveAttributes()
+        }
+    }
+}
+
+private fun File.updateExifOrientation(url: URL) {
+    url.openStream()?.use {
         val exif = ExifInterface(it)
         exif.getAttribute(ExifInterface.TAG_ORIENTATION)?.let { attribute ->
             val newExif = ExifInterface(absolutePath)
