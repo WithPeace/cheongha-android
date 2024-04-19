@@ -11,10 +11,13 @@ import com.withpeace.withpeace.core.ui.post.toDomain
 import com.withpeace.withpeace.core.ui.post.toUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -37,6 +40,9 @@ class RegisterPostViewModel @Inject constructor(
             images = LimitedImages(emptyList()),
         ),
     )
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
 
     val registerPostUiModel = registerPost.map { it.toUi() }
         .stateIn(
@@ -84,6 +90,11 @@ class RegisterPostViewModel @Inject constructor(
                 registerPostValue.topic == null -> _uiEvent.send(RegisterPostUiEvent.TopicBlank)
                 else -> registerPostUseCase(post = registerPostValue) {
                     _uiEvent.send(RegisterPostUiEvent.RegisterFail(it))
+                }.onStart {
+                    _isLoading.update { true }
+                    delay(5000L)
+                }.onCompletion {
+                    _isLoading.update { false }
                 }.collect { postId ->
                     _uiEvent.send(RegisterPostUiEvent.RegisterSuccess(postId))
                 }
