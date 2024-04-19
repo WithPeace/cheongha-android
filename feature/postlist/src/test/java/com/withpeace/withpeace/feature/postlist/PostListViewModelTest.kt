@@ -57,6 +57,7 @@ class PostListViewModelTest {
                 postTopic = PostTopic.FREEDOM,
                 createDate = Date(date = LocalDateTime.MIN),
                 postImageUrl = null,
+                nowDate = LocalDateTime.now()
             )
         }
         coEvery {
