@@ -50,6 +50,7 @@ import com.withpeace.withpeace.core.designsystem.ui.KeyboardAware
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.ui.DateUiModel
 import com.withpeace.withpeace.core.ui.post.CommentUiModel
+import com.withpeace.withpeace.core.ui.post.CommentUserUiModel
 import com.withpeace.withpeace.core.ui.post.PostDetailUiModel
 import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 import com.withpeace.withpeace.core.ui.post.PostUserUiModel
@@ -416,7 +417,18 @@ private fun PostDetailScreenPreview() {
                         LocalDateTime.now(),
                     ),
                     isMyPost = false,
-                    comments = List(10) { CommentUiModel(id = it.toLong()) },
+                    comments = List(10) {
+                        CommentUiModel(
+                            id = it.toLong(),
+                            content = "natum",
+                            createDate = DateUiModel(date = LocalDateTime.now()),
+                            commentUser = CommentUserUiModel(
+                                id = 9807,
+                                nickname = "Becky Lowery",
+                                profileImageUrl = "https://www.google.com/#q=repudiare",
+                            ),
+                        )
+                    },
                 ),
             ),
             lazyListState = rememberLazyListState(),

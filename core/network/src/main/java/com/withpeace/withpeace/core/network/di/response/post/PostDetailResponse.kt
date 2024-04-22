@@ -13,5 +13,5 @@ data class PostDetailResponse(
     val type: PostTopicResponse,
     val createDate: String,
     val postImageUrls: List<String>,
-    val comments: List<CommentResponse> = emptyList(),
+    val comments: List<CommentResponse>,
 )

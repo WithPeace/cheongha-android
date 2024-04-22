@@ -7,18 +7,18 @@ import com.withpeace.withpeace.core.ui.toUiModel
 import java.time.LocalDateTime
 
 data class CommentUiModel(
-    val id: Long = 0,
-    val content: String = "댓글 내용 입니다",
+    val id: Long,
+    val content: String,
     val createDate: DateUiModel = DateUiModel(
         LocalDateTime.now(),
     ),
-    val commentUser: CommentUserUiModel = CommentUserUiModel(),
+    val commentUser: CommentUserUiModel,
 )
 
 data class CommentUserUiModel(
-    val id: Long = 0,
-    val nickname: String = "위드피스",
-    val profileImageUrl: String = "",
+    val id: Long,
+    val nickname: String,
+    val profileImageUrl: String,
 )
 
 fun Comment.toUiModel() = CommentUiModel(
