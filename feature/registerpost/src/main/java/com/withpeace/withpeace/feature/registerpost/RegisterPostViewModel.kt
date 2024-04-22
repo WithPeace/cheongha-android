@@ -92,7 +92,6 @@ class RegisterPostViewModel @Inject constructor(
                     _uiEvent.send(RegisterPostUiEvent.RegisterFail(it))
                 }.onStart {
                     _isLoading.update { true }
-                    delay(5000L)
                 }.onCompletion {
                     _isLoading.update { false }
                 }.collect { postId ->
