@@ -2,6 +2,7 @@ package com.withpeace.withpeace.core.domain.model.date
 
 import java.time.Duration
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 sealed class DurationFromNow(
     val value: Duration,
@@ -15,7 +16,7 @@ sealed class DurationFromNow(
 
     companion object {
         fun from(date: LocalDateTime): DurationFromNow {
-            val duration = Duration.between(date, LocalDateTime.now())
+            val duration = Duration.between(date, LocalDateTime.now(ZoneId.of("Asia/Seoul")))
             return when {
                 duration.isOverOneYear() -> OverOneYear(duration)
                 duration.isOverWeekDays() -> SevenDayToOneYear(duration)

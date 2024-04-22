@@ -5,13 +5,14 @@ import com.withpeace.withpeace.core.domain.model.date.Date
 import com.withpeace.withpeace.core.domain.model.date.DurationFromNow
 import java.time.Duration
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 data class DateUiModel(
     val date: LocalDateTime,
 ) {
     val duration: Duration
-        get() = Duration.between(date, LocalDateTime.now())
+        get() = Duration.between(date, LocalDateTime.now(ZoneId.of("Asia/Seoul")))
 
     val durationFromNow: DurationFromNowUiModel
         get() = date.toDurationFromNowUiModel()
