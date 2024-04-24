@@ -1,3 +1,9 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
+fun getLocalPropertyString(propertyKey: String): String {
+    return gradleLocalProperties(rootDir).getProperty(propertyKey)
+}
+
 plugins {
     id("com.android.library")
     id("convention.android.base")
@@ -9,7 +15,14 @@ plugins {
 android {
     defaultConfig {
         consumerProguardFiles("consumer-rules.pro")
+
+        buildConfigField(
+            "String",
+            "YOUTH_POLICY_API_KEY",
+            getLocalPropertyString("YOUTH_POLICY_API_KEY"),
+        )
     }
+
     testOptions {
         unitTests.isReturnDefaultValues = true
         //https://developer.android.com/reference/tools/gradle-api/4.1/com/android/build/api/dsl/UnitTestOptions#isreturndefaultvalues

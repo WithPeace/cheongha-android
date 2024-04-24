@@ -4,10 +4,12 @@ import com.withpeace.withpeace.core.data.repository.DefaultImageRepository
 import com.withpeace.withpeace.core.data.repository.DefaultPostRepository
 import com.withpeace.withpeace.core.data.repository.DefaultTokenRepository
 import com.withpeace.withpeace.core.data.repository.DefaultUserRepository
+import com.withpeace.withpeace.core.data.repository.DefaultYouthPolicyRepository
 import com.withpeace.withpeace.core.domain.repository.ImageRepository
 import com.withpeace.withpeace.core.domain.repository.PostRepository
 import com.withpeace.withpeace.core.domain.repository.TokenRepository
 import com.withpeace.withpeace.core.domain.repository.UserRepository
+import com.withpeace.withpeace.core.domain.repository.YouthPolicyRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -35,4 +37,10 @@ interface RepositoryModule {
     fun bindsUserRepository(
         defaultUserRepository: DefaultUserRepository,
     ): UserRepository
+
+    @Binds
+    @Singleton
+    fun bindsYouthPolicyRepository(
+        defaultYouthPolicyRepository: DefaultYouthPolicyRepository
+    ): YouthPolicyRepository
 }
