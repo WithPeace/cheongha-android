@@ -1,6 +1,5 @@
 package com.withpeace.withpeace.feature.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.withpeace.withpeace.core.domain.usecase.GetYouthPoliciesUseCase
@@ -19,7 +18,7 @@ class HomeViewModel @Inject constructor(
 
                 },
             ).collect {
-                Log.d("test", it[0].title)
+
             }
         }
     }

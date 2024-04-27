@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.core.domain.usecase
 
+import androidx.paging.PagingData
 import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import com.withpeace.withpeace.core.domain.model.policy.YouthPolicy
 import com.withpeace.withpeace.core.domain.repository.YouthPolicyRepository
@@ -11,5 +12,5 @@ class GetYouthPoliciesUseCase @Inject constructor(
 ) {
     operator fun invoke(
         onError: (CheonghaError) -> Unit,
-    ): Flow<List<YouthPolicy>> = youthPolicyRepository.getPolicies(onError)
+    ): Flow<PagingData<YouthPolicy>> = youthPolicyRepository.getPolicies(onError)
 }

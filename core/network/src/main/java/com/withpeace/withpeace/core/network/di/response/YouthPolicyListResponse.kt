@@ -8,8 +8,8 @@ import com.tickaroo.tikxml.annotation.Xml
 data class YouthPolicyListResponse(
     @PropertyElement
     val pageIndex: Int,
-    @PropertyElement
-    val totalCount: Int,
+    @PropertyElement(name = "totalCount")
+    val pageCount: Int,
     @Element
     val youthPolicyEntity: List<YouthPolicyEntity>,
 )
