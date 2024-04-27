@@ -47,6 +47,6 @@ class YouthPolicyPagingSource(
     }
 
     companion object {
-        private const val STARTING_PAGE_INDEX = 0
+        private const val STARTING_PAGE_INDEX = 1
     }
 }
