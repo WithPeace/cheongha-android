@@ -12,7 +12,10 @@ data class DateUiModel(
     val date: LocalDateTime,
 ) {
     val duration: Duration
-        get() = Duration.between(date, LocalDateTime.now(ZoneId.of("Asia/Seoul")))
+        get() = Duration.between(
+            date,
+            LocalDateTime.now(ZoneId.of("Asia/Seoul")),
+        )
 
     val durationFromNow: DurationFromNowUiModel
         get() = date.toDurationFromNowUiModel()
@@ -51,10 +54,9 @@ fun LocalDateTime.toDurationFromNowUiModel(): DurationFromNowUiModel {
 fun DateUiModel.toRelativeString(context: Context): String {
     return when (durationFromNow) {
         is DurationFromNowUiModel.LessThanOneMinute -> {
-            context.getString(
-                R.string.second_format,
-                duration.seconds,
-            )
+            val seconds =
+                if (duration.seconds > MIN_DURATION_SECONDS) duration.seconds else MIN_DURATION_SECONDS
+            context.getString(R.string.second_format, seconds)
         }
 
         is DurationFromNowUiModel.OneMinuteToOneHour -> context.getString(
@@ -85,5 +87,6 @@ fun DateUiModel.toRelativeString(context: Context): String {
     }
 }
 
+private const val MIN_DURATION_SECONDS = 1L
 private const val DATE_FORMAT = "MM월 dd일"
 private const val DAYS_FOR_YEAR = 365
