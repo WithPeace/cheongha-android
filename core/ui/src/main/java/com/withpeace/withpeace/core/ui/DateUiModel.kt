@@ -5,14 +5,20 @@ import com.withpeace.withpeace.core.domain.model.date.Date
 import com.withpeace.withpeace.core.domain.model.date.DurationFromNow
 import java.time.Duration
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 data class DateUiModel(
     val date: LocalDateTime,
-    val durationFromNow: DurationFromNowUiModel,
 ) {
     val duration: Duration
-        get() = Duration.between(date, LocalDateTime.now())
+        get() = Duration.between(
+            date,
+            LocalDateTime.now(ZoneId.of("Asia/Seoul")),
+        )
+
+    val durationFromNow: DurationFromNowUiModel
+        get() = date.toDurationFromNowUiModel()
 }
 
 sealed class DurationFromNowUiModel {
@@ -26,7 +32,11 @@ sealed class DurationFromNowUiModel {
 
 fun Date.toUiModel(): DateUiModel = DateUiModel(
     date = date,
-    durationFromNow = when (durationFromNow) {
+)
+
+fun LocalDateTime.toDurationFromNowUiModel(): DurationFromNowUiModel {
+    val date = Date(this)
+    return when (date.durationFromNow) {
         is DurationFromNow.LessThanOneMinute -> DurationFromNowUiModel.LessThanOneMinute
 
         is DurationFromNow.OneDayToSevenDay -> DurationFromNowUiModel.OneDayToSevenDay
@@ -38,16 +48,15 @@ fun Date.toUiModel(): DateUiModel = DateUiModel(
         is DurationFromNow.OverOneYear -> DurationFromNowUiModel.OverOneYear
 
         is DurationFromNow.SevenDayToOneYear -> DurationFromNowUiModel.SevenDayToOneYear
-    },
-)
+    }
+}
 
 fun DateUiModel.toRelativeString(context: Context): String {
     return when (durationFromNow) {
         is DurationFromNowUiModel.LessThanOneMinute -> {
-            context.getString(
-                R.string.second_format,
-                duration.seconds,
-            )
+            val seconds =
+                if (duration.seconds > MIN_DURATION_SECONDS) duration.seconds else MIN_DURATION_SECONDS
+            context.getString(R.string.second_format, seconds)
         }
 
         is DurationFromNowUiModel.OneMinuteToOneHour -> context.getString(
@@ -78,5 +87,6 @@ fun DateUiModel.toRelativeString(context: Context): String {
     }
 }
 
+private const val MIN_DURATION_SECONDS = 1L
 private const val DATE_FORMAT = "MM월 dd일"
 private const val DAYS_FOR_YEAR = 365

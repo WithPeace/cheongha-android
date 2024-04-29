@@ -219,7 +219,6 @@ private fun PostListScreenPreview() {
                                 postTopic = PostTopicUiModel.ECONOMY,
                                 createDate = DateUiModel(
                                     date = LocalDateTime.now(),
-                                    durationFromNow = DurationFromNowUiModel.LessThanOneMinute
                                 ),
                                 postImageUrl = null,
                             )

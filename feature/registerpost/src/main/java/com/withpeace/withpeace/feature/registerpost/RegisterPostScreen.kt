@@ -31,6 +31,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -85,6 +86,7 @@ fun RegisterPostRoute(
 
     val postUiState = viewModel.registerPostUiModel.collectAsStateWithLifecycle().value
     val showBottomSheet = viewModel.showBottomSheet.collectAsStateWithLifecycle().value
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
     KeyboardAware {
         RegisterPostScreen(
@@ -98,6 +100,7 @@ fun RegisterPostRoute(
             showBottomSheet = showBottomSheet,
             onImageUrlDeleted = viewModel::onImageUrlDeleted,
             onNavigateToGallery = onNavigateToGallery,
+            isLoading = isLoading,
         )
     }
     LaunchedEffect(null) {
@@ -134,9 +137,9 @@ fun RegisterPostScreen(
     onShowBottomSheetChanged: (Boolean) -> Unit = {},
     showBottomSheet: Boolean,
     onNavigateToGallery: (imageLimit: Int, imageCount: Int) -> Unit = { _, _ -> },
+    isLoading: Boolean,
 ) {
     val scrollState = rememberScrollState()
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -151,6 +154,7 @@ fun RegisterPostScreen(
             RegisterPostTopAppBar(
                 onClickBackButton = onClickBackButton,
                 onCompleteRegisterPost = onCompleteRegisterPost,
+                isLoading = isLoading,
             )
             Column(
                 modifier = Modifier
@@ -191,6 +195,14 @@ fun RegisterPostScreen(
                         registerPostUiState.imageUrls.size,
                     )
                 },
+            )
+        }
+    }
+    if (isLoading) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center),
+                color = WithpeaceTheme.colors.MainPink,
             )
         }
     }
@@ -241,6 +253,7 @@ fun RegisterPostTopAppBar(
     modifier: Modifier = Modifier,
     onClickBackButton: () -> Unit,
     onCompleteRegisterPost: () -> Unit,
+    isLoading: Boolean,
 ) {
     Column {
         WithPeaceBackButtonTopAppBar(
@@ -255,7 +268,7 @@ fun RegisterPostTopAppBar(
             actions = {
                 WithPeaceCompleteButton(
                     onClick = onCompleteRegisterPost,
-                    enabled = true,
+                    enabled = !isLoading,
                 )
             },
         )
@@ -573,6 +586,7 @@ fun RegisterPostScreenPreview() {
             onImageUrlDeleted = {},
             onShowBottomSheetChanged = {},
             showBottomSheet = false,
+            isLoading = false,
         )
     }
 }

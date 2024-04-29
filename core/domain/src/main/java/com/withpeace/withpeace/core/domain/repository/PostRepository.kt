@@ -1,7 +1,7 @@
 package com.withpeace.withpeace.core.domain.repository
 
-import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import androidx.paging.PagingData
+import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import com.withpeace.withpeace.core.domain.model.post.Post
 import com.withpeace.withpeace.core.domain.model.post.PostDetail
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
@@ -27,6 +27,12 @@ interface PostRepository {
 
     fun deletePost(
         postId: Long,
+        onError: suspend (CheonghaError) -> Unit,
+    ): Flow<Boolean>
+
+    fun registerComment(
+        postId: Long,
+        content: String,
         onError: suspend (CheonghaError) -> Unit,
     ): Flow<Boolean>
 }

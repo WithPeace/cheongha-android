@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.webkit.URLUtil
+import androidx.exifinterface.media.ExifInterface
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
@@ -20,7 +21,9 @@ fun String.convertToFile(context: Context): File {
 
 fun URL.convertToFile(context: Context): File {
     val bitmap = convertToBitmap()
-    return bitmap.convertToFile(context)
+    val file = bitmap.convertToFile(context)
+    file.updateExifOrientation(this)
+    return file
 }
 
 fun URL.convertToBitmap(): Bitmap {
@@ -31,6 +34,7 @@ fun URL.convertToBitmap(): Bitmap {
 fun Uri.convertToFile(context: Context): File {
     val bitmap = convertToBitmap(context)
     val file = bitmap?.convertToFile(context)
+    file?.updateExifOrientation(context,this)
     return file ?: throw IllegalStateException("이미지를 파일로 바꾸는데에 실패하였습니다")
 }
 
@@ -49,4 +53,26 @@ private fun Bitmap.convertToFile(context: Context): File {
     return tempFile
 }
 
-private const val HIGHEST_COMPRESS_QUALITY = 100
+private fun File.updateExifOrientation(context: Context, uri: Uri) {
+    context.contentResolver.openInputStream(uri)?.use {
+        val exif = ExifInterface(it)
+        exif.getAttribute(ExifInterface.TAG_ORIENTATION)?.let { attribute ->
+            val newExif = ExifInterface(absolutePath)
+            newExif.setAttribute(ExifInterface.TAG_ORIENTATION, attribute)
+            newExif.saveAttributes()
+        }
+    }
+}
+
+private fun File.updateExifOrientation(url: URL) {
+    url.openStream()?.use {
+        val exif = ExifInterface(it)
+        exif.getAttribute(ExifInterface.TAG_ORIENTATION)?.let { attribute ->
+            val newExif = ExifInterface(absolutePath)
+            newExif.setAttribute(ExifInterface.TAG_ORIENTATION, attribute)
+            newExif.saveAttributes()
+        }
+    }
+}
+
+private const val HIGHEST_COMPRESS_QUALITY = 20

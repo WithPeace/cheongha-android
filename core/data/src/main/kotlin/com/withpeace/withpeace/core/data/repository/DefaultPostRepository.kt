@@ -18,6 +18,7 @@ import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.domain.model.post.RegisterPost
 import com.withpeace.withpeace.core.domain.repository.PostRepository
 import com.withpeace.withpeace.core.domain.repository.UserRepository
+import com.withpeace.withpeace.core.network.di.request.CommentRequest
 import com.withpeace.withpeace.core.network.di.service.PostService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -98,6 +99,19 @@ class DefaultPostRepository @Inject constructor(
         }.handleApiFailure {
             onErrorWithAuthExpired(it, onError)
         }
+    }
+
+    override fun registerComment(
+        postId: Long,
+        content: String,
+        onError: suspend (CheonghaError) -> Unit,
+    ): Flow<Boolean> = flow {
+        postService.registerComment(postId = postId, CommentRequest(content))
+            .suspendMapSuccess {
+                emit(data)
+            }.handleApiFailure {
+                onErrorWithAuthExpired(it, onError)
+            }
     }
 
     private fun getImageRequestBodies(
