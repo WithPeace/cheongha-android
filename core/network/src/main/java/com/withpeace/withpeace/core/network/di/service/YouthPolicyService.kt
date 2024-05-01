@@ -11,5 +11,7 @@ interface YouthPolicyService {
         @Query("openApiVlak") apiKey: String,
         @Query("display") pageSize: Int,
         @Query("pageIndex") pageIndex: Int,
+        @Query("bizTycdSel") classification: String?,
+        @Query("srchPolyBizSecd") region: String?,
     ): ApiResponse<YouthPolicyListResponse>
 }

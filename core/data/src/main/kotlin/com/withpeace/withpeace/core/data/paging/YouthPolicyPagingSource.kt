@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.core.data.paging
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.skydoves.sandwich.ApiResponse
@@ -16,11 +17,14 @@ class YouthPolicyPagingSource(
 ) :
     PagingSource<Int, YouthPolicy>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, YouthPolicy> {
+        Log.d("test","test")
         val pageIndex = params.key ?: 1
         val response = youthPolicyService.getPolicies(
             apiKey = BuildConfig.YOUTH_POLICY_API_KEY,
             pageSize = params.loadSize,
             pageIndex = pageIndex,
+            classification = "023010",
+            region = "003002002", //TODO(조회 view단 연결해야함)
         )
 
         if (response is ApiResponse.Failure) {

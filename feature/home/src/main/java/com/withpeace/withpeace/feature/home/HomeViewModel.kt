@@ -14,6 +14,8 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             youthPoliciesUseCase(
+                policyClassifications = listOf(),
+                policyRegions = listOf(),
                 onError = {
 
                 },
