@@ -1,5 +1,7 @@
 package com.withpeace.withpeace.feature.postdetail.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -30,6 +32,12 @@ fun NavGraphBuilder.postDetailGraph(
         arguments = listOf(
             navArgument(POST_DETAIL_ID_ARGUMENT) { type = NavType.LongType },
         ),
+        enterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(500),
+            )
+        },
     ) {
         PostDetailRoute(
             onShowSnackBar = onShowSnackBar,
