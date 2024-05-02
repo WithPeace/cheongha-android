@@ -49,6 +49,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -470,9 +471,12 @@ fun RegisterPostContent(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val keyboardHeight = WindowInsets.ime.getBottom(LocalDensity.current)
+    var isContentFocus by remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(key1 = keyboardHeight, key2 = content.lines().size) {
-        if (content.lines().size >= SCROLL_THRESHOLD_LINE) {
+        if (content.lines().size >= SCROLL_THRESHOLD_LINE && isContentFocus) {
             coroutineScope.launch { scrollByKeyboardHeight(keyboardHeight.toFloat()) }
         }
     }  // 키보드기 올라가거나, Content의 라인이 변할때마다 내용이 키보드 영역에 가려지지 않도록 키보드 영역만큼 스크롤해줌.
@@ -484,6 +488,7 @@ fun RegisterPostContent(
                     vertical = 16.dp,
                     horizontal = WithpeaceTheme.padding.BasicHorizontalPadding,
                 )
+                .onFocusChanged { isContentFocus = it.isFocused }
                 .fillMaxSize(),
             value = content,
             onValueChange = onContentChanged,
