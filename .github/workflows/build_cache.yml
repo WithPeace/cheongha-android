@@ -40,7 +40,7 @@ jobs:
 
       - name: Access YOUTH POLICY API KEY
         env:
-          GOOGLE_CLIENT_ID: ${{ secrets.YOUTH_POLICY_API_KEY }}
+          YOUTH_POLICY_API_KEY: ${{ secrets.YOUTH_POLICY_API_KEY }}
         run: |
           echo "YOUTH_POLICY_API_KEY=\"YOUTH_POLICY_API_KEY\"" >> local.properties
 
