@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -30,6 +30,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
+import com.withpeace.withpeace.core.designsystem.util.dropShadow
 
 @Composable
 fun HomeRoute(
@@ -47,23 +48,27 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             modifier = modifier.height(1.dp),
             color = WithpeaceTheme.colors.SystemGray3,
         )
-        LazyColumn(
+        Column(
             modifier = modifier
                 .fillMaxSize()
                 .background(Color(0xFFF8F9FB))
-                .padding(vertical = 16.dp, horizontal = 24.dp),
+                .padding(horizontal = 24.dp),
         ) {
-            item {
-                YouthPolicyCard(
-                    modifier = modifier,
-                    youthPolicy = YouthPolicyUiModel(
-                        id = 0,
-                        title = "청년창업 지원사업 예비 창업자를 위한 정책입니다.",
-                        content = "생애 최초로 창업에 도전하는 만 29세 이하 청년 예비 창업자들의 성공을 위해 지원하는 정책입니다. 이 정책을 하면은 정말 좋습니다",
-                        region = "서울",
-                        ageRange = "만29세 이하",
-                    ),
-                )
+            Spacer(modifier = modifier.height(8.dp))
+            LazyColumn(modifier = modifier.fillMaxSize()) {
+                item {
+                    Spacer(modifier = modifier.height(8.dp))
+                    YouthPolicyCard(
+                        modifier = modifier,
+                        youthPolicy = YouthPolicyUiModel(
+                            id = 0,
+                            title = "청년창업 지원사업 예비 창업자를 위한 정책입니다.",
+                            content = "생애 최초로 창업에 도전하는 만 29세 이하 청년 예비 창업자들의 성공을 위해 지원하는 정책입니다. 이 정책을 하면은 정말 좋습니다",
+                            region = "서울",
+                            ageRange = "만29세 이하",
+                        ),
+                    )
+                }
             }
         }
     }
@@ -101,16 +106,17 @@ private fun YouthPolicyCard(
     youthPolicy: YouthPolicyUiModel,
 ) {
     Card(
-        modifier
+        modifier = modifier
             .fillMaxWidth()
-            .shadow(
-                elevation = 4.dp,
-                spotColor = Color(0x1A000000),
-                ambientColor = Color(0x1A000000),
-            )
             .background(
                 color = WithpeaceTheme.colors.SystemWhite,
                 shape = RoundedCornerShape(size = 10.dp),
+            )
+            .dropShadow(
+                color = Color(0x1A000000),
+                blurRadius = 4.dp,
+                spreadRadius = 2.dp,
+                borderRadius = 10.dp
             ),
     ) {
         ConstraintLayout(
@@ -167,7 +173,10 @@ private fun YouthPolicyCard(
                             bottom.linkTo(parent.bottom)
                         },
                     )
-                    .background(color = WithpeaceTheme.colors.SubPink, shape = RoundedCornerShape(size = 5.dp))
+                    .background(
+                        color = WithpeaceTheme.colors.SubPink,
+                        shape = RoundedCornerShape(size = 5.dp),
+                    )
                     .padding(horizontal = 8.dp, vertical = 4.dp),
                 //TODO("Text style 디자인 가이드라인에 맞게 요청")
             )
@@ -183,7 +192,10 @@ private fun YouthPolicyCard(
                             bottom.linkTo(parent.bottom)
                         },
                     )
-                    .background(color = WithpeaceTheme.colors.SystemGray3, shape = RoundedCornerShape(size = 5.dp))
+                    .background(
+                        color = WithpeaceTheme.colors.SystemGray3,
+                        shape = RoundedCornerShape(size = 5.dp),
+                    )
                     .padding(horizontal = 8.dp, vertical = 4.dp),
                 //TODO("Text style 디자인 가이드라인에 맞게 요청")
             )
