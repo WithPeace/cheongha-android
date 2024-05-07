@@ -7,4 +7,6 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.paging.common)
+    implementation(libs.androidx.pagingCompose)
 }

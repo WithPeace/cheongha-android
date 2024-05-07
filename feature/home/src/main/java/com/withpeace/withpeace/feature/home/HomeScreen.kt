@@ -164,6 +164,7 @@ private fun YouthPolicyCard(
 
             Text(
                 text = youthPolicy.region,
+                color = WithpeaceTheme.colors.MainPink,
                 modifier = modifier
                     .constrainAs(
                         region,
@@ -183,6 +184,7 @@ private fun YouthPolicyCard(
 
             Text(
                 text = youthPolicy.ageRange,
+                color = WithpeaceTheme.colors.SystemGray1,
                 modifier = modifier
                     .constrainAs(
                         ageRange,
