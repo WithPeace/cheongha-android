@@ -1,9 +1,9 @@
 package com.withpeace.withpeace.feature.home
 
 data class YouthPolicyUiModel(
-    val id: Long,
+    val id: String,
     val title: String,
     val content: String,
     val region: String,
-    val ageRange: String,
+    val ageInfo: String,
 )

@@ -3,6 +3,7 @@ package com.withpeace.withpeace.core.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.withpeace.withpeace.core.data.paging.YouthPolicyPagingSource
 import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import com.withpeace.withpeace.core.domain.model.policy.PolicyClassification

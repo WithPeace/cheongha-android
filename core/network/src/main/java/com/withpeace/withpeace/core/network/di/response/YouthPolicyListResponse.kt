@@ -26,4 +26,6 @@ data class YouthPolicyEntity(
     val classification: String?,
     @PropertyElement(name = "polyBizSecd")
     val regionCode: String?,
+    @PropertyElement(name = "ageInfo", writeAsCData = true)
+    val ageInfo: String?,
 )

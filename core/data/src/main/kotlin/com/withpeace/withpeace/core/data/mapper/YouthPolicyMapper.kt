@@ -12,11 +12,12 @@ fun YouthPolicyEntity.toDomain(): YouthPolicy {
         introduce = introduce ?: "",
         region = regionCode.toRegion(),
         policyClassification = classification.toPolicyClassification(),
+        ageInfo = ageInfo ?: "",
     )
 }
 
 private fun String?.toRegion(): PolicyRegion {
-    return when(this) {
+    return when(this?.slice(0..8)) {
         "003002001" -> PolicyRegion.서울
         "003002002" -> PolicyRegion.부산
         "003002003" -> PolicyRegion.대구

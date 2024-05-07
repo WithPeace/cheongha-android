@@ -29,6 +29,9 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.util.dropShadow
 
@@ -37,11 +40,16 @@ fun HomeRoute(
     onShowSnackBar: (message: String) -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
-    HomeScreen()
+    val youthPolicyPagingData = viewModel.youthPolicyPagingFlow.collectAsLazyPagingItems()
+    HomeScreen(youthPolicies = youthPolicyPagingData)
 }
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    youthPolicies: LazyPagingItems<YouthPolicyUiModel>,
+) {
+
     Column(modifier = modifier.fillMaxSize()) {
         HomeHeader(modifier)
         HorizontalDivider(
@@ -56,17 +64,15 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         ) {
             Spacer(modifier = modifier.height(8.dp))
             LazyColumn(modifier = modifier.fillMaxSize()) {
-                item {
+                items(
+                    count = youthPolicies.itemCount,
+                    key = youthPolicies.itemKey { it.id },
+                ) {
+                    val youthPolicy = youthPolicies[it] ?: throw IllegalStateException()
                     Spacer(modifier = modifier.height(8.dp))
                     YouthPolicyCard(
                         modifier = modifier,
-                        youthPolicy = YouthPolicyUiModel(
-                            id = 0,
-                            title = "청년창업 지원사업 예비 창업자를 위한 정책입니다.",
-                            content = "생애 최초로 창업에 도전하는 만 29세 이하 청년 예비 창업자들의 성공을 위해 지원하는 정책입니다. 이 정책을 하면은 정말 좋습니다",
-                            region = "서울",
-                            ageRange = "만29세 이하",
-                        ),
+                        youthPolicy = youthPolicy,
                     )
                 }
             }
@@ -183,7 +189,7 @@ private fun YouthPolicyCard(
             )
 
             Text(
-                text = youthPolicy.ageRange,
+                text = youthPolicy.ageInfo,
                 color = WithpeaceTheme.colors.SystemGray1,
                 modifier = modifier
                     .constrainAs(
@@ -191,7 +197,7 @@ private fun YouthPolicyCard(
                         constrainBlock = {
                             top.linkTo(region.top)
                             start.linkTo(region.end, margin = 8.dp)
-                            bottom.linkTo(parent.bottom)
+                            bottom.linkTo(region.bottom)
                         },
                     )
                     .background(
@@ -226,6 +232,9 @@ private fun YouthPolicyCard(
 @Preview
 fun HomePreview() {
     WithpeaceTheme {
-        HomeScreen()
+        // HomeScreen()
     }
 }
+
+// TODO("페이징이 잘 안되는 문제")
+// TODO("로딩 및 에러")

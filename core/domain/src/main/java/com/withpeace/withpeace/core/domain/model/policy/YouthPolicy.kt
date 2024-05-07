@@ -6,4 +6,5 @@ data class YouthPolicy(
     val introduce: String,
     val region: PolicyRegion,
     val policyClassification: PolicyClassification,
+    val ageInfo: String,
 )
