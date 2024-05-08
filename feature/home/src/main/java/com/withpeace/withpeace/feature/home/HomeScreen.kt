@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -63,7 +64,11 @@ fun HomeScreen(
                 .padding(horizontal = 24.dp),
         ) {
             Spacer(modifier = modifier.height(8.dp))
-            LazyColumn(modifier = modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = modifier.fillMaxSize(),
+                userScrollEnabled = true,
+                contentPadding = PaddingValues(bottom = 16.dp)
+            ) {
                 items(
                     count = youthPolicies.itemCount,
                     key = youthPolicies.itemKey { it.id },
@@ -147,7 +152,8 @@ private fun YouthPolicyCard(
                         width = Dimension.fillToConstraints
                     },
                 ),
-                style = WithpeaceTheme.typography.title2, //TODO("style 디자인 가이드라인에 맞게 요청")
+                color = WithpeaceTheme.colors.SystemBlack,
+                style = WithpeaceTheme.typography.homePolicyTitle,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
             )
@@ -163,7 +169,8 @@ private fun YouthPolicyCard(
                             width = Dimension.fillToConstraints
                         },
                     ),
-                style = WithpeaceTheme.typography.caption, //TODO("style 디자인 가이드라인에 맞게 요청")
+                color = WithpeaceTheme.colors.SystemBlack,
+                style = WithpeaceTheme.typography.homePolicyContent,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 2,
             )
@@ -185,7 +192,7 @@ private fun YouthPolicyCard(
                         shape = RoundedCornerShape(size = 5.dp),
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp),
-                //TODO("Text style 디자인 가이드라인에 맞게 요청")
+                style = WithpeaceTheme.typography.homePolicyTag,
             )
 
             Text(
@@ -205,7 +212,7 @@ private fun YouthPolicyCard(
                         shape = RoundedCornerShape(size = 5.dp),
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp),
-                //TODO("Text style 디자인 가이드라인에 맞게 요청")
+                style = WithpeaceTheme.typography.homePolicyTag,
             )
 
 
@@ -236,5 +243,5 @@ fun HomePreview() {
     }
 }
 
-// TODO("페이징이 잘 안되는 문제")
 // TODO("로딩 및 에러")
+// TODO("로딩 뷰")
