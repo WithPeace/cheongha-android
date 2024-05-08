@@ -132,4 +132,24 @@ data class WithPeaceTypography(
             lineHeight = 19.6.sp,
             letterSpacing = (-0.4).sp,
         ),
+
+    val homePolicyTitle: TextStyle =
+        TextStyle(
+            fontFamily = PretendardFont,
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp,
+            letterSpacing = (0.16).sp,
+        ),
+    val homePolicyContent: TextStyle =
+        TextStyle(
+            fontFamily = PretendardFont,
+            fontWeight = FontWeight.Normal,
+            fontSize = 12.sp,
+        ),
+    val homePolicyTag: TextStyle =
+        TextStyle(
+            fontFamily = PretendardFont,
+            fontWeight = FontWeight.Normal,
+            fontSize = 10.sp,
+        ),
 )

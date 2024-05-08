@@ -17,15 +17,18 @@ class YouthPolicyPagingSource(
 ) :
     PagingSource<Int, YouthPolicy>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, YouthPolicy> {
-        Log.d("test","test")
         val pageIndex = params.key ?: 1
         val response = youthPolicyService.getPolicies(
             apiKey = BuildConfig.YOUTH_POLICY_API_KEY,
             pageSize = params.loadSize,
             pageIndex = pageIndex,
-            classification = "023010",
-            region = "003002002", //TODO(조회 view단 연결해야함)
+            classification = null,
+            region = "003002002",
         )
+        Log.d("test",pageIndex.toString())
+        Log.d("testLoadSize",params.loadSize.toString())
+
+
 
         if (response is ApiResponse.Failure) {
             val error: CheonghaError =
@@ -39,7 +42,7 @@ class YouthPolicyPagingSource(
         return LoadResult.Page(
             data = data.youthPolicyEntity.map { it.toDomain() },
             prevKey = if (pageIndex == STARTING_PAGE_INDEX) null else pageIndex - 1,
-            nextKey = if (data.pageCount / params.loadSize < pageIndex) null else pageIndex + 1,
+            nextKey = if (response.data.youthPolicyEntity.isEmpty()) null else pageIndex + 1
         )
     }
 

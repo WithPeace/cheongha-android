@@ -9,7 +9,7 @@ data class YouthPolicyListResponse(
     @PropertyElement
     val pageIndex: Int,
     @PropertyElement(name = "totalCount")
-    val pageCount: Int,
+    val totalDataCount: Int,
     @Element
     val youthPolicyEntity: List<YouthPolicyEntity>,
 )

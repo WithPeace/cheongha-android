@@ -17,6 +17,9 @@ fun YouthPolicyEntity.toDomain(): YouthPolicy {
 }
 
 private fun String?.toRegion(): PolicyRegion {
+    if(this?.slice(0..5)== "003001"){
+        return PolicyRegion.중앙부처
+    }
     return when(this?.slice(0..8)) {
         "003002001" -> PolicyRegion.서울
         "003002002" -> PolicyRegion.부산
@@ -35,7 +38,7 @@ private fun String?.toRegion(): PolicyRegion {
         "003002015" -> PolicyRegion.경남
         "003002016" -> PolicyRegion.제주
         "003002017" -> PolicyRegion.세종
-        else -> throw IllegalArgumentException("Unknown region code: $this")
+        else -> PolicyRegion.기타
     }
 }
 
@@ -46,6 +49,6 @@ private fun String?.toPolicyClassification(): PolicyClassification {
         "023030" -> PolicyClassification.EDUCATION
         "023040" -> PolicyClassification.WELFARE_AND_CULTURE
         "023050" -> PolicyClassification.PARTICIPATION_AND_RIGHT
-        else -> throw IllegalArgumentException("Unknown policy classification code: $this")
+        else -> PolicyClassification.UNKNOWN
     }
 }
