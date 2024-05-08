@@ -361,7 +361,13 @@ fun PostDetailBottomSheet(
                 }
             }
         } else {
-            Column(modifier = Modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding)) {
+            Column(
+                modifier = Modifier.padding(
+                    start = WithpeaceTheme.padding.BasicHorizontalPadding,
+                    end = WithpeaceTheme.padding.BasicHorizontalPadding,
+                    top = 24.dp,
+                ),
+            ) {
                 Row(
                     modifier = Modifier.padding(vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
