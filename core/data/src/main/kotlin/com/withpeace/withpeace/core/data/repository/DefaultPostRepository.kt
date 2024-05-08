@@ -129,6 +129,19 @@ class DefaultPostRepository @Inject constructor(
             }
     }
 
+    override fun reportComment(
+        commentId: Long,
+        reportType: ReportType,
+        onError: suspend (CheonghaError) -> Unit,
+    ): Flow<Boolean> = flow {
+        postService.reportComment(commentId = commentId, ReportTypeRequest(reportType.name))
+            .suspendMapSuccess {
+                emit(data)
+            }.handleApiFailure {
+                onErrorWithAuthExpired(it, onError)
+            }
+    }
+
     private fun getImageRequestBodies(
         imageUris: List<String>,
     ): List<MultipartBody.Part> {

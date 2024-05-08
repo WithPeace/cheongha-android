@@ -86,7 +86,7 @@ fun PostDetailRoute(
             onClickEditButton = onClickEditButton,
             isLoading = isLoading,
             lazyListState = lazyListState,
-            onReportComment = { _, _ -> },
+            onReportComment = viewModel::reportComment,
             onReportPost = viewModel::reportPost,
         )
     }
@@ -139,9 +139,10 @@ fun PostDetailScreen(
     onReportPost: (id: Long, ReportTypeUiModel) -> Unit = { _, _ -> },
     onReportComment: (id: Long, ReportTypeUiModel) -> Unit = { _, _ -> },
 ) {
-    var showBottomSheet by rememberSaveable {
+    var showPostBottomSheet by rememberSaveable {
         mutableStateOf(false)
     }
+
     var showDeleteDialog by rememberSaveable {
         mutableStateOf(false)
     }
@@ -156,7 +157,7 @@ fun PostDetailScreen(
                     Icon(
                         modifier = Modifier
                             .clickable {
-                                showBottomSheet = true
+                                showPostBottomSheet = true
                             }
                             .padding(21.dp)
                             .size(24.dp),
@@ -213,14 +214,17 @@ fun PostDetailScreen(
                             imageUrls = postUiState.postDetail.imageUrls,
                             commentSize = postUiState.postDetail.comments.size,
                         )
-                        CommentSection(postUiState.postDetail.comments)
+                        CommentSection(
+                            comments = postUiState.postDetail.comments,
+                            onReportComment = onReportComment,
+                        )
                     }
 
-                    if (showBottomSheet) {
+                    if (showPostBottomSheet) {
                         PostDetailPostBottomSheet(
                             isMyPost = postUiState.postDetail.isMyPost,
                             postId = postUiState.postDetail.id,
-                            onDismissRequest = { showBottomSheet = false },
+                            onDismissRequest = { showPostBottomSheet = false },
                             onClickDeleteButton = { showDeleteDialog = true },
                             onClickEditButton = {
                                 onClickEditButton(
@@ -611,6 +615,7 @@ private fun PostDetailScreenPreview() {
                                 nickname = "Becky Lowery",
                                 profileImageUrl = "https://www.google.com/#q=repudiare",
                             ),
+                            false
                         )
                     },
                 ),

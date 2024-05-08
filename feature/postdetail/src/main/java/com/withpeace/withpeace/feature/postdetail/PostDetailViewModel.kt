@@ -9,6 +9,7 @@ import com.withpeace.withpeace.core.domain.usecase.DeletePostUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetCurrentUserIdUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetPostDetailUseCase
 import com.withpeace.withpeace.core.domain.usecase.RegisterCommentUseCase
+import com.withpeace.withpeace.core.domain.usecase.ReportCommentUseCase
 import com.withpeace.withpeace.core.domain.usecase.ReportPostUseCase
 import com.withpeace.withpeace.core.ui.post.ReportTypeUiModel
 import com.withpeace.withpeace.core.ui.post.toDomain
@@ -35,6 +36,7 @@ class PostDetailViewModel @Inject constructor(
     private val deletePostUseCase: DeletePostUseCase,
     private val registerCommentUseCase: RegisterCommentUseCase,
     private val reportPostUseCase: ReportPostUseCase,
+    private val reportCommentUseCase: ReportCommentUseCase,
 ) : ViewModel() {
 
     private val postId =
@@ -125,7 +127,8 @@ class PostDetailViewModel @Inject constructor(
         reportTypeUiModel: ReportTypeUiModel,
     ) {
         reportPostUseCase(
-            postId, reportTypeUiModel.toDomain(),
+            postId,
+            reportTypeUiModel.toDomain(),
             onError = {
                 when (it) {
                     ResponseError.POST_DUPLICATED_ERROR -> _postUiEvent.send(PostDetailUiEvent.ReportPostDuplicated)
@@ -136,6 +139,28 @@ class PostDetailViewModel @Inject constructor(
             _isLoading.update { true }
         }.onEach {
             _postUiEvent.send(PostDetailUiEvent.ReportPostSuccess)
+        }.onCompletion {
+            _isLoading.update { false }
+        }.launchIn(viewModelScope)
+    }
+
+    fun reportComment(
+        commentId: Long,
+        reportTypeUiModel: ReportTypeUiModel,
+    ) {
+        reportCommentUseCase(
+            commentId,
+            reportTypeUiModel.toDomain(),
+            onError = {
+                when (it) {
+                    ResponseError.COMMENT_DUPLICATED_ERROR -> _postUiEvent.send(PostDetailUiEvent.ReportCommentDuplicated)
+                    else -> _postUiEvent.send(PostDetailUiEvent.ReportCommentFail)
+                }
+            },
+        ).onStart {
+            _isLoading.update { true }
+        }.onEach {
+            _postUiEvent.send(PostDetailUiEvent.ReportCommentSuccess)
         }.onCompletion {
             _isLoading.update { false }
         }.launchIn(viewModelScope)

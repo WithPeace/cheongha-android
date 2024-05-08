@@ -65,4 +65,10 @@ interface PostService {
         @Path("postId") postId: Long,
         @Body reportTypeRequest: ReportTypeRequest,
     ): ApiResponse<BaseResponse<Boolean>>
+
+    @POST("/api/v1/posts/{commentId}/reportComment")
+    suspend fun reportComment(
+        @Path("commentId") commentId: Long,
+        @Body reportTypeRequest: ReportTypeRequest,
+    ): ApiResponse<BaseResponse<Boolean>>
 }

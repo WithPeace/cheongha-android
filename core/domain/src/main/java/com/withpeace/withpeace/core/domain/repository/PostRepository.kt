@@ -42,4 +42,10 @@ interface PostRepository {
         reportType: ReportType,
         onError: suspend (CheonghaError) -> Unit
     ): Flow<Boolean>
+
+    fun reportComment(
+        commentId: Long,
+        reportType: ReportType,
+        onError: suspend (CheonghaError) -> Unit,
+    ): Flow<Boolean>
 }
