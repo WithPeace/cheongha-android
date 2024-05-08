@@ -2,6 +2,7 @@ package com.withpeace.withpeace.core.network.di.service
 
 import com.skydoves.sandwich.ApiResponse
 import com.withpeace.withpeace.core.network.di.request.CommentRequest
+import com.withpeace.withpeace.core.network.di.request.ReportTypeRequest
 import com.withpeace.withpeace.core.network.di.response.BaseResponse
 import com.withpeace.withpeace.core.network.di.response.post.PostDetailResponse
 import com.withpeace.withpeace.core.network.di.response.post.PostIdResponse
@@ -57,5 +58,11 @@ interface PostService {
     suspend fun registerComment(
         @Path("postId") postId: Long,
         @Body commentRequest: CommentRequest,
+    ): ApiResponse<BaseResponse<Boolean>>
+
+    @POST("/api/v1/posts/{postId}/reportPost")
+    suspend fun reportPost(
+        @Path("postId") postId: Long,
+        @Body reportTypeRequest: ReportTypeRequest,
     ): ApiResponse<BaseResponse<Boolean>>
 }

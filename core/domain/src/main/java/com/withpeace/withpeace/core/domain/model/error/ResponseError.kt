@@ -21,6 +21,7 @@ enum class ResponseError(val serverErrorCode: Int? = null) : CheonghaError {
     FAILURE_LOGIN(40106),
     FAILURE_LOGOUT(40107),
     TOKEN_UNKNOWN_ERROR(40106),
+    POST_DUPLICATED_ERROR(42202),
 
     /* Server 403 */
     ACCESS_DENIED_ERROR(40300),

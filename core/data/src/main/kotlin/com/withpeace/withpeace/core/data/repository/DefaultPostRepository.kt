@@ -16,9 +16,11 @@ import com.withpeace.withpeace.core.domain.model.post.Post
 import com.withpeace.withpeace.core.domain.model.post.PostDetail
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.domain.model.post.RegisterPost
+import com.withpeace.withpeace.core.domain.model.post.ReportType
 import com.withpeace.withpeace.core.domain.repository.PostRepository
 import com.withpeace.withpeace.core.domain.repository.UserRepository
 import com.withpeace.withpeace.core.network.di.request.CommentRequest
+import com.withpeace.withpeace.core.network.di.request.ReportTypeRequest
 import com.withpeace.withpeace.core.network.di.service.PostService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -107,6 +109,19 @@ class DefaultPostRepository @Inject constructor(
         onError: suspend (CheonghaError) -> Unit,
     ): Flow<Boolean> = flow {
         postService.registerComment(postId = postId, CommentRequest(content))
+            .suspendMapSuccess {
+                emit(data)
+            }.handleApiFailure {
+                onErrorWithAuthExpired(it, onError)
+            }
+    }
+
+    override fun reportPost(
+        postId: Long,
+        reportType: ReportType,
+        onError: suspend (CheonghaError) -> Unit,
+    ): Flow<Boolean> = flow {
+        postService.reportPost(postId = postId, ReportTypeRequest(reportType.name))
             .suspendMapSuccess {
                 emit(data)
             }.handleApiFailure {
