@@ -8,6 +8,9 @@ import androidx.paging.map
 import com.withpeace.withpeace.core.domain.model.policy.PolicyFilters
 import com.withpeace.withpeace.core.domain.model.policy.PolicyRegion
 import com.withpeace.withpeace.core.domain.usecase.GetYouthPoliciesUseCase
+import com.withpeace.withpeace.feature.home.filtersetting.uistate.ClassificationUiModel
+import com.withpeace.withpeace.feature.home.filtersetting.uistate.RegionUiModel
+import com.withpeace.withpeace.feature.home.filtersetting.uistate.toDomain
 import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
 import com.withpeace.withpeace.feature.home.uistate.YouthPolicyUiModel
 import com.withpeace.withpeace.feature.home.uistate.toUiModel
@@ -51,14 +54,21 @@ class HomeViewModel @Inject constructor(
                     it.map { youthPolicy ->
                         youthPolicy.toUiModel()
                     }
-
                 }.cachedIn(viewModelScope).firstOrNull() ?: PagingData.empty()
             }
         }
     }
 
-    fun onSelectRegion(region: PolicyRegion) {
-        _selectingFilters.update { it.addRegion(region) }
+    fun onCheckClassification(classification: ClassificationUiModel) {
+        _selectingFilters.update {
+            it.updateClassification(classification.toDomain())
+        }
+    }
+
+    fun onCheckRegion(region: RegionUiModel) {
+        _selectingFilters.update {
+            it.updateRegion(region.toDomain())
+        }
     }
 
     fun onCompleteFilter() {

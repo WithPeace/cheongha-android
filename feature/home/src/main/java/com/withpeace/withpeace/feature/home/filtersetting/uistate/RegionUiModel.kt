@@ -1,4 +1,4 @@
-package com.withpeace.withpeace.feature.home.uistate.filter
+package com.withpeace.withpeace.feature.home.filtersetting.uistate
 
 import com.withpeace.withpeace.core.domain.model.policy.PolicyRegion
 
@@ -10,6 +10,6 @@ fun PolicyRegion.toUiModel(): RegionUiModel {
     return RegionUiModel.entries.find { this.name == it.name } ?: RegionUiModel.기타
 }
 
-fun RegionUiModel.toDomainModel(): PolicyRegion {
+fun RegionUiModel.toDomain(): PolicyRegion {
     return PolicyRegion.entries.find { this.name == it.name } ?: PolicyRegion.기타
 }

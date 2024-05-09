@@ -1,4 +1,4 @@
-package com.withpeace.withpeace.feature.home.uistate.filter
+package com.withpeace.withpeace.feature.home.filtersetting.uistate
 
 import androidx.annotation.StringRes
 import com.withpeace.withpeace.core.domain.model.policy.PolicyClassification
@@ -17,6 +17,6 @@ fun PolicyClassification.toUiModel(): ClassificationUiModel {
     return ClassificationUiModel.entries.find { it.name == this.name } ?: ClassificationUiModel.ETC
 }
 
-fun ClassificationUiModel.toUiModel(): PolicyClassification {
+fun ClassificationUiModel.toDomain(): PolicyClassification {
     return PolicyClassification.entries.find { it.name == this.name } ?: PolicyClassification.ETC
 }

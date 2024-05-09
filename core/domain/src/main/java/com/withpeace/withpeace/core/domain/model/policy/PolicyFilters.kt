@@ -8,11 +8,21 @@ data class PolicyFilters(
 
     fun removeRegion(region: PolicyRegion): PolicyFilters = copy(regions = regions - region)
 
+    fun updateRegion(region: PolicyRegion): PolicyFilters {
+        return if (!regions.contains(region)) addRegion(region)
+        else removeRegion(region)
+    }
+
     fun addClassification(classification: PolicyClassification): PolicyFilters =
         copy(classifications = classifications + classification)
 
     fun removeClassification(classification: PolicyClassification): PolicyFilters =
         copy(classifications = classifications - classification)
+
+    fun updateClassification(classification: PolicyClassification): PolicyFilters {
+        return if (!classifications.contains(classification)) addClassification(classification)
+        else removeClassification(classification)
+    }
 
     fun removeAll(): PolicyFilters = copy(regions = emptyList(), classifications = emptyList())
 }

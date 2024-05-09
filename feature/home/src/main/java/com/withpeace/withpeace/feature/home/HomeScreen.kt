@@ -1,14 +1,11 @@
 package com.withpeace.withpeace.feature.home
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,13 +15,10 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
@@ -53,9 +47,10 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.util.dropShadow
+import com.withpeace.withpeace.feature.home.filtersetting.FilterBottomSheet
+import com.withpeace.withpeace.feature.home.filtersetting.uistate.ClassificationUiModel
 import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
 import com.withpeace.withpeace.feature.home.uistate.YouthPolicyUiModel
-import com.withpeace.withpeace.feature.home.uistate.filter.FilterListUiState
 
 @Composable
 fun HomeRoute(
@@ -66,8 +61,9 @@ fun HomeRoute(
     val selectedFilterUiState = viewModel.selectingFilters.collectAsStateWithLifecycle()
     HomeScreen(
         youthPolicies = youthPolicyPagingData,
-        onDismissRequest = viewModel::onCancelFilter,
         selectedFilterUiState = selectedFilterUiState.value,
+        onDismissRequest = viewModel::onCancelFilter,
+        onClassificationCheckChange = viewModel::onCheckClassification
     )
 }
 
@@ -75,8 +71,9 @@ fun HomeRoute(
 fun HomeScreen(
     modifier: Modifier = Modifier,
     youthPolicies: LazyPagingItems<YouthPolicyUiModel>,
-    onDismissRequest: () -> Unit,
     selectedFilterUiState: PolicyFiltersUiModel,
+    onDismissRequest: () -> Unit,
+    onClassificationCheckChange: (ClassificationUiModel) -> Unit,
 ) {
 
     Column(modifier = modifier.fillMaxSize()) {
@@ -84,6 +81,7 @@ fun HomeScreen(
             modifier = modifier,
             onDismissRequest = onDismissRequest,
             selectedFilterUiState = selectedFilterUiState,
+            onClassificationCheckChange = onClassificationCheckChange
         )
         HorizontalDivider(
             modifier = modifier.height(1.dp),
@@ -121,8 +119,9 @@ fun HomeScreen(
 @Composable
 private fun HomeHeader(
     modifier: Modifier,
-    onDismissRequest: () -> Unit,
     selectedFilterUiState: PolicyFiltersUiModel,
+    onDismissRequest: () -> Unit,
+    onClassificationCheckChange: (ClassificationUiModel) -> Unit,
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
@@ -161,91 +160,12 @@ private fun HomeHeader(
             sheetState = sheetState,
             windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Bottom), // 바텀시트시 상태바의 색깔도 ScopeOut 색으로 바꾸기 위함
         ) {
-            FilterBottomSheet(modifier = modifier, selectedFilterUiState = selectedFilterUiState)
-        }
-    }
-}
-
-@Composable
-private fun FilterBottomSheet(
-    modifier: Modifier,
-    selectedFilterUiState: PolicyFiltersUiModel,
-) {
-    val scrollState = rememberScrollState()
-    val filterListUiState = remember { FilterListUiState() }
-    Column {
-        Spacer(modifier = modifier.height(24.dp))
-        Row(modifier = modifier.padding(horizontal = 16.dp)) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_filter_close),
-                contentDescription = stringResource(
-                    R.string.filter_close,
-                ),
-            )
-            Text(
-                text = stringResource(id = R.string.filter),
-                modifier = modifier.padding(start = 8.dp),
-                style = WithpeaceTheme.typography.title1,
-                color = WithpeaceTheme.colors.SystemBlack,
+            FilterBottomSheet(
+                modifier = modifier,
+                selectedFilterUiState = selectedFilterUiState,
+                onClassificationCheckChange = onClassificationCheckChange
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        HorizontalDivider(
-            modifier = modifier
-                .fillMaxWidth()
-                .background(WithpeaceTheme.colors.SystemGray3)
-                .height(1.dp),
-        )
-        ScrollableFilterSection(
-            modifier = modifier,
-            scrollState = scrollState,
-            filterListUiState = filterListUiState,
-            selectedFilterUiState = selectedFilterUiState,
-        )
-    }
-}
-
-@Composable
-private fun ScrollableFilterSection(
-    modifier: Modifier,
-    scrollState: ScrollState,
-    filterListUiState: FilterListUiState,
-    selectedFilterUiState: PolicyFiltersUiModel,
-) {
-    Column(
-        modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp)
-            .verticalScroll(state = scrollState),
-
-        ) {
-        Spacer(modifier = modifier.height(16.dp))
-        Text(
-            text = "정책분야",
-            style = WithpeaceTheme.typography.title2,
-            color = WithpeaceTheme.colors.SystemBlack,
-        )
-
-        Spacer(modifier = modifier.height(16.dp))
-        filterListUiState.getClassifications().mapIndexed { index, filterItem ->
-            Row(
-                modifier = modifier.fillMaxWidth(),
-                horizontalArrangement =
-                Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = stringResource(id = filterItem.resId),
-                    style = WithpeaceTheme.typography.body,
-                    color = WithpeaceTheme.colors.SystemBlack,
-                )
-                Checkbox(
-                    checked = true,
-                    onCheckedChange = {},
-                )
-            }
-        }
-
     }
 }
 

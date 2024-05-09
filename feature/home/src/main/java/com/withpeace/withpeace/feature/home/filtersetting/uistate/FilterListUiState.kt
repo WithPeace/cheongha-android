@@ -1,4 +1,6 @@
-package com.withpeace.withpeace.feature.home.uistate.filter
+package com.withpeace.withpeace.feature.home.filtersetting.uistate
+
+import android.util.Log
 
 data class FilterListUiState(
     val isClassificationExpanded: Boolean = false,
@@ -15,6 +17,10 @@ data class FilterListUiState(
     fun getRegions(): List<RegionUiModel> {
         return if (isRegionExpanded) allRegions
         else allRegions.subList(0, FOLDED_ITEM_COUNT)
+    }
+
+    fun onClassificationClick() {
+
     }
 
     companion object {

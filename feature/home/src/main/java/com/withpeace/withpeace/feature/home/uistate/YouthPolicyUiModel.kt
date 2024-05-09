@@ -2,9 +2,9 @@ package com.withpeace.withpeace.feature.home.uistate
 
 import com.withpeace.withpeace.core.domain.model.policy.PolicyClassification
 import com.withpeace.withpeace.core.domain.model.policy.YouthPolicy
-import com.withpeace.withpeace.feature.home.uistate.filter.RegionUiModel
-import com.withpeace.withpeace.feature.home.uistate.filter.toDomainModel
-import com.withpeace.withpeace.feature.home.uistate.filter.toUiModel
+import com.withpeace.withpeace.feature.home.filtersetting.uistate.RegionUiModel
+import com.withpeace.withpeace.feature.home.filtersetting.uistate.toDomain
+import com.withpeace.withpeace.feature.home.filtersetting.uistate.toUiModel
 
 data class YouthPolicyUiModel(
     val id: String,
@@ -29,7 +29,7 @@ fun YouthPolicyUiModel.toDomain(): YouthPolicy {
         id = id,
         title = title,
         introduce = content,
-        region = region.toDomainModel(),
+        region = region.toDomain(),
         policyClassification = PolicyClassification.JOB,
         ageInfo = ageInfo,
     )
