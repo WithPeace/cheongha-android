@@ -10,17 +10,17 @@ fun YouthPolicyEntity.toDomain(): YouthPolicy {
         id = id,
         title = title ?: "",
         introduce = introduce ?: "",
-        region = regionCode.toRegion(),
-        policyClassification = classification.toPolicyClassification(),
+        region = regionCode.codeToRegion(),
+        policyClassification = classification.codeToPolicyClassification(),
         ageInfo = ageInfo ?: "",
     )
 }
 
-private fun String?.toRegion(): PolicyRegion {
-    if(this?.slice(0..5)== "003001"){
+private fun String?.codeToRegion(): PolicyRegion {
+    if (this?.slice(0..5) == "003001") {
         return PolicyRegion.중앙부처
     }
-    return when(this?.slice(0..8)) {
+    return when (this?.slice(0..8)) {
         "003002001" -> PolicyRegion.서울
         "003002002" -> PolicyRegion.부산
         "003002003" -> PolicyRegion.대구
@@ -42,13 +42,13 @@ private fun String?.toRegion(): PolicyRegion {
     }
 }
 
-private fun String?.toPolicyClassification(): PolicyClassification {
-    return when(this) {
+private fun String?.codeToPolicyClassification(): PolicyClassification {
+    return when (this) {
         "023010" -> PolicyClassification.JOB
         "023020" -> PolicyClassification.RESIDENT
         "023030" -> PolicyClassification.EDUCATION
         "023040" -> PolicyClassification.WELFARE_AND_CULTURE
         "023050" -> PolicyClassification.PARTICIPATION_AND_RIGHT
-        else -> PolicyClassification.UNKNOWN
+        else -> PolicyClassification.ETC
     }
 }

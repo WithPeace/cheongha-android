@@ -2,4 +2,11 @@
 <resources>
     <string name="cheongha_logo">청하 로고</string>
     <string name="filter">필터</string>
+    <string name="classification_job">일자리</string>
+    <string name="classification_resident">주거</string>
+    <string name="classification_education">교육</string>
+    <string name="classification_wefare_and_culture">복지,문화</string>
+    <string name="classification_partification_and_right">참여,권리</string>
+    <string name="classification_etc">기타</string>
+    <string name="filter_close">필터 닫기</string>
 </resources>

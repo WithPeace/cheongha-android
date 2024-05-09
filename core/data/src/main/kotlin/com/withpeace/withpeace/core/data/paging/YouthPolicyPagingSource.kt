@@ -12,6 +12,7 @@ import com.withpeace.withpeace.core.domain.model.policy.YouthPolicy
 import com.withpeace.withpeace.core.network.di.service.YouthPolicyService
 
 class YouthPolicyPagingSource(
+    private val pageSize: Int,
     private val youthPolicyService: YouthPolicyService,
     private val onError: suspend (CheonghaError) -> Unit,
 ) :
@@ -25,8 +26,6 @@ class YouthPolicyPagingSource(
             classification = null,
             region = "003002002",
         )
-        Log.d("test",pageIndex.toString())
-        Log.d("testLoadSize",params.loadSize.toString())
 
 
 
@@ -42,7 +41,7 @@ class YouthPolicyPagingSource(
         return LoadResult.Page(
             data = data.youthPolicyEntity.map { it.toDomain() },
             prevKey = if (pageIndex == STARTING_PAGE_INDEX) null else pageIndex - 1,
-            nextKey = if (response.data.youthPolicyEntity.isEmpty()) null else pageIndex + 1
+            nextKey = if (response.data.youthPolicyEntity.isEmpty()) null else pageIndex + (params.loadSize / pageSize),
         )
     }
 
