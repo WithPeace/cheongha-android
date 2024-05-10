@@ -10,20 +10,17 @@ data class FilterListUiState(
     private val allRegions: List<RegionUiModel> = RegionUiModel.entries
 
     fun getClassifications(): List<ClassificationUiModel> {
-        return if (isClassificationExpanded) allClassifications
+        return if (isClassificationExpanded) allClassifications.dropLast(ETC_COUNT)
         else allClassifications.subList(0, FOLDED_ITEM_COUNT)
     }
 
     fun getRegions(): List<RegionUiModel> {
-        return if (isRegionExpanded) allRegions
+        return if (isRegionExpanded) allRegions.dropLast(ETC_COUNT)
         else allRegions.subList(0, FOLDED_ITEM_COUNT)
-    }
-
-    fun onClassificationClick() {
-
     }
 
     companion object {
         private const val FOLDED_ITEM_COUNT = 3
+        private const val ETC_COUNT = 1
     }
 }

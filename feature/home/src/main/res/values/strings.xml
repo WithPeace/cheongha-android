@@ -9,6 +9,10 @@
     <string name="classification_partification_and_right">참여,권리</string>
     <string name="classification_etc">기타</string>
     <string name="filter_close">필터 닫기</string>
-    <string name="see_more">더보기</string>
+    <string name="filter_expanded">더보기</string>
     <string name="policy_classfication">정책분야</string>
+    <string name="region">지역</string>
+    <string name="filter_all_off">전체 해제</string>
+    <string name="search">검색하기</string>
+    <string name="filter_fold">접기</string>
 </resources>

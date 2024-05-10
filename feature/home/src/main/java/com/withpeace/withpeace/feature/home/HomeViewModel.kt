@@ -6,13 +6,13 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.withpeace.withpeace.core.domain.model.policy.PolicyFilters
-import com.withpeace.withpeace.core.domain.model.policy.PolicyRegion
 import com.withpeace.withpeace.core.domain.usecase.GetYouthPoliciesUseCase
 import com.withpeace.withpeace.feature.home.filtersetting.uistate.ClassificationUiModel
 import com.withpeace.withpeace.feature.home.filtersetting.uistate.RegionUiModel
 import com.withpeace.withpeace.feature.home.filtersetting.uistate.toDomain
 import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
 import com.withpeace.withpeace.feature.home.uistate.YouthPolicyUiModel
+import com.withpeace.withpeace.feature.home.uistate.toDomain
 import com.withpeace.withpeace.feature.home.uistate.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -72,10 +72,16 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onCompleteFilter() {
-        // completedFilters = selectingFilters
+        completedFilters = selectingFilters.value.toDomain()
     }
 
     fun onCancelFilter() {
         _selectingFilters.update { completedFilters }
+    }
+
+    fun onFilterAllOff() {
+        _selectingFilters.update {
+            it.removeAll()
+        }
     }
 }

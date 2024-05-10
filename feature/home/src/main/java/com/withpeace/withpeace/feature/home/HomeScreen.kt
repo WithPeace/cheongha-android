@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,8 +50,10 @@ import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.util.dropShadow
 import com.withpeace.withpeace.feature.home.filtersetting.FilterBottomSheet
 import com.withpeace.withpeace.feature.home.filtersetting.uistate.ClassificationUiModel
+import com.withpeace.withpeace.feature.home.filtersetting.uistate.RegionUiModel
 import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
 import com.withpeace.withpeace.feature.home.uistate.YouthPolicyUiModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeRoute(
@@ -63,7 +66,11 @@ fun HomeRoute(
         youthPolicies = youthPolicyPagingData,
         selectedFilterUiState = selectedFilterUiState.value,
         onDismissRequest = viewModel::onCancelFilter,
-        onClassificationCheckChange = viewModel::onCheckClassification
+        onClassificationCheckChanged = viewModel::onCheckClassification,
+        onRegionCheckChanged = viewModel::onCheckRegion,
+        onFilterAllOff = viewModel::onFilterAllOff,
+        onSearchWithFilter = viewModel::onCompleteFilter,
+        onCloseFilter = viewModel::onCancelFilter,
     )
 }
 
@@ -73,7 +80,11 @@ fun HomeScreen(
     youthPolicies: LazyPagingItems<YouthPolicyUiModel>,
     selectedFilterUiState: PolicyFiltersUiModel,
     onDismissRequest: () -> Unit,
-    onClassificationCheckChange: (ClassificationUiModel) -> Unit,
+    onClassificationCheckChanged: (ClassificationUiModel) -> Unit,
+    onRegionCheckChanged: (RegionUiModel) -> Unit,
+    onFilterAllOff: () -> Unit,
+    onSearchWithFilter: () -> Unit,
+    onCloseFilter: () -> Unit,
 ) {
 
     Column(modifier = modifier.fillMaxSize()) {
@@ -81,7 +92,11 @@ fun HomeScreen(
             modifier = modifier,
             onDismissRequest = onDismissRequest,
             selectedFilterUiState = selectedFilterUiState,
-            onClassificationCheckChange = onClassificationCheckChange
+            onClassificationCheckChanged = onClassificationCheckChanged,
+            onRegionCheckChanged = onRegionCheckChanged,
+            onFilterAllOff = onFilterAllOff,
+            onSearchWithFilter = onSearchWithFilter,
+            onCloseFilter = onCloseFilter,
         )
         HorizontalDivider(
             modifier = modifier.height(1.dp),
@@ -121,10 +136,15 @@ private fun HomeHeader(
     modifier: Modifier,
     selectedFilterUiState: PolicyFiltersUiModel,
     onDismissRequest: () -> Unit,
-    onClassificationCheckChange: (ClassificationUiModel) -> Unit,
+    onClassificationCheckChanged: (ClassificationUiModel) -> Unit,
+    onRegionCheckChanged: (RegionUiModel) -> Unit,
+    onFilterAllOff: () -> Unit,
+    onSearchWithFilter: () -> Unit,
+    onCloseFilter: () -> Unit,
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -163,7 +183,21 @@ private fun HomeHeader(
             FilterBottomSheet(
                 modifier = modifier,
                 selectedFilterUiState = selectedFilterUiState,
-                onClassificationCheckChange = onClassificationCheckChange
+                onClassificationCheckChanged = onClassificationCheckChanged,
+                onRegionCheckChanged = onRegionCheckChanged,
+                onFilterAllOff = onFilterAllOff,
+                onSearchWithFilter = {
+                    scope.launch { sheetState.hide() }.invokeOnCompletion {
+                        showBottomSheet = false
+                        onSearchWithFilter()
+                    }
+                },
+                onCloseFilter = {
+                    scope.launch { sheetState.hide() }.invokeOnCompletion {
+                        showBottomSheet = false
+                        onCloseFilter()
+                    }
+                },
             )
         }
     }
@@ -303,3 +337,5 @@ fun HomePreview() {
 
 // TODO("로딩 및 에러")
 // TODO("로딩 뷰")
+// TODO(필터 검색 가능, 더보기 텍스트 및 이미지 변경)
+// TODO(바텀 시트 고정 및 사이즈 세팅)

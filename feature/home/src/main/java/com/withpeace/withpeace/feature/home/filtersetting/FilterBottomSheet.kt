@@ -1,23 +1,26 @@
 package com.withpeace.withpeace.feature.home.filtersetting
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,13 +33,18 @@ import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.feature.home.R
 import com.withpeace.withpeace.feature.home.filtersetting.uistate.ClassificationUiModel
 import com.withpeace.withpeace.feature.home.filtersetting.uistate.FilterListUiState
+import com.withpeace.withpeace.feature.home.filtersetting.uistate.RegionUiModel
 import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
 
 @Composable
 fun FilterBottomSheet(
     modifier: Modifier,
     selectedFilterUiState: PolicyFiltersUiModel,
-    onClassificationCheckChange: (ClassificationUiModel) -> Unit,
+    onClassificationCheckChanged: (ClassificationUiModel) -> Unit,
+    onRegionCheckChanged: (RegionUiModel) -> Unit,
+    onFilterAllOff: () -> Unit,
+    onSearchWithFilter: () -> Unit,
+    onCloseFilter: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
     val filterListUiState = remember { mutableStateOf(FilterListUiState()) }
@@ -45,6 +53,9 @@ fun FilterBottomSheet(
         Row(modifier = modifier.padding(horizontal = 16.dp)) {
             Image(
                 painter = painterResource(id = R.drawable.ic_filter_close),
+                modifier = modifier.clickable {
+                    onCloseFilter()
+                },
                 contentDescription = stringResource(
                     R.string.filter_close,
                 ),
@@ -68,12 +79,54 @@ fun FilterBottomSheet(
             scrollState = scrollState,
             filterListUiState = filterListUiState.value,
             selectedFilterUiState = selectedFilterUiState,
-            onClassificationCheckChange = onClassificationCheckChange,
+            onClassificationCheckChanged = onClassificationCheckChanged,
+            onRegionCheckChanged = onRegionCheckChanged,
             onClassificationMoreViewClick = {
                 filterListUiState.value =
                     filterListUiState.value.copy(isClassificationExpanded = !filterListUiState.value.isClassificationExpanded)
             },
+            onRegionMoreViewClick = {
+                filterListUiState.value =
+                    filterListUiState.value.copy(isRegionExpanded = !filterListUiState.value.isRegionExpanded)
+            },
         )
+        Spacer(modifier = Modifier.height(24.dp))
+        HorizontalDivider(
+            modifier = modifier
+                .height(4.dp)
+                .background(WithpeaceTheme.colors.SystemGray3),
+        )
+        Row(
+            modifier = modifier
+                .padding(horizontal = 24.dp, vertical = 16.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            TextButton(
+                modifier = modifier,
+                onClick = { onFilterAllOff() },
+            ) {
+                Text(
+                    text = stringResource(R.string.filter_all_off),
+                    color = WithpeaceTheme.colors.SystemGray1,
+                    style = WithpeaceTheme.typography.body,
+                )
+            }
+            TextButton(
+                contentPadding = PaddingValues(vertical = 12.dp, horizontal = 32.dp),
+                colors = ButtonColors(
+                    containerColor = WithpeaceTheme.colors.MainPink,
+                    contentColor = WithpeaceTheme.colors.SystemWhite,
+                    disabledContainerColor = WithpeaceTheme.colors.MainPink,
+                    disabledContentColor = WithpeaceTheme.colors.SystemWhite,
+                ),
+                shape = RoundedCornerShape(5.dp),
+                onClick = { onSearchWithFilter() },
+            ) {
+                Text(text = stringResource(R.string.search))
+            }
+        }
     }
 }
 
@@ -83,8 +136,10 @@ private fun ScrollableFilterSection(
     scrollState: ScrollState,
     filterListUiState: FilterListUiState,
     selectedFilterUiState: PolicyFiltersUiModel,
-    onClassificationCheckChange: (ClassificationUiModel) -> Unit,
+    onClassificationCheckChanged: (ClassificationUiModel) -> Unit,
+    onRegionCheckChanged: (RegionUiModel) -> Unit,
     onClassificationMoreViewClick: () -> Unit,
+    onRegionMoreViewClick: () -> Unit,
 ) {
     Column(
         modifier
@@ -98,9 +153,8 @@ private fun ScrollableFilterSection(
             style = WithpeaceTheme.typography.title2,
             color = WithpeaceTheme.colors.SystemBlack,
         )
-
         Spacer(modifier = modifier.height(16.dp))
-        Log.d("test", "test")
+
         filterListUiState.getClassifications().map { filterItem ->
             Row(
                 modifier = modifier.fillMaxWidth(),
@@ -114,8 +168,13 @@ private fun ScrollableFilterSection(
                     color = WithpeaceTheme.colors.SystemBlack,
                 )
                 Checkbox(
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = WithpeaceTheme.colors.MainPink,
+                        uncheckedColor = WithpeaceTheme.colors.SystemGray2,
+                        checkmarkColor = WithpeaceTheme.colors.SystemWhite,
+                    ),
                     checked = selectedFilterUiState.classifications.contains(filterItem),
-                    onCheckedChange = { onClassificationCheckChange(filterItem) },
+                    onCheckedChange = { onClassificationCheckChanged(filterItem) },
                 )
             }
         }
@@ -129,15 +188,70 @@ private fun ScrollableFilterSection(
             horizontalArrangement = Arrangement.Center,
         ) {
             Text(
-                text = stringResource(R.string.see_more),
+                text = stringResource(id = if (filterListUiState.isClassificationExpanded) R.string.filter_fold else R.string.filter_expanded),
                 color = WithpeaceTheme.colors.SystemGray1,
                 style = WithpeaceTheme.typography.caption,
                 modifier = modifier.padding(end = 4.dp),
             )
             Image(
-                painterResource(id = R.drawable.ic_more),
-                contentDescription = stringResource(id = R.string.see_more),
+                painterResource(id = if (filterListUiState.isClassificationExpanded) R.drawable.ic_filter_fold else R.drawable.ic_filter_expanded),
+                contentDescription = stringResource(id = R.string.filter_expanded),
             )
         }
+        Spacer(modifier = modifier.height(16.dp))
+        HorizontalDivider(
+            modifier = modifier.height(1.dp),
+            color = WithpeaceTheme.colors.SystemGray3,
+        )
+        Spacer(modifier = modifier.height(16.dp))
+        Text(
+            text = stringResource(id = R.string.region),
+            style = WithpeaceTheme.typography.title2,
+            color = WithpeaceTheme.colors.SystemBlack,
+        )
+
+        Spacer(modifier = modifier.height(16.dp))
+
+        filterListUiState.getRegions().map { filterItem ->
+            Row(
+                modifier = modifier.fillMaxWidth(),
+                horizontalArrangement =
+                Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = filterItem.name,
+                    style = WithpeaceTheme.typography.body,
+                    color = WithpeaceTheme.colors.SystemBlack,
+                )
+                Checkbox(
+                    checked = selectedFilterUiState.regions.contains(filterItem),
+                    onCheckedChange = { onRegionCheckChanged(filterItem) },
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .clickable {
+                    onRegionMoreViewClick()
+                },
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                text = stringResource(
+                    if (filterListUiState.isRegionExpanded) R.string.filter_fold else R.string.filter_expanded,
+                ),
+                color = WithpeaceTheme.colors.SystemGray1,
+                style = WithpeaceTheme.typography.caption,
+                modifier = modifier.padding(end = 4.dp),
+            )
+            Image(
+                painterResource(id = if (filterListUiState.isRegionExpanded) R.drawable.ic_filter_fold else R.drawable.ic_filter_expanded),
+                contentDescription = stringResource(id = R.string.filter_expanded),
+            )
+        }
+
     }
 }
