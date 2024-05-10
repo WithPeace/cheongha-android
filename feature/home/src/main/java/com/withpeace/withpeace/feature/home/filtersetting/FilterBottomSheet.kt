@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +27,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -76,7 +79,6 @@ fun FilterBottomSheet(
         )
         ScrollableFilterSection(
             modifier = modifier,
-            scrollState = scrollState,
             filterListUiState = filterListUiState.value,
             selectedFilterUiState = selectedFilterUiState,
             onClassificationCheckChanged = onClassificationCheckChanged,
@@ -89,6 +91,7 @@ fun FilterBottomSheet(
                 filterListUiState.value =
                     filterListUiState.value.copy(isRegionExpanded = !filterListUiState.value.isRegionExpanded)
             },
+            scrollState = scrollState,
         )
         Spacer(modifier = Modifier.height(24.dp))
         HorizontalDivider(
@@ -133,20 +136,28 @@ fun FilterBottomSheet(
 @Composable
 private fun ScrollableFilterSection(
     modifier: Modifier,
-    scrollState: ScrollState,
     filterListUiState: FilterListUiState,
     selectedFilterUiState: PolicyFiltersUiModel,
     onClassificationCheckChanged: (ClassificationUiModel) -> Unit,
     onRegionCheckChanged: (RegionUiModel) -> Unit,
     onClassificationMoreViewClick: () -> Unit,
     onRegionMoreViewClick: () -> Unit,
+    scrollState: ScrollState,
 ) {
+    val density = LocalDensity.current
+    val height = remember {
+        mutableStateOf(0.dp)
+    }
     Column(
-        modifier
+        modifier = if (height.value == 0.dp) modifier
+            .verticalScroll(scrollState)
             .padding(horizontal = 24.dp)
-            .verticalScroll(state = scrollState),
-
-        ) {
+            .onSizeChanged { height.value = with(density) { it.height.toDp() } }
+        else modifier
+            .height(height.value)
+            .verticalScroll(scrollState)
+            .padding(horizontal = 24.dp),
+    ) {
         Spacer(modifier = modifier.height(16.dp))
         Text(
             text = stringResource(R.string.policy_classfication),
@@ -154,30 +165,32 @@ private fun ScrollableFilterSection(
             color = WithpeaceTheme.colors.SystemBlack,
         )
         Spacer(modifier = modifier.height(16.dp))
-
-        filterListUiState.getClassifications().map { filterItem ->
-            Row(
-                modifier = modifier.fillMaxWidth(),
-                horizontalArrangement =
-                Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = stringResource(id = filterItem.resId),
-                    style = WithpeaceTheme.typography.body,
-                    color = WithpeaceTheme.colors.SystemBlack,
-                )
-                Checkbox(
-                    colors = CheckboxDefaults.colors(
-                        checkedColor = WithpeaceTheme.colors.MainPink,
-                        uncheckedColor = WithpeaceTheme.colors.SystemGray2,
-                        checkmarkColor = WithpeaceTheme.colors.SystemWhite,
-                    ),
-                    checked = selectedFilterUiState.classifications.contains(filterItem),
-                    onCheckedChange = { onClassificationCheckChanged(filterItem) },
-                )
+        Column(modifier = modifier.height(IntrinsicSize.Max)) {
+            filterListUiState.getClassifications().forEach {
+                Row(
+                    modifier = modifier.fillMaxWidth(),
+                    horizontalArrangement =
+                    Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = stringResource(id = it.resId),
+                        style = WithpeaceTheme.typography.body,
+                        color = WithpeaceTheme.colors.SystemBlack,
+                    )
+                    Checkbox(
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = WithpeaceTheme.colors.MainPink,
+                            uncheckedColor = WithpeaceTheme.colors.SystemGray2,
+                            checkmarkColor = WithpeaceTheme.colors.SystemWhite,
+                        ),
+                        checked = selectedFilterUiState.classifications.contains(it),
+                        onCheckedChange = { _ -> onClassificationCheckChanged(it) },
+                    )
+                }
             }
         }
+
         Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier = modifier
@@ -211,8 +224,7 @@ private fun ScrollableFilterSection(
         )
 
         Spacer(modifier = modifier.height(16.dp))
-
-        filterListUiState.getRegions().map { filterItem ->
+        filterListUiState.getRegions().forEach { filterItem ->
             Row(
                 modifier = modifier.fillMaxWidth(),
                 horizontalArrangement =
@@ -252,6 +264,5 @@ private fun ScrollableFilterSection(
                 contentDescription = stringResource(id = R.string.filter_expanded),
             )
         }
-
     }
 }

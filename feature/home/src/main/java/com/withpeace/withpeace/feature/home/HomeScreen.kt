@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -143,7 +144,7 @@ private fun HomeHeader(
     onCloseFilter: () -> Unit,
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     Box(
         modifier = modifier
@@ -337,5 +338,5 @@ fun HomePreview() {
 
 // TODO("로딩 및 에러")
 // TODO("로딩 뷰")
-// TODO(필터 검색 가능, 더보기 텍스트 및 이미지 변경)
+// TODO(필터 검색 가능)
 // TODO(바텀 시트 고정 및 사이즈 세팅)
