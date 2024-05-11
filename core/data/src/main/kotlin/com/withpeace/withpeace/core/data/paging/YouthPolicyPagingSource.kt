@@ -5,15 +5,18 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.skydoves.sandwich.ApiResponse
 import com.withpeace.withpeace.core.data.BuildConfig
+import com.withpeace.withpeace.core.data.mapper.toCode
 import com.withpeace.withpeace.core.data.mapper.toDomain
 import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import com.withpeace.withpeace.core.domain.model.error.ResponseError
+import com.withpeace.withpeace.core.domain.model.policy.PolicyFilters
 import com.withpeace.withpeace.core.domain.model.policy.YouthPolicy
 import com.withpeace.withpeace.core.network.di.service.YouthPolicyService
 
 class YouthPolicyPagingSource(
     private val pageSize: Int,
     private val youthPolicyService: YouthPolicyService,
+    private val filterInfo: PolicyFilters,
     private val onError: suspend (CheonghaError) -> Unit,
 ) :
     PagingSource<Int, YouthPolicy>() {
@@ -23,8 +26,8 @@ class YouthPolicyPagingSource(
             apiKey = BuildConfig.YOUTH_POLICY_API_KEY,
             pageSize = params.loadSize,
             pageIndex = pageIndex,
-            classification = null,
-            region = "003002002",
+            classification = filterInfo.classifications.joinToString(",") { it.toCode() },
+            region = filterInfo.regions.joinToString(",") { it.toCode() },
         )
 
 

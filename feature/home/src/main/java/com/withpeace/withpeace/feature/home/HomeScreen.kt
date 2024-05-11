@@ -16,13 +16,16 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -44,6 +47,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -87,7 +91,6 @@ fun HomeScreen(
     onSearchWithFilter: () -> Unit,
     onCloseFilter: () -> Unit,
 ) {
-
     Column(modifier = modifier.fillMaxSize()) {
         HomeHeader(
             modifier = modifier,
@@ -103,28 +106,49 @@ fun HomeScreen(
             modifier = modifier.height(1.dp),
             color = WithpeaceTheme.colors.SystemGray3,
         )
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .background(Color(0xFFF8F9FB))
-                .padding(horizontal = 24.dp),
-        ) {
-            Spacer(modifier = modifier.height(8.dp))
-            LazyColumn(
-                modifier = modifier.fillMaxSize(),
-                userScrollEnabled = true,
-                contentPadding = PaddingValues(bottom = 16.dp)
-            ) {
-                items(
-                    count = youthPolicies.itemCount,
-                    key = youthPolicies.itemKey { it.id },
-                ) {
-                    val youthPolicy = youthPolicies[it] ?: throw IllegalStateException()
-                    Spacer(modifier = modifier.height(8.dp))
-                    YouthPolicyCard(
-                        modifier = modifier,
-                        youthPolicy = youthPolicy,
+        when(youthPolicies.loadState.refresh) {
+            is LoadState.Loading -> {
+                Box(Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        color = WithpeaceTheme.colors.MainPink,
                     )
+                }
+            }
+
+            is LoadState.Error -> {
+                Box(Modifier.fillMaxSize()) {
+                    Text(
+                        text = "네트워크 상태를 확인해주세요.",
+                        modifier = Modifier.align(Alignment.Center),
+                    )
+                }
+            }
+
+            is LoadState.NotLoading -> {
+                Column(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .background(Color(0xFFF8F9FB))
+                        .padding(horizontal = 24.dp),
+                ) {
+                    Spacer(modifier = modifier.height(8.dp))
+                    LazyColumn(
+                        modifier = modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(bottom = 16.dp)
+                    ) {
+                        items(
+                            count = youthPolicies.itemCount,
+                            key = youthPolicies.itemKey { it.id },
+                        ) {
+                            val youthPolicy = youthPolicies[it] ?: throw IllegalStateException()
+                            Spacer(modifier = modifier.height(8.dp))
+                            YouthPolicyCard(
+                                modifier = modifier,
+                                youthPolicy = youthPolicy,
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -335,8 +359,5 @@ fun HomePreview() {
         // HomeScreen()
     }
 }
-
-// TODO("로딩 및 에러")
-// TODO("로딩 뷰")
-// TODO(필터 검색 가능)
-// TODO(바텀 시트 고정 및 사이즈 세팅)
+// TODO(바텀 시트 스크롤 고려)
+//

@@ -1,12 +1,14 @@
 package com.withpeace.withpeace.feature.home.filtersetting
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -165,7 +167,14 @@ private fun ScrollableFilterSection(
             color = WithpeaceTheme.colors.SystemBlack,
         )
         Spacer(modifier = modifier.height(16.dp))
-        Column(modifier = modifier.height(IntrinsicSize.Max)) {
+        Column(
+            modifier = modifier.animateContentSize(
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioNoBouncy,
+                    stiffness = Spring.StiffnessMedium,
+                ),
+            ),
+        ) {
             filterListUiState.getClassifications().forEach {
                 Row(
                     modifier = modifier.fillMaxWidth(),
@@ -224,24 +233,39 @@ private fun ScrollableFilterSection(
         )
 
         Spacer(modifier = modifier.height(16.dp))
-        filterListUiState.getRegions().forEach { filterItem ->
-            Row(
-                modifier = modifier.fillMaxWidth(),
-                horizontalArrangement =
-                Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = filterItem.name,
-                    style = WithpeaceTheme.typography.body,
-                    color = WithpeaceTheme.colors.SystemBlack,
-                )
-                Checkbox(
-                    checked = selectedFilterUiState.regions.contains(filterItem),
-                    onCheckedChange = { onRegionCheckChanged(filterItem) },
-                )
+        Column(
+            modifier = modifier.animateContentSize(
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioNoBouncy,
+                    stiffness = Spring.StiffnessMedium,
+                ),
+            ),
+        ) {
+            filterListUiState.getRegions().forEach { filterItem ->
+                Row(
+                    modifier = modifier.fillMaxWidth(),
+                    horizontalArrangement =
+                    Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = filterItem.name,
+                        style = WithpeaceTheme.typography.body,
+                        color = WithpeaceTheme.colors.SystemBlack,
+                    )
+                    Checkbox(
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = WithpeaceTheme.colors.MainPink,
+                            uncheckedColor = WithpeaceTheme.colors.SystemGray2,
+                            checkmarkColor = WithpeaceTheme.colors.SystemWhite,
+                        ),
+                        checked = selectedFilterUiState.regions.contains(filterItem),
+                        onCheckedChange = { onRegionCheckChanged(filterItem) },
+                    )
+                }
             }
         }
+
         Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier = modifier

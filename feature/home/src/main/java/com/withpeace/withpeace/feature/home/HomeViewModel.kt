@@ -44,6 +44,10 @@ class HomeViewModel @Inject constructor(
     private var completedFilters = PolicyFilters()
 
     init {
+        fetchData()
+    }
+
+    private fun fetchData() {
         viewModelScope.launch {
             _youthPolicyPagingFlow.update {
                 youthPoliciesUseCase(
@@ -73,6 +77,7 @@ class HomeViewModel @Inject constructor(
 
     fun onCompleteFilter() {
         completedFilters = selectingFilters.value.toDomain()
+        fetchData()
     }
 
     fun onCancelFilter() {
@@ -85,3 +90,5 @@ class HomeViewModel @Inject constructor(
         }
     }
 }
+
+//TODO("검색이 끝나지 않았을 때 필터걸면?")

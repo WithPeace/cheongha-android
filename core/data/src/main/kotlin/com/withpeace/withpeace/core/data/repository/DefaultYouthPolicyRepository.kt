@@ -25,6 +25,7 @@ class DefaultYouthPolicyRepository @Inject constructor(
                 youthPolicyService = youthPolicyService,
                 onError = onError,
                 pageSize = PAGE_SIZE,
+                filterInfo = filterInfo,
             )
         },
     ).flow
