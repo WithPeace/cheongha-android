@@ -34,7 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -67,10 +67,8 @@ fun FilterBottomSheet(
         FilterFooter(
             modifier = modifier
                 .align(Alignment.BottomCenter)
-                .onGloballyPositioned { coordinates ->
-                    footerHeight = with(localDensity) {
-                        coordinates.size.height.toDp()
-                    }
+                .onSizeChanged {
+                    footerHeight = with(localDensity) { it.height.toDp() }
                 },
             onFilterAllOff = onFilterAllOff,
             onSearchWithFilter = onSearchWithFilter,
@@ -78,7 +76,7 @@ fun FilterBottomSheet(
         Column(
             modifier = modifier
                 .align(Alignment.TopCenter)
-                .padding(bottom = footerHeight * 2),
+                .padding(bottom = footerHeight),
         ) {
             FilterHeader(
                 modifier = modifier,
