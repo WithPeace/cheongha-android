@@ -175,13 +175,12 @@ private fun HomeHeader(
             .fillMaxWidth()
             .padding(vertical = 10.dp, horizontal = 24.dp),
     ) {
-        //TODO("로고로 변경")
         Image(
             modifier = modifier
                 .size(36.dp)
                 .clip(CircleShape)
                 .align(Alignment.Center),
-            painter = painterResource(id = com.withpeace.withpeace.core.ui.R.drawable.ic_default_profile),
+            painter = painterResource(id = R.drawable.home_logo),
             contentDescription = stringResource(R.string.cheongha_logo),
         )
         Image(
