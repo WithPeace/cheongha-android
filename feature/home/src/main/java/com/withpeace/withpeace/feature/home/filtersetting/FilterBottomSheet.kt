@@ -57,7 +57,7 @@ fun FilterBottomSheet(
     onSearchWithFilter: () -> Unit,
     onCloseFilter: () -> Unit,
 ) {
-    val filterListUiState = remember { mutableStateOf(FilterListUiState()) }
+    val filterListUiState= remember { mutableStateOf(FilterListUiState().getStateByFilterState(selectedFilterUiState)) }
     val scrollState = rememberScrollState()
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
