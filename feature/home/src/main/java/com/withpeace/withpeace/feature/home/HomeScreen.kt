@@ -145,7 +145,24 @@ fun HomeScreen(
                                 youthPolicy = youthPolicy,
                             )
                         }
+                        item {
+                            if (youthPolicies.loadState.append is LoadState.Loading) {
+                                Column(
+                                    modifier = modifier.padding(top = 8.dp)
+                                        .fillMaxWidth()
+                                        .background(
+                                            Color.Transparent,
+                                        ),
+                                ) {
+                                    CircularProgressIndicator(
+                                        modifier.align(Alignment.CenterHorizontally),
+                                        color = WithpeaceTheme.colors.MainPink,
+                                    )
+                                }
+                            }
+                        }
                     }
+
                 }
             }
         }
