@@ -411,21 +411,22 @@ fun PostDetailPostBottomSheet(
                         style = WithpeaceTheme.typography.body,
                     )
                 }
-                HorizontalDivider()
-                Row(
-                    modifier = Modifier.padding(vertical = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        painter = painterResource(id = drawable.ic_hide),
-                        contentDescription = stringResource(string.hide_user_posts_icon_content_description),
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(string.hide_user_posts),
-                        style = WithpeaceTheme.typography.body,
-                    )
-                }
+                // TODO("사용자의 글 다시보지 않기")
+                // HorizontalDivider()
+                // Row(
+                //     modifier = Modifier.padding(vertical = 16.dp),
+                //     verticalAlignment = Alignment.CenterVertically,
+                // ) {
+                //     Icon(
+                //         painter = painterResource(id = drawable.ic_hide),
+                //         contentDescription = stringResource(string.hide_user_posts_icon_content_description),
+                //     )
+                //     Spacer(modifier = Modifier.width(8.dp))
+                //     Text(
+                //         text = stringResource(string.hide_user_posts),
+                //         style = WithpeaceTheme.typography.body,
+                //     )
+                // }
             }
         }
         if (showReportBottomSheet) {
