@@ -6,6 +6,7 @@ import com.withpeace.withpeace.core.domain.model.post.Post
 import com.withpeace.withpeace.core.domain.model.post.PostDetail
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
 import com.withpeace.withpeace.core.domain.model.post.RegisterPost
+import com.withpeace.withpeace.core.domain.model.post.ReportType
 import kotlinx.coroutines.flow.Flow
 
 interface PostRepository {
@@ -33,6 +34,18 @@ interface PostRepository {
     fun registerComment(
         postId: Long,
         content: String,
+        onError: suspend (CheonghaError) -> Unit,
+    ): Flow<Boolean>
+
+    fun reportPost(
+        postId: Long,
+        reportType: ReportType,
+        onError: suspend (CheonghaError) -> Unit
+    ): Flow<Boolean>
+
+    fun reportComment(
+        commentId: Long,
+        reportType: ReportType,
         onError: suspend (CheonghaError) -> Unit,
     ): Flow<Boolean>
 }

@@ -29,6 +29,10 @@ enum class ResponseError(val serverErrorCode: Int? = null) : CheonghaError {
     NOT_FOUND_USER(40401),
     NOT_FOUND_POST(40402),
 
+    /* Server 422 */
+    POST_DUPLICATED_ERROR(42202),
+    COMMENT_DUPLICATED_ERROR(42203),
+
     /* Server 500 */
     SERVER_ERROR(50000),
     AUTH_SERVER_USER_INFO_ERROR(50001),

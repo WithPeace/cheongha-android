@@ -34,6 +34,6 @@ fun PostDetail.toUiModel(currentUserId: Long): PostDetailUiModel = PostDetailUiM
     postTopic = postTopic.toUi(),
     imageUrls = imageUrls,
     createDate = createDate.toUiModel(),
-    comments = comments.map { it.toUiModel() },
+    comments = comments.map { it.toUiModel(currentUserId) },
     isMyPost = user.id == currentUserId,
 )

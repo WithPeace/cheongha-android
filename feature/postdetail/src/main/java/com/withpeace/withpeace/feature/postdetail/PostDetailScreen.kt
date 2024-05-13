@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -37,6 +38,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -55,6 +57,7 @@ import com.withpeace.withpeace.core.ui.post.PostDetailUiModel
 import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 import com.withpeace.withpeace.core.ui.post.PostUserUiModel
 import com.withpeace.withpeace.core.ui.post.RegisterPostUiModel
+import com.withpeace.withpeace.core.ui.post.ReportTypeUiModel
 import com.withpeace.withpeace.feature.postdetail.R.drawable
 import com.withpeace.withpeace.feature.postdetail.R.string
 import java.time.LocalDateTime
@@ -83,6 +86,8 @@ fun PostDetailRoute(
             onClickEditButton = onClickEditButton,
             isLoading = isLoading,
             lazyListState = lazyListState,
+            onReportComment = viewModel::reportComment,
+            onReportPost = viewModel::reportPost,
         )
     }
 
@@ -102,6 +107,13 @@ fun PostDetailRoute(
                 PostDetailUiEvent.RegisterCommentSuccess -> {
                     lazyListState.fullAnimatedScroll()
                 }
+
+                PostDetailUiEvent.ReportCommentFail -> onShowSnackBar("신고에 실패하였습니다")
+                PostDetailUiEvent.ReportCommentSuccess -> onShowSnackBar("신고 되었습니다")
+                PostDetailUiEvent.ReportPostFail -> onShowSnackBar("신고에 실패하였습니다")
+                PostDetailUiEvent.ReportPostSuccess -> onShowSnackBar("신고 되었습니다")
+                PostDetailUiEvent.ReportCommentDuplicated -> onShowSnackBar("이미 신고한 댓글입니다")
+                PostDetailUiEvent.ReportPostDuplicated -> onShowSnackBar("이미 신고한 게시글입니다")
             }
         }
     }
@@ -124,10 +136,13 @@ fun PostDetailScreen(
     onClickRegisterCommentButton: () -> Unit = {},
     onCommentTextChanged: (String) -> Unit = {},
     lazyListState: LazyListState,
+    onReportPost: (id: Long, ReportTypeUiModel) -> Unit = { _, _ -> },
+    onReportComment: (id: Long, ReportTypeUiModel) -> Unit = { _, _ -> },
 ) {
-    var showBottomSheet by rememberSaveable {
+    var showPostBottomSheet by rememberSaveable {
         mutableStateOf(false)
     }
+
     var showDeleteDialog by rememberSaveable {
         mutableStateOf(false)
     }
@@ -142,7 +157,7 @@ fun PostDetailScreen(
                     Icon(
                         modifier = Modifier
                             .clickable {
-                                showBottomSheet = true
+                                showPostBottomSheet = true
                             }
                             .padding(21.dp)
                             .size(24.dp),
@@ -199,13 +214,17 @@ fun PostDetailScreen(
                             imageUrls = postUiState.postDetail.imageUrls,
                             commentSize = postUiState.postDetail.comments.size,
                         )
-                        CommentSection(postUiState.postDetail.comments)
+                        CommentSection(
+                            comments = postUiState.postDetail.comments,
+                            onReportComment = onReportComment,
+                        )
                     }
 
-                    if (showBottomSheet) {
-                        PostDetailBottomSheet(
+                    if (showPostBottomSheet) {
+                        PostDetailPostBottomSheet(
                             isMyPost = postUiState.postDetail.isMyPost,
-                            onDismissRequest = { showBottomSheet = false },
+                            postId = postUiState.postDetail.id,
+                            onDismissRequest = { showPostBottomSheet = false },
                             onClickDeleteButton = { showDeleteDialog = true },
                             onClickEditButton = {
                                 onClickEditButton(
@@ -218,6 +237,7 @@ fun PostDetailScreen(
                                     ),
                                 )
                             },
+                            onReportPost = onReportPost,
                         )
                     }
 
@@ -295,15 +315,19 @@ fun DeletePostDialog(
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostDetailBottomSheet(
+fun PostDetailPostBottomSheet(
     isMyPost: Boolean,
+    postId: Long,
     onDismissRequest: () -> Unit,
     onClickDeleteButton: () -> Unit,
     onClickEditButton: () -> Unit,
+    onReportPost: (id: Long, ReportTypeUiModel) -> Unit,
 ) {
+    var showReportBottomSheet by rememberSaveable {
+        mutableStateOf(false)
+    }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
         dragHandle = {},
@@ -361,9 +385,20 @@ fun PostDetailBottomSheet(
                 }
             }
         } else {
-            Column(modifier = Modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding)) {
+            Column(
+                modifier = Modifier.padding(
+                    start = WithpeaceTheme.padding.BasicHorizontalPadding,
+                    end = WithpeaceTheme.padding.BasicHorizontalPadding,
+                    top = 24.dp,
+                ),
+            ) {
                 Row(
-                    modifier = Modifier.padding(vertical = 16.dp),
+                    modifier = Modifier
+                        .clickable {
+                            showReportBottomSheet = true
+                        }
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
@@ -376,22 +411,176 @@ fun PostDetailBottomSheet(
                         style = WithpeaceTheme.typography.body,
                     )
                 }
-                HorizontalDivider()
-                Row(
-                    modifier = Modifier.padding(vertical = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        painter = painterResource(id = drawable.ic_hide),
-                        contentDescription = stringResource(string.hide_user_posts_icon_content_description),
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(string.hide_user_posts),
-                        style = WithpeaceTheme.typography.body,
+                // TODO("사용자의 글 다시보지 않기")
+                // HorizontalDivider()
+                // Row(
+                //     modifier = Modifier.padding(vertical = 16.dp),
+                //     verticalAlignment = Alignment.CenterVertically,
+                // ) {
+                //     Icon(
+                //         painter = painterResource(id = drawable.ic_hide),
+                //         contentDescription = stringResource(string.hide_user_posts_icon_content_description),
+                //     )
+                //     Spacer(modifier = Modifier.width(8.dp))
+                //     Text(
+                //         text = stringResource(string.hide_user_posts),
+                //         style = WithpeaceTheme.typography.body,
+                //     )
+                // }
+            }
+        }
+        if (showReportBottomSheet) {
+            PostDetailReportBottomSheet(
+                isPostReport = true,
+                id = postId,
+                onDismissRequest = {
+                    showReportBottomSheet = false
+                    onDismissRequest()
+                },
+                onClickReportType = onReportPost,
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PostDetailReportBottomSheet(
+    isPostReport: Boolean,
+    id: Long,
+    onDismissRequest: () -> Unit,
+    onClickReportType: (id: Long, ReportTypeUiModel) -> Unit,
+) {
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ModalBottomSheet(
+        dragHandle = {},
+        containerColor = WithpeaceTheme.colors.SystemWhite,
+        onDismissRequest = onDismissRequest,
+        sheetState = bottomSheetState,
+        shape = RectangleShape,
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            WithPeaceBackButtonTopAppBar(
+                onClickBackButton = onDismissRequest,
+                title = {
+                    Text(text = "신고하는 이유를 선택해주세요", style = WithpeaceTheme.typography.title1)
+                },
+            )
+            HorizontalDivider(Modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding))
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
+            ) {
+                ReportTypeUiModel.entries.forEach { reportTypeUiModel ->
+                    ReportTypeItem(
+                        isPostReport = isPostReport,
+                        id = id,
+                        reportTypeUiModel = reportTypeUiModel,
+                        onClickReportType = onClickReportType,
+                        onDismissRequest = onDismissRequest,
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun ReportTypeItem(
+    modifier: Modifier = Modifier,
+    isPostReport: Boolean,
+    id: Long,
+    reportTypeUiModel: ReportTypeUiModel,
+    onClickReportType: (id: Long, ReportTypeUiModel) -> Unit,
+    onDismissRequest: () -> Unit,
+) {
+    var showReportDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+    val title = if (isPostReport) reportTypeUiModel.postTitle else reportTypeUiModel.commentTitle
+    Column(
+        modifier = modifier.clickable {
+            showReportDialog = true
+        },
+    ) {
+        Text(
+            text = title,
+            style = WithpeaceTheme.typography.body,
+            modifier = Modifier.padding(start = 4.dp, top = 16.dp, bottom = 16.dp),
+        )
+        HorizontalDivider()
+    }
+    if (showReportDialog) {
+        ReportDialog(
+            title = title,
+            onClickReportButton = {
+                onClickReportType(id, reportTypeUiModel)
+                onDismissRequest()
+            },
+            onDismissRequest = { showReportDialog = false },
+        )
+    }
+}
+
+@Composable
+fun ReportDialog(
+    title: String,
+    onClickReportButton: () -> Unit,
+    onDismissRequest: () -> Unit,
+) {
+    Dialog(onDismissRequest = onDismissRequest) {
+        Column(
+            modifier = Modifier
+                .background(
+                    WithpeaceTheme.colors.SystemWhite,
+                    RoundedCornerShape(10.dp),
+                )
+                .wrapContentSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                modifier = Modifier.padding(top = 24.dp, bottom = 16.dp),
+                text = title,
+                style = WithpeaceTheme.typography.title2,
+            )
+            Row {
+                Button(
+                    modifier = Modifier
+                        .padding(start = 16.dp, end = 4.dp)
+                        .weight(1f),
+                    onClick = { onDismissRequest() },
+                    shape = RoundedCornerShape(10.dp),
+                    border = BorderStroke(width = 1.dp, color = WithpeaceTheme.colors.MainPink),
+                    colors = ButtonDefaults.buttonColors(containerColor = WithpeaceTheme.colors.SystemWhite),
+                ) {
+                    Text(
+                        text = stringResource(string.delete_cancel),
+                        style = WithpeaceTheme.typography.caption,
+                        color = WithpeaceTheme.colors.MainPink,
+                    )
+                }
+                Button(
+                    modifier = Modifier
+                        .padding(start = 4.dp, end = 16.dp)
+                        .weight(1f),
+                    onClick = {
+                        onClickReportButton()
+                        onDismissRequest()
+                    },
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = WithpeaceTheme.colors.MainPink),
+                ) {
+                    Text(
+                        text = "신고하기",
+                        style = WithpeaceTheme.typography.caption,
+                        color = WithpeaceTheme.colors.SystemWhite,
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -427,6 +616,7 @@ private fun PostDetailScreenPreview() {
                                 nickname = "Becky Lowery",
                                 profileImageUrl = "https://www.google.com/#q=repudiare",
                             ),
+                            false
                         )
                     },
                 ),
