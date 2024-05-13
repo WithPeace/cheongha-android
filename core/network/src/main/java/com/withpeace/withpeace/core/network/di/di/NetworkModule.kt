@@ -2,6 +2,8 @@ package com.withpeace.withpeace.core.network.di.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.skydoves.sandwich.adapters.ApiResponseCallAdapterFactory
+import com.tickaroo.tikxml.TikXml
+import com.tickaroo.tikxml.retrofit.TikXmlConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -58,7 +60,7 @@ object NetworkModule {
         }.build()
     }
 
-    @Named("auth_client")
+    @Named("logging_client")
     @Singleton
     @Provides
     fun provideAuthOkhttpClient(
@@ -96,12 +98,28 @@ object NetworkModule {
     @Singleton
     fun provideRetrofitClient(
         converterFactory: Converter.Factory,
-        @Named("auth_client") okHttpClient: OkHttpClient,
+        @Named("logging_client") okHttpClient: OkHttpClient,
     ): Retrofit {
         return Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl("http://49.50.160.170:8080/")
             .addConverterFactory(converterFactory)
+            .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
+            .build()
+    }
+
+    @Named("youth_policy")
+    @Provides
+    @Singleton
+    fun provideXmlRetrofitClient(
+        @Named("logging_client") okHttpClient: OkHttpClient,
+    ): Retrofit {
+        val parser = TikXml.Builder().exceptionOnUnreadXml(false).build()
+
+        return Retrofit.Builder()
+            .client(okHttpClient)
+            .baseUrl("https://www.youthcenter.go.kr/opi/")
+            .addConverterFactory(TikXmlConverterFactory.create(parser))
             .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
             .build()
     }

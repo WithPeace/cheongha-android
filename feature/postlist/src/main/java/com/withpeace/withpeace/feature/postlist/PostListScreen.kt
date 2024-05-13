@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.feature.postlist
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -196,6 +198,22 @@ fun PostListItems(
                             previewPlaceholder = R.drawable.ic_freedom,
                         )
                     }
+                }
+            }
+        }
+        item {
+            if (postListPagingData.loadState.append is LoadState.Loading) {
+                Column(
+                    modifier = Modifier.padding(top = 8.dp)
+                        .fillMaxWidth()
+                        .background(
+                            Color.Transparent,
+                        ),
+                ) {
+                    CircularProgressIndicator(
+                        Modifier.align(Alignment.CenterHorizontally),
+                        color = WithpeaceTheme.colors.MainPink,
+                    )
                 }
             }
         }

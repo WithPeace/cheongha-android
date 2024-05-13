@@ -16,6 +16,7 @@ fun NavGraphBuilder.homeNavGraph(
     onShowSnackBar: (message: String) -> Unit,
 ) {
     composable(route = HOME_ROUTE) {
-        HomeRoute(onShowSnackBar = onShowSnackBar)
+        HomeRoute(
+            onShowSnackBar = onShowSnackBar)
     }
 }

@@ -3,6 +3,7 @@ package com.withpeace.withpeace.core.network.di.di
 import com.withpeace.withpeace.core.network.di.service.UserService
 import com.withpeace.withpeace.core.network.di.service.AuthService
 import com.withpeace.withpeace.core.network.di.service.PostService
+import com.withpeace.withpeace.core.network.di.service.YouthPolicyService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,4 +30,9 @@ object ServiceModule {
     @Singleton
     fun providesUserService(@Named("general") retrofit: Retrofit): UserService =
         retrofit.create(UserService::class.java)
+
+    @Provides
+    @Singleton
+    fun providesYouthPolicyService(@Named("youth_policy") retrofit: Retrofit): YouthPolicyService =
+        retrofit.create(YouthPolicyService::class.java)
 }
