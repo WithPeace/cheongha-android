@@ -118,7 +118,7 @@ fun MyPageScreen(
                     onClick = { onEditProfile(profileInfo) },
                 ) {
                     Text(
-                        color = WithpeaceTheme.colors.MainPink,
+                        color = WithpeaceTheme.colors.MainPurple,
                         text = stringResource(R.string.edit_profile),
                         style = WithpeaceTheme.typography.caption,
                     )

@@ -203,7 +203,7 @@ fun RegisterPostScreen(
         Box(modifier = Modifier.fillMaxSize()) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center),
-                color = WithpeaceTheme.colors.MainPink,
+                color = WithpeaceTheme.colors.MainPurple,
             )
         }
     }
@@ -370,7 +370,7 @@ fun TopicBottomSheetContent(
                 items = PostTopicUiModel.entries,
             ) { topicUiState ->
                 val color = if (currentTopic == topicUiState) {
-                    WithpeaceTheme.colors.MainPink
+                    WithpeaceTheme.colors.MainPurple
                 } else {
                     WithpeaceTheme.colors.SystemGray2
                 }

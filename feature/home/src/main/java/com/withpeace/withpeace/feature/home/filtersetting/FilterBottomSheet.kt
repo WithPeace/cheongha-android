@@ -176,7 +176,7 @@ private fun ScrollableFilterSection(
                     )
                     Checkbox(
                         colors = CheckboxDefaults.colors(
-                            checkedColor = WithpeaceTheme.colors.MainPink,
+                            checkedColor = WithpeaceTheme.colors.MainPurple,
                             uncheckedColor = WithpeaceTheme.colors.SystemGray2,
                             checkmarkColor = WithpeaceTheme.colors.SystemWhite,
                         ),
@@ -242,7 +242,7 @@ private fun ScrollableFilterSection(
                     )
                     Checkbox(
                         colors = CheckboxDefaults.colors(
-                            checkedColor = WithpeaceTheme.colors.MainPink,
+                            checkedColor = WithpeaceTheme.colors.MainPurple,
                             uncheckedColor = WithpeaceTheme.colors.SystemGray2,
                             checkmarkColor = WithpeaceTheme.colors.SystemWhite,
                         ),
@@ -312,9 +312,9 @@ private fun FilterFooter(
             TextButton(
                 contentPadding = PaddingValues(vertical = 12.dp, horizontal = 32.dp),
                 colors = ButtonColors(
-                    containerColor = WithpeaceTheme.colors.MainPink,
+                    containerColor = WithpeaceTheme.colors.MainPurple,
                     contentColor = WithpeaceTheme.colors.SystemWhite,
-                    disabledContainerColor = WithpeaceTheme.colors.MainPink,
+                    disabledContainerColor = WithpeaceTheme.colors.MainPurple,
                     disabledContentColor = WithpeaceTheme.colors.SystemWhite,
                 ),
                 shape = RoundedCornerShape(5.dp),

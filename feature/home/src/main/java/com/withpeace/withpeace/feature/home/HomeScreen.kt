@@ -108,7 +108,7 @@ fun HomeScreen(
                 Box(Modifier.fillMaxSize()) {
                     CircularProgressIndicator(
                         modifier = Modifier.align(Alignment.Center),
-                        color = WithpeaceTheme.colors.MainPink,
+                        color = WithpeaceTheme.colors.MainPurple,
                     )
                 }
             }
@@ -156,7 +156,7 @@ fun HomeScreen(
                                 ) {
                                     CircularProgressIndicator(
                                         modifier.align(Alignment.CenterHorizontally),
-                                        color = WithpeaceTheme.colors.MainPink,
+                                        color = WithpeaceTheme.colors.MainPurple,
                                     )
                                 }
                             }
@@ -307,7 +307,7 @@ private fun YouthPolicyCard(
 
             Text(
                 text = youthPolicy.region.name,
-                color = WithpeaceTheme.colors.MainPink,
+                color = WithpeaceTheme.colors.MainPurple,
                 modifier = modifier
                     .constrainAs(
                         region,
@@ -318,7 +318,7 @@ private fun YouthPolicyCard(
                         },
                     )
                     .background(
-                        color = WithpeaceTheme.colors.SubPink,
+                        color = WithpeaceTheme.colors.SubPurple,
                         shape = RoundedCornerShape(size = 5.dp),
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp),

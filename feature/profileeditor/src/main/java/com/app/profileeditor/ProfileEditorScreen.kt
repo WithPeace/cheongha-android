@@ -206,7 +206,7 @@ private fun EditCompletedButton(
                 start = WithpeaceTheme.padding.BasicHorizontalPadding,
             )
             .fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(containerColor = if (isClickable) WithpeaceTheme.colors.MainPink else WithpeaceTheme.colors.SystemGray2),
+        colors = ButtonDefaults.buttonColors(containerColor = if (isClickable) WithpeaceTheme.colors.MainPurple else WithpeaceTheme.colors.SystemGray2),
         shape = RoundedCornerShape(9.dp),
     ) {
         Text(
@@ -265,14 +265,14 @@ fun ModifySaveDialogContent(
                     .border(
                         width = 1.dp,
                         shape = RoundedCornerShape(10.dp),
-                        color = WithpeaceTheme.colors.MainPink,
+                        color = WithpeaceTheme.colors.MainPurple,
                     )
                     .background(WithpeaceTheme.colors.SystemWhite),
                 onClick = { onClickExit() },
                 content = {
                     Text(
                         text = stringResource(R.string.dialog_exit),
-                        color = WithpeaceTheme.colors.MainPink,
+                        color = WithpeaceTheme.colors.MainPurple,
                         style = WithpeaceTheme.typography.caption,
                     )
                 },
@@ -281,7 +281,7 @@ fun ModifySaveDialogContent(
             TextButton(
                 modifier = modifier
                     .width(136.dp)
-                    .background(WithpeaceTheme.colors.MainPink, shape = RoundedCornerShape(10.dp)),
+                    .background(WithpeaceTheme.colors.MainPurple, shape = RoundedCornerShape(10.dp)),
                 onClick = { onClickSave() },
                 content = {
                     Text(

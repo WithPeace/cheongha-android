@@ -25,7 +25,7 @@ fun WithPeaceCompleteButton(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(20.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = WithpeaceTheme.colors.MainPink,
+            containerColor = WithpeaceTheme.colors.MainPurple,
             disabledContainerColor = WithpeaceTheme.colors.SystemGray2,
         ),
         enabled = enabled,

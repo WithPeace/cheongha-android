@@ -32,12 +32,12 @@ fun TopicTabs(
                 modifier = Modifier
                     .tabIndicatorOffset(tabPositions[tabPosition])
                     .padding(horizontal = 16.dp),
-                color = WithpeaceTheme.colors.MainPink,
+                color = WithpeaceTheme.colors.MainPurple,
             )
         },
     ) {
         PostTopicUiModel.entries.forEachIndexed { index, postTopic ->
-            val color = if (currentTopic == postTopic) WithpeaceTheme.colors.MainPink
+            val color = if (currentTopic == postTopic) WithpeaceTheme.colors.MainPurple
             else WithpeaceTheme.colors.SystemGray2
             Tab(
                 selected = postTopic == currentTopic,
