@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
@@ -128,60 +130,63 @@ private fun MyPageContent(
     onLogoutClick: () -> Unit,
     onWithdrawClick: () -> Unit,
 ) {
-    Column(modifier = modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding)) {
-        Row(
-            modifier = modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                val imageModifier = modifier
-                    .size(54.dp)
-                    .border(
-                        BorderStroke(0.dp, Color.Transparent),
-                        shape = CircleShape,
-                    )
-                GlideImage(
-                    modifier = imageModifier.clip(CircleShape),
-                    imageModel = { profileInfo.profileImage },
-                    failure = {
-                        Image(
-                            painterResource(id = R.drawable.ic_default_profile),
-                            modifier = imageModifier,
-                            contentDescription = "",
-                        )
-                    },
-                )
-                Text(
-                    style = WithpeaceTheme.typography.body,
-                    text = profileInfo.nickname,
-                    modifier = modifier.padding(start = 8.dp),
-                )
-            }
-            TextButton(
-                onClick = { onEditProfile(profileInfo) },
+    val scrollState = rememberScrollState()
+    Column(modifier = modifier.verticalScroll(scrollState)) {
+        Column(modifier = modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding)) {
+            Row(
+                modifier = modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    color = WithpeaceTheme.colors.MainPurple,
-                    text = stringResource(R.string.edit_profile),
-                    style = WithpeaceTheme.typography.caption,
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    val imageModifier = modifier
+                        .size(54.dp)
+                        .border(
+                            BorderStroke(0.dp, Color.Transparent),
+                            shape = CircleShape,
+                        )
+                    GlideImage(
+                        modifier = imageModifier.clip(CircleShape),
+                        imageModel = { profileInfo.profileImage },
+                        failure = {
+                            Image(
+                                painterResource(id = R.drawable.ic_default_profile),
+                                modifier = imageModifier,
+                                contentDescription = "",
+                            )
+                        },
+                    )
+                    Text(
+                        style = WithpeaceTheme.typography.body,
+                        text = profileInfo.nickname,
+                        modifier = modifier.padding(start = 8.dp),
+                    )
+                }
+                TextButton(
+                    onClick = { onEditProfile(profileInfo) },
+                ) {
+                    Text(
+                        color = WithpeaceTheme.colors.MainPurple,
+                        text = stringResource(R.string.edit_profile),
+                        style = WithpeaceTheme.typography.caption,
+                    )
+                }
             }
         }
+        Spacer(modifier = modifier.height(16.dp))
+        Spacer(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(4.dp)
+                .background(WithpeaceTheme.colors.SystemGray3),
+        )
+        MyPageSections(
+            modifier = modifier,
+            onLogoutClick = onLogoutClick,
+            onWithdrawClick = onWithdrawClick,
+            email = profileInfo.email,
+        )
     }
-    Spacer(modifier = modifier.height(16.dp))
-    Spacer(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(4.dp)
-            .background(WithpeaceTheme.colors.SystemGray3),
-    )
-    MyPageSections(
-        modifier = modifier,
-        onLogoutClick = onLogoutClick,
-        onWithdrawClick = onWithdrawClick,
-        email = profileInfo.email,
-    )
 }
 
 @Composable
