@@ -286,7 +286,7 @@ private fun FilterFooter(
     onSearchWithFilter: () -> Unit,
 ) {
     Column(modifier = modifier.wrapContentHeight()) {
-        HorizontalDivider(
+        Spacer(
             modifier = modifier
                 .fillMaxWidth()
                 .height(4.dp)
