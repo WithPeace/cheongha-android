@@ -7,6 +7,7 @@ import com.withpeace.withpeace.core.domain.usecase.GetProfileInfoUseCase
 import com.withpeace.withpeace.core.domain.usecase.LogoutUseCase
 import com.withpeace.withpeace.feature.mypage.uistate.MyPageUiEvent
 import com.withpeace.withpeace.feature.mypage.uistate.ProfileInfoUiModel
+import com.withpeace.withpeace.feature.mypage.uistate.ProfileUiState
 import com.withpeace.withpeace.feature.mypage.uistate.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -25,14 +26,10 @@ class MyPageViewModel @Inject constructor(
     private val _myPageUiEvent = Channel<MyPageUiEvent>()
     val myPageUiEvent = _myPageUiEvent.receiveAsFlow()
 
-    private val _profileUiModel = MutableStateFlow(
-        ProfileInfoUiModel(
-            "nickname",
-            "default.png",
-            "",
-        ),
+    private val _profileUiState = MutableStateFlow<ProfileUiState>(
+        ProfileUiState.Loading,
     )
-    val myPageUiState = _profileUiModel.asStateFlow()
+    val profileUiState = _profileUiState.asStateFlow()
 
     init {
         getProfile()
@@ -49,19 +46,27 @@ class MyPageViewModel @Inject constructor(
                         _myPageUiEvent.send(MyPageUiEvent.ResponseError)
                     }
                 }
+                _profileUiState.update { ProfileUiState.Failure }
             }.collect { profileInfo ->
-                _profileUiModel.update {
-                    profileInfo.toUiModel()
+                _profileUiState.update {
+                    ProfileUiState.Success(profileInfo.toUiModel())
                 }
             }
         }
     }
 
     fun updateProfile(nickname: String?, profileUrl: String?) {
-        _profileUiModel.update {
-            it.copy(
-                nickname = nickname ?: it.nickname,
-                profileImage = profileUrl ?: it.profileImage,
+        if (nickname == null && profileUrl == null) {
+            return
+        }
+        _profileUiState.update {
+            val profileInfo = (it as ProfileUiState.Success).profileInfoUiModel
+            ProfileUiState.Success(
+                ProfileInfoUiModel(
+                    nickname = nickname ?: profileInfo.nickname,
+                    profileImage = profileUrl ?: profileInfo.profileImage,
+                    email = profileInfo.email,
+                ),
             )
         }
     }

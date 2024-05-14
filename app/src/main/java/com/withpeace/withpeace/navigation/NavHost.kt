@@ -139,7 +139,15 @@ fun WithpeaceNavHost(
                         },
                     )
                 },
-                onWithdrawClick = {},
+                onWithdrawSuccess = {
+                    navController.navigateLogin(
+                        navOptions = navOptions {
+                            popUpTo(navController.graph.id) {
+                                inclusive = true
+                            }
+                        },
+                    )
+                },
                 onAuthExpired = {
                     onAuthExpired(onShowSnackBar, navController)
                 },

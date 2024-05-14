@@ -20,7 +20,7 @@ fun NavGraphBuilder.myPageNavGraph(
     onShowSnackBar: (message: String) -> Unit,
     onEditProfile: (nickname: String, profileImageUrl: String) -> Unit,
     onLogoutSuccess: () -> Unit,
-    onWithdrawClick: () -> Unit,
+    onWithdrawSuccess: () -> Unit,
     onAuthExpired: () -> Unit,
 ) {
     composable(route = MY_PAGE_ROUTE) {
@@ -32,7 +32,7 @@ fun NavGraphBuilder.myPageNavGraph(
             onShowSnackBar = onShowSnackBar,
             onEditProfile = onEditProfile,
             onLogoutSuccess = onLogoutSuccess,
-            onWithdrawClick = onWithdrawClick,
+            onWithdrawSuccess = onWithdrawSuccess,
             viewModel = viewModel,
             onAuthExpired = onAuthExpired
         )
