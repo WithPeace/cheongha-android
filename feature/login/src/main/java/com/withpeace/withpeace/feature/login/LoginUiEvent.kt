@@ -9,5 +9,7 @@ sealed interface LoginUiEvent {
 
     data object SignUpSuccess : LoginUiEvent
 
+    data object WithdrawUser : LoginUiEvent
+
     data class SignUpFail(val message: String?) : LoginUiEvent
 }
