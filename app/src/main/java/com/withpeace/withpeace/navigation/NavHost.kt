@@ -50,7 +50,14 @@ fun WithpeaceNavHost(
                 navController.navigateSignUp()
             },
             onLoginSuccess = {
-                navController.navigateHome()
+                navController.navigateHome(
+                    navOptions =
+                    navOptions {
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                    },
+                )
             },
         )
         signUpNavGraph(
