@@ -30,5 +30,5 @@ fun Comment.toUiModel(currentUserId: Long) = CommentUiModel(
         nickname = commentUser.nickname,
         profileImageUrl = commentUser.profileImageUrl,
     ),
-    isMyComment = currentUserId == commentId,
+    isMyComment = currentUserId == commentUser.id,
 )

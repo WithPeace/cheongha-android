@@ -119,15 +119,17 @@ fun CommentItem(
                     )
                 }
             }
-            Icon(
-                modifier = Modifier.clickable {
-                    showCommentBottomSheet = true
-                },
-                painter = painterResource(id = R.drawable.ic_more),
-                contentDescription = stringResource(
-                    R.string.comment_menu_icon_description,
-                ),
-            )
+            if (!comment.isMyComment) {
+                Icon(
+                    modifier = Modifier.clickable {
+                        showCommentBottomSheet = true
+                    },
+                    painter = painterResource(id = R.drawable.ic_more),
+                    contentDescription = stringResource(
+                        R.string.comment_menu_icon_description,
+                    ),
+                )
+            }
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(

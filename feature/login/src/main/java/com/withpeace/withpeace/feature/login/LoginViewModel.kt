@@ -2,6 +2,7 @@ package com.withpeace.withpeace.feature.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.model.role.Role
 import com.withpeace.withpeace.core.domain.usecase.GoogleLoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +23,18 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             googleLoginUseCase(
                 idToken = idToken,
-                onError = { _loginUiEvent.send(LoginUiEvent.LoginFail) },
+                onError = {
+                    when (it) {
+                        ResponseError.DUPLICATE_RESOURCE -> {
+                            _loginUiEvent.send(LoginUiEvent.WithdrawUser)
+                        }
+
+                        else -> {
+                            _loginUiEvent.send(LoginUiEvent.LoginFail)
+                        }
+                    }
+
+                },
             ).collect {
                 launch {
                     when (it) {

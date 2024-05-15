@@ -2,7 +2,6 @@ package com.withpeace.withpeace.feature.login
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -70,6 +69,9 @@ fun LoginRoute(
 
                 is LoginUiEvent.LoginSuccess -> {
                     onLoginSuccess()
+                }
+                is LoginUiEvent.WithdrawUser -> {
+                    onShowSnackBar("삭제된 계정입니다.")
                 }
             }
         }
