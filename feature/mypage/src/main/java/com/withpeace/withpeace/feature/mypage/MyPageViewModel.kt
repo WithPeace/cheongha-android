@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.usecase.GetProfileInfoUseCase
 import com.withpeace.withpeace.core.domain.usecase.LogoutUseCase
+import com.withpeace.withpeace.core.domain.usecase.WithdrawUseCase
 import com.withpeace.withpeace.feature.mypage.uistate.MyPageUiEvent
 import com.withpeace.withpeace.feature.mypage.uistate.ProfileInfoUiModel
 import com.withpeace.withpeace.feature.mypage.uistate.ProfileUiState
@@ -22,6 +23,7 @@ import javax.inject.Inject
 class MyPageViewModel @Inject constructor(
     private val getUserInfoUseCase: GetProfileInfoUseCase,
     private val logoutUseCase: LogoutUseCase,
+    private val withdrawUseCase: WithdrawUseCase,
 ) : ViewModel() {
     private val _myPageUiEvent = Channel<MyPageUiEvent>()
     val myPageUiEvent = _myPageUiEvent.receiveAsFlow()
@@ -75,11 +77,30 @@ class MyPageViewModel @Inject constructor(
         viewModelScope.launch {
             logoutUseCase {
                 _myPageUiEvent.send(
-                    MyPageUiEvent.ResponseError
+                    MyPageUiEvent.ResponseError,
                 )
             }.collect {
                 _myPageUiEvent.send(MyPageUiEvent.Logout)
             }
+        }
+    }
+
+    fun withdraw() {
+        viewModelScope.launch {
+            withdrawUseCase {
+                when (it) {
+                    ResponseError.EXPIRED_TOKEN_ERROR -> {
+                        _myPageUiEvent.send(MyPageUiEvent.UnAuthorizedError)
+                    }
+
+                    else -> {
+                        _myPageUiEvent.send(MyPageUiEvent.ResponseError)
+                    }
+                }
+            }.collect {
+                _myPageUiEvent.send(MyPageUiEvent.WithdrawSuccess)
+            }
+
         }
     }
 }

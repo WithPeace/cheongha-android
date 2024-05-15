@@ -8,4 +8,6 @@
     <string name="logout">로그아웃</string>
     <string name="withdraw">탈퇴하기</string>
     <string name="network_failure_message">서버와의 오류가 발생했습니다. 다시 시도해주세요.</string>
+    <string name="withdraw_info_content">탈퇴하시면 같은 계정으로\n 14일 동안 계정 생성을 할 수 없습니다.\n그래도 탈퇴하시겠습니까?</string>
+    <string name="withdraw_undo">나가기</string>
 </resources>

@@ -19,12 +19,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,10 +36,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.landscapist.glide.GlideImage
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
+import com.withpeace.withpeace.core.designsystem.ui.NoTitleDialog
 import com.withpeace.withpeace.core.designsystem.ui.TitleBar
 import com.withpeace.withpeace.feature.mypage.uistate.MyPageUiEvent
 import com.withpeace.withpeace.feature.mypage.uistate.ProfileInfoUiModel
@@ -64,6 +69,10 @@ fun MyPageRoute(
                 }
 
                 MyPageUiEvent.Logout -> onLogoutSuccess()
+                MyPageUiEvent.WithdrawSuccess -> {
+                    onShowSnackBar("계정삭제 되었습니다. 14일이내 복구 가능합니다.")
+                    onWithdrawSuccess()
+                }
             }
         }
     }
@@ -74,7 +83,7 @@ fun MyPageRoute(
         onLogoutClick = {
             viewModel.logout()
         },
-        onWithdrawClick = onWithdrawSuccess,
+        onWithdrawClick = viewModel::withdraw,
         profileInfo = profileInfo,
     )
 }
@@ -198,7 +207,7 @@ fun MyPageSections(
 ) {
     Column(modifier = modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding)) {
         AccountSection(modifier, email = email)
-        Divider(
+        HorizontalDivider(
             modifier = modifier
                 .fillMaxWidth()
                 .height(1.dp),
@@ -233,6 +242,7 @@ private fun EtcSection(
     onLogoutClick: () -> Unit,
     onWithdrawClick: () -> Unit,
 ) {
+    var showDialog by remember { mutableStateOf(false) }
     Section(title = stringResource(R.string.etc)) {
         Spacer(modifier = modifier.height(8.dp))
         Text(
@@ -253,10 +263,24 @@ private fun EtcSection(
             modifier = modifier
                 .fillMaxWidth()
                 .clickable {
-                    onWithdrawClick()
+                    showDialog = true
                 }
                 .padding(vertical = 8.dp),
         )
+    }
+    if (showDialog) {
+        Dialog(onDismissRequest = { showDialog = false }) {
+            NoTitleDialog(
+                onClickPositive = { showDialog = false },
+                onClickNegative = {
+                    onWithdrawClick()
+                    showDialog = false
+                },
+                contentText = stringResource(R.string.withdraw_info_content),
+                positiveText = stringResource(R.string.withdraw_undo),
+                negativeText = stringResource(id = R.string.withdraw),
+            )
+        }
     }
 }
 
@@ -275,7 +299,7 @@ private fun Section(
 
 }
 
-@Preview
+@Preview(widthDp = 400, heightDp = 900)
 @Composable
 fun MyPagePreview() {
     WithpeaceTheme {
