@@ -183,7 +183,7 @@ fun PostDetailScreen(
             if (isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center),
-                    color = WithpeaceTheme.colors.MainPink,
+                    color = WithpeaceTheme.colors.MainPurple,
                 )
             }
             when (postUiState) {
@@ -286,13 +286,13 @@ fun DeletePostDialog(
                         .weight(1f),
                     onClick = { onDismissRequest() },
                     shape = RoundedCornerShape(10.dp),
-                    border = BorderStroke(width = 1.dp, color = WithpeaceTheme.colors.MainPink),
+                    border = BorderStroke(width = 1.dp, color = WithpeaceTheme.colors.MainPurple),
                     colors = ButtonDefaults.buttonColors(containerColor = WithpeaceTheme.colors.SystemWhite),
                 ) {
                     Text(
                         text = stringResource(string.delete_cancel),
                         style = WithpeaceTheme.typography.caption,
-                        color = WithpeaceTheme.colors.MainPink,
+                        color = WithpeaceTheme.colors.MainPurple,
                     )
                 }
                 Button(
@@ -301,7 +301,7 @@ fun DeletePostDialog(
                         .weight(1f),
                     onClick = { onClickConfirmButton() },
                     shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = WithpeaceTheme.colors.MainPink),
+                    colors = ButtonDefaults.buttonColors(containerColor = WithpeaceTheme.colors.MainPurple),
                 ) {
                     Text(
                         text = stringResource(id = string.delete_post),
@@ -553,13 +553,13 @@ fun ReportDialog(
                         .weight(1f),
                     onClick = { onDismissRequest() },
                     shape = RoundedCornerShape(10.dp),
-                    border = BorderStroke(width = 1.dp, color = WithpeaceTheme.colors.MainPink),
+                    border = BorderStroke(width = 1.dp, color = WithpeaceTheme.colors.MainPurple),
                     colors = ButtonDefaults.buttonColors(containerColor = WithpeaceTheme.colors.SystemWhite),
                 ) {
                     Text(
                         text = stringResource(string.delete_cancel),
                         style = WithpeaceTheme.typography.caption,
-                        color = WithpeaceTheme.colors.MainPink,
+                        color = WithpeaceTheme.colors.MainPurple,
                     )
                 }
                 Button(
@@ -571,7 +571,7 @@ fun ReportDialog(
                         onDismissRequest()
                     },
                     shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = WithpeaceTheme.colors.MainPink),
+                    colors = ButtonDefaults.buttonColors(containerColor = WithpeaceTheme.colors.MainPurple),
                 ) {
                     Text(
                         text = "신고하기",

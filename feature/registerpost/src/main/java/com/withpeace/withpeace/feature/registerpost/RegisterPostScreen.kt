@@ -49,6 +49,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -203,7 +204,7 @@ fun RegisterPostScreen(
         Box(modifier = Modifier.fillMaxSize()) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center),
-                color = WithpeaceTheme.colors.MainPink,
+                color = WithpeaceTheme.colors.MainPurple,
             )
         }
     }
@@ -218,20 +219,19 @@ fun PostImageList(
 ) {
     LazyRow(
         modifier = modifier,
-        contentPadding = PaddingValues(start = WithpeaceTheme.padding.BasicHorizontalPadding),
+        contentPadding = PaddingValues(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
     ) {
         itemsIndexed(
             items = imageUrls,
         ) { index, imageUrl ->
             Box(
                 modifier = Modifier
-                    .size(122.dp)
+                    .size(118.dp)
                     .animateItemPlacement(),
             ) {
                 GlideImage(
-                    modifier = Modifier
-                        .size(110.dp)
-                        .padding(top = 12.dp),
+                    modifier = Modifier.align(Alignment.BottomStart)
+                        .size(110.dp).clip(RoundedCornerShape(10.dp)),
                     imageModel = { imageUrl },
                     previewPlaceholder = drawable.ic_camera,
                 )
@@ -370,7 +370,7 @@ fun TopicBottomSheetContent(
                 items = PostTopicUiModel.entries,
             ) { topicUiState ->
                 val color = if (currentTopic == topicUiState) {
-                    WithpeaceTheme.colors.MainPink
+                    WithpeaceTheme.colors.MainPurple
                 } else {
                     WithpeaceTheme.colors.SystemGray2
                 }

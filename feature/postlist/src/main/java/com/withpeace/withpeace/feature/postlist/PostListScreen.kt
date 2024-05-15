@@ -45,14 +45,12 @@ import com.withpeace.withpeace.core.designsystem.theme.PretendardFont
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.WithpeaceCard
 import com.withpeace.withpeace.core.ui.DateUiModel
-import com.withpeace.withpeace.core.ui.DurationFromNowUiModel
 import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 import com.withpeace.withpeace.core.ui.R
 import com.withpeace.withpeace.core.ui.post.PostUiModel
 import com.withpeace.withpeace.core.ui.toRelativeString
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOf
-import java.time.Duration
 import java.time.LocalDateTime
 
 @Composable
@@ -100,7 +98,7 @@ fun PostListScreen(
                 Box(Modifier.fillMaxSize()) {
                     CircularProgressIndicator(
                         modifier = Modifier.align(Alignment.Center),
-                        color = WithpeaceTheme.colors.MainPink,
+                        color = WithpeaceTheme.colors.MainPurple,
                     )
                 }
             }
@@ -212,7 +210,7 @@ fun PostListItems(
                 ) {
                     CircularProgressIndicator(
                         Modifier.align(Alignment.CenterHorizontally),
-                        color = WithpeaceTheme.colors.MainPink,
+                        color = WithpeaceTheme.colors.MainPurple,
                     )
                 }
             }

@@ -44,6 +44,12 @@ jobs:
         run: |
           echo "YOUTH_POLICY_API_KEY=\"YOUTH_POLICY_API_KEY\"" >> local.properties
 
+      - name: Access BaseUrl
+        env:
+          YOUTH_POLICY_API_KEY: ${{ secrets.BASE_URL }}
+        run: |
+          echo "BASE_URL=\"BASE_URL\"" >> local.properties
+
       - name: Create google-services
         run: |
           echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > ./app/google-services.json

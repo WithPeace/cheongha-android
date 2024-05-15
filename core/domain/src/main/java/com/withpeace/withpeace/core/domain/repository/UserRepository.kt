@@ -39,4 +39,7 @@ interface UserRepository {
     ): Flow<Unit>
 
     suspend fun getCurrentUserId(): Long
+    fun withdraw(
+        onError: suspend (CheonghaError) -> Unit,
+    ): Flow<Unit>
 }

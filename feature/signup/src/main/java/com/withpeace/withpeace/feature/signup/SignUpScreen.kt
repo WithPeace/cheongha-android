@@ -131,7 +131,7 @@ private fun SignUpButton(
                 start = WithpeaceTheme.padding.BasicHorizontalPadding,
             )
             .fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(containerColor = WithpeaceTheme.colors.MainPink),
+        colors = ButtonDefaults.buttonColors(containerColor = WithpeaceTheme.colors.MainPurple),
         shape = RoundedCornerShape(9.dp),
     ) {
         Text(

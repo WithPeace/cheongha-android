@@ -3,6 +3,7 @@ package com.app.profileeditor
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,7 +14,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
@@ -137,6 +140,7 @@ fun ProfileEditorScreen(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(top = 0.dp),
     ) {
         Column(
@@ -206,7 +210,7 @@ private fun EditCompletedButton(
                 start = WithpeaceTheme.padding.BasicHorizontalPadding,
             )
             .fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(containerColor = if (isClickable) WithpeaceTheme.colors.MainPink else WithpeaceTheme.colors.SystemGray2),
+        colors = ButtonDefaults.buttonColors(containerColor = if (isClickable) WithpeaceTheme.colors.MainPurple else WithpeaceTheme.colors.SystemGray2),
         shape = RoundedCornerShape(9.dp),
     ) {
         Text(
@@ -265,14 +269,14 @@ fun ModifySaveDialogContent(
                     .border(
                         width = 1.dp,
                         shape = RoundedCornerShape(10.dp),
-                        color = WithpeaceTheme.colors.MainPink,
+                        color = WithpeaceTheme.colors.MainPurple,
                     )
                     .background(WithpeaceTheme.colors.SystemWhite),
                 onClick = { onClickExit() },
                 content = {
                     Text(
                         text = stringResource(R.string.dialog_exit),
-                        color = WithpeaceTheme.colors.MainPink,
+                        color = WithpeaceTheme.colors.MainPurple,
                         style = WithpeaceTheme.typography.caption,
                     )
                 },
@@ -281,7 +285,7 @@ fun ModifySaveDialogContent(
             TextButton(
                 modifier = modifier
                     .width(136.dp)
-                    .background(WithpeaceTheme.colors.MainPink, shape = RoundedCornerShape(10.dp)),
+                    .background(WithpeaceTheme.colors.MainPurple, shape = RoundedCornerShape(10.dp)),
                 onClick = { onClickSave() },
                 content = {
                     Text(

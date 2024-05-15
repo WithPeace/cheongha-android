@@ -131,6 +131,19 @@ class DefaultUserRepository @Inject constructor(
         }
     }
 
+    override fun withdraw(onError: suspend (CheonghaError) -> Unit): Flow<Unit> =
+        flow {
+            userService.withdraw().suspendMapSuccess {
+                if(this.data) {
+                    tokenPreferenceDataSource.removeAll()
+                    userPreferenceDataSource.removeAll()
+                    emit(Unit)
+                } else {
+                    onError(ResponseError.UNKNOWN_ERROR)
+                }
+            }.handleApiFailure(onError)
+        }
+
     override fun logout(onError: suspend (CheonghaError) -> Unit): Flow<Unit> = flow {
         userService.logout().suspendMapSuccess {
             tokenPreferenceDataSource.removeAll()

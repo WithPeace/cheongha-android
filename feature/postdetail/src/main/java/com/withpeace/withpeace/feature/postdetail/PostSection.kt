@@ -152,7 +152,7 @@ fun PostTopic(
         modifier = modifier
             .padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding)
             .background(
-                color = WithpeaceTheme.colors.MainPink,
+                color = WithpeaceTheme.colors.MainPurple,
                 shape = RoundedCornerShape(20.dp),
             ),
     ) {

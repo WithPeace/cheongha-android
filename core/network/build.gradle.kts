@@ -1,3 +1,10 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
+fun getLocalPropertyString(propertyKey: String): String {
+    return gradleLocalProperties(rootDir).getProperty(propertyKey)
+}
+
+
 plugins {
     id("com.android.library")
     id("convention.android.base")
@@ -10,6 +17,11 @@ android {
     namespace = "com.withpeace.withpeace.core.network"
     defaultConfig {
         consumerProguardFiles("consumer-rules.pro")
+        buildConfigField(
+            "String",
+            "BASE_URL",
+            getLocalPropertyString("BASE_URL"),
+        )
     }
 }
 
