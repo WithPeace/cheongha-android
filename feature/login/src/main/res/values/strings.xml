@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_logo_content_description">app logo</string>
+    <string name="welcome_to_withpeace">청하에 오신 것을 환영합니다</string>
+    <string name="image_google_logo">image_google_logo</string>
+    <string name="login_to_google">Google로 로그인하기</string>
+    <string name="welcome_introduction">1인 가구의 모든 것\n 유용한 정보를 함께 공유해보세요!</string>
+</resources>
