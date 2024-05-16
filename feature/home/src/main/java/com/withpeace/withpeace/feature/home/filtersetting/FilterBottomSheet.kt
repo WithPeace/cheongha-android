@@ -63,7 +63,7 @@ fun FilterBottomSheet(
     val screenHeight = configuration.screenHeightDp.dp
     var footerHeight by remember { mutableStateOf(0.dp) }
     val localDensity = LocalDensity.current
-    Box(modifier = modifier.heightIn(0.dp, screenHeight)) {
+    Box(modifier = modifier.heightIn(0.dp, screenHeight).background(WithpeaceTheme.colors.SystemWhite)) {
         FilterFooter(
             modifier = modifier
                 .align(Alignment.BottomCenter)
