@@ -1,7 +1,5 @@
 plugins {
     id("convention.application")
-    alias(libs.plugins.firebase.services)
-    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {

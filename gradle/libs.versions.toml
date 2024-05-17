@@ -186,7 +186,6 @@ firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashly
 [bundles]
 
 [plugins]
-dependency-graph = { id = "com.vanniktech.dependency.graph.generator", version.ref = "dependencyGraph" }
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
