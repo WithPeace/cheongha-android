@@ -12,4 +12,5 @@ fun PostResponse.toDomain() =
         postTopic = type.toDomain(),
         createDate = Date(createDate.toLocalDateTime()),
         postImageUrl = postImageUrl,
+        commentCount = commentCount,
     )

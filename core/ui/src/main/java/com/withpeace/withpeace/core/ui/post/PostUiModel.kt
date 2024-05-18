@@ -11,6 +11,7 @@ data class PostUiModel(
     val postTopic: PostTopicUiModel,
     val createDate: DateUiModel,
     val postImageUrl: String?,
+    val commentCount: String,
 )
 
 fun Post.toPostUiModel() =
@@ -21,4 +22,5 @@ fun Post.toPostUiModel() =
         postTopic = postTopic.toUi(),
         createDate = createDate.toUiModel(),
         postImageUrl = postImageUrl,
+        commentCount = commentCount.toString(),
     )

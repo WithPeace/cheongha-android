@@ -1,12 +1,16 @@
 package com.withpeace.withpeace.feature.postlist
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -25,6 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,8 +52,8 @@ import com.withpeace.withpeace.core.designsystem.theme.PretendardFont
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.WithpeaceCard
 import com.withpeace.withpeace.core.ui.DateUiModel
-import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 import com.withpeace.withpeace.core.ui.R
+import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 import com.withpeace.withpeace.core.ui.post.PostUiModel
 import com.withpeace.withpeace.core.ui.toRelativeString
 import kotlinx.coroutines.flow.collectLatest
@@ -173,14 +180,43 @@ fun PostListItems(
                             style = WithpeaceTheme.typography.caption,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
+                            color = WithpeaceTheme.colors.SystemBlack,
                         )
-                        Text(
-                            text = post.createDate.toRelativeString(context),
-                            fontFamily = PretendardFont,
-                            fontWeight = FontWeight.Normal,
-                            color = WithpeaceTheme.colors.SystemGray2,
-                            fontSize = 12.sp,
-                        )
+                        Row(
+                            modifier = Modifier
+                                .height(IntrinsicSize.Min),
+                        ) {
+                            Image(
+                                modifier = Modifier.align(Alignment.CenterVertically),
+                                painter =
+                                painterResource(id = com.withpeace.withpeace.feature.postlist.R.drawable.ic_comment),
+                                contentDescription = stringResource(
+                                    com.withpeace.withpeace.feature.postlist.R.string.comment_count,
+                                ),
+                            )
+                            Text(
+                                modifier = Modifier.padding(start = 2.dp),
+                                text = post.commentCount,
+                                fontFamily = PretendardFont,
+                                fontWeight = FontWeight.Normal,
+                                color = WithpeaceTheme.colors.SystemBlack,
+                                fontSize = 12.sp,
+                            )
+                            VerticalDivider(
+                                thickness = 1.dp,
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .padding(vertical = 2.dp, horizontal = 4.dp),
+                                color = WithpeaceTheme.colors.SystemGray2,
+                            )
+                            Text(
+                                text = post.createDate.toRelativeString(context),
+                                fontFamily = PretendardFont,
+                                fontWeight = FontWeight.Normal,
+                                color = WithpeaceTheme.colors.SystemBlack,
+                                fontSize = 12.sp,
+                            )
+                        }
                     }
                     post.postImageUrl?.let {
                         GlideImage(
@@ -202,7 +238,8 @@ fun PostListItems(
         item {
             if (postListPagingData.loadState.append is LoadState.Loading) {
                 Column(
-                    modifier = Modifier.padding(top = 8.dp)
+                    modifier = Modifier
+                        .padding(top = 8.dp)
                         .fillMaxWidth()
                         .background(
                             Color.Transparent,
@@ -237,6 +274,7 @@ private fun PostListScreenPreview() {
                                     date = LocalDateTime.now(),
                                 ),
                                 postImageUrl = null,
+                                commentCount = "0",
                             )
                         },
                         sourceLoadStates =

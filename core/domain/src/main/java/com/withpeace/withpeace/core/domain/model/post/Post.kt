@@ -9,4 +9,5 @@ data class Post(
     val postTopic: PostTopic,
     val createDate: Date,
     val postImageUrl: String?,
+    val commentCount: Int,
 )
