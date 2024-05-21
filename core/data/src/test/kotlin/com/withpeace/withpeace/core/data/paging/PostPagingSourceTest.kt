@@ -47,6 +47,7 @@ class PostPagingSourceTest {
                             type = PostTopicResponse.FREEDOM,
                             postImageUrl = null,
                             createDate = "2024/04/12 00:00:00",
+                            commentCount = 0,
                         )
                     },
                     error = null,
@@ -83,6 +84,7 @@ class PostPagingSourceTest {
                             LocalTime.of(0, 0, 0),
                         ),
                     ),
+                    commentCount = 0,
                 )
             },
         ).inOrder()
@@ -118,6 +120,7 @@ class PostPagingSourceTest {
                             LocalTime.of(0, 0, 0),
                         ),
                     ),
+                    commentCount = 0,
                 )
             },
         ).inOrder()

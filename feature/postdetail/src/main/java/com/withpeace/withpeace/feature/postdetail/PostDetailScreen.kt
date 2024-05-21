@@ -69,6 +69,7 @@ fun PostDetailRoute(
     onClickBackButton: () -> Unit,
     onClickEditButton: (RegisterPostUiModel) -> Unit,
     onAuthExpired: () -> Unit,
+    onDeleteSuccess: (Long) -> Unit,
 ) {
     val postUiState by viewModel.postUiState.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
@@ -98,9 +99,9 @@ fun PostDetailRoute(
 
                 PostDetailUiEvent.UnAuthorized -> onAuthExpired()
 
-                PostDetailUiEvent.DeleteSuccess -> {
+                is PostDetailUiEvent.DeleteSuccess -> {
                     onShowSnackBar("게시글이 삭제되었습니다.")
-                    onClickBackButton()
+                    onDeleteSuccess(it.postId)
                 }
 
                 PostDetailUiEvent.RegisterCommentFailByNetwork -> onShowSnackBar("댓글 등록에 실패했습니다. 네트워크를 확인해주세요")

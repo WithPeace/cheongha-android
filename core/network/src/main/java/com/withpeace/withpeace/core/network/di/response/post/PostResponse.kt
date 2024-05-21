@@ -10,4 +10,5 @@ data class PostResponse(
     val type: PostTopicResponse,
     val postImageUrl: String? = null,
     val createDate: String,
+    val commentCount: Int,
 )

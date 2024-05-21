@@ -22,6 +22,7 @@ import com.withpeace.withpeace.feature.mypage.navigation.myPageNavGraph
 import com.withpeace.withpeace.feature.postdetail.navigation.POST_DETAIL_ROUTE_WITH_ARGUMENT
 import com.withpeace.withpeace.feature.postdetail.navigation.navigateToPostDetail
 import com.withpeace.withpeace.feature.postdetail.navigation.postDetailGraph
+import com.withpeace.withpeace.feature.postlist.navigation.POST_LIST_DELETED_POST_ID_ARGUMENT
 import com.withpeace.withpeace.feature.postlist.navigation.POST_LIST_ROUTE
 import com.withpeace.withpeace.feature.postlist.navigation.postListGraph
 import com.withpeace.withpeace.feature.registerpost.navigation.IMAGE_LIST_ARGUMENT
@@ -193,6 +194,12 @@ fun WithpeaceNavHost(
             onAuthExpired = {
                 onAuthExpired(onShowSnackBar, navController)
             },
+            onDeleteSuccess = {
+                navController.previousBackStackEntry?.savedStateHandle?.apply {
+                    set(POST_LIST_DELETED_POST_ID_ARGUMENT, it)
+                }
+                navController.popBackStack()
+            }
         )
         postListGraph(
             onShowSnackBar = onShowSnackBar,
