@@ -1,9 +1,12 @@
 package com.withpeace.withpeace.feature.postlist
 
+import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.filter
 import androidx.paging.map
 import com.withpeace.withpeace.core.domain.model.error.ClientError
 import com.withpeace.withpeace.core.domain.usecase.GetPostsUseCase
@@ -11,13 +14,17 @@ import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 import com.withpeace.withpeace.core.ui.post.PostUiModel
 import com.withpeace.withpeace.core.ui.post.toDomain
 import com.withpeace.withpeace.core.ui.post.toPostUiModel
+import com.withpeace.withpeace.feature.postlist.navigation.POST_LIST_DELETED_POST_ID_ARGUMENT
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,8 +40,13 @@ class PostListViewModel @Inject constructor(
     val currentTopic = _currentTopic.asStateFlow()
 
     private val _postListPagingFlow = MutableStateFlow(PagingData.empty<PostUiModel>())
-    val postListPagingFlow = _postListPagingFlow.asStateFlow()
+    private val deletedIdsFlow = MutableStateFlow(setOf<Long>())
 
+    val postListPagingFlow = combine(_postListPagingFlow, deletedIdsFlow) { paging, deletedPostId ->
+        paging.filter {
+            deletedPostId.contains(it.postId).not()
+        }
+    }.cachedIn(viewModelScope)
     init {
         fetchPostList(currentTopic.value)
     }
@@ -58,10 +70,14 @@ class PostListViewModel @Inject constructor(
                         throw IllegalStateException() // LoadStateError를 내보내기 위함
                     },
                 ).map {
-                    it.map { it.toPostUiModel() }
+                    it.map { post -> post.toPostUiModel() }
                 }.cachedIn(viewModelScope).firstOrNull() ?: PagingData.empty()
             }
         }
+    }
+
+    fun updateDeletedId(id: Long) {
+        deletedIdsFlow.update { it + id }
     }
 
     companion object {

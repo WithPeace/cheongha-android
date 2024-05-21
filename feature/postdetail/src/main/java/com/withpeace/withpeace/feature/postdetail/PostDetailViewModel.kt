@@ -91,7 +91,7 @@ class PostDetailViewModel @Inject constructor(
                 }
             },
         ).onEach {
-            _postUiEvent.send(PostDetailUiEvent.DeleteSuccess)
+            _postUiEvent.send(PostDetailUiEvent.DeleteSuccess(postId))
         }.launchIn(viewModelScope)
     }
 
