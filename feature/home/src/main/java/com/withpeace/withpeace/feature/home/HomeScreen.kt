@@ -148,7 +148,8 @@ fun HomeScreen(
                         item {
                             if (youthPolicies.loadState.append is LoadState.Loading) {
                                 Column(
-                                    modifier = modifier.padding(top = 8.dp)
+                                    modifier = modifier
+                                        .padding(top = 8.dp)
                                         .fillMaxWidth()
                                         .background(
                                             Color.Transparent,
@@ -358,9 +359,9 @@ private fun YouthPolicyCard(
                             top.linkTo(parent.top)
                         },
                     ),
-                painter = painterResource(id = R.drawable.ic_home_thumbnail_example),
-                contentDescription = "임시",
-            ) //TODO("이미지 변경")
+                painter = painterResource(id = youthPolicy.classification),
+                contentDescription = stringResource(R.string.policy_classification_image),
+            )
         }
     }
 }

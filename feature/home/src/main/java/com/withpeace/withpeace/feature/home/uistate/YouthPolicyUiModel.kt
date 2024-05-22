@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.feature.home.uistate
 
+import androidx.annotation.DrawableRes
 import com.withpeace.withpeace.core.domain.model.policy.PolicyClassification
 import com.withpeace.withpeace.core.domain.model.policy.YouthPolicy
 import com.withpeace.withpeace.feature.home.filtersetting.uistate.RegionUiModel
@@ -12,6 +13,7 @@ data class YouthPolicyUiModel(
     val content: String,
     val region: RegionUiModel,
     val ageInfo: String,
+    @DrawableRes val classification: Int,
 )
 
 fun YouthPolicy.toUiModel(): YouthPolicyUiModel {
@@ -21,6 +23,14 @@ fun YouthPolicy.toUiModel(): YouthPolicyUiModel {
         content = introduce,
         region = region.toUiModel(),
         ageInfo = ageInfo,
+        classification = when (policyClassification) {
+            PolicyClassification.JOB -> com.withpeace.withpeace.core.ui.R.drawable.ic_policy_job
+            PolicyClassification.EDUCATION -> com.withpeace.withpeace.core.ui.R.drawable.ic_policy_eductaion
+            PolicyClassification.RESIDENT -> com.withpeace.withpeace.core.ui.R.drawable.ic_policy_resident
+            PolicyClassification.PARTICIPATION_AND_RIGHT -> com.withpeace.withpeace.core.ui.R.drawable.ic_policy_participation_right
+            PolicyClassification.WELFARE_AND_CULTURE -> com.withpeace.withpeace.core.ui.R.drawable.ic_policy_welfare_culture
+            else -> 0
+        },
     )
 }
 
