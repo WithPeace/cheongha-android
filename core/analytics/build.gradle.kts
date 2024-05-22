@@ -1,6 +1,8 @@
 plugins {
     id("com.android.library")
     id("convention.android.base")
+    id("convention.android.hilt")
+    id("convention.android.compose")
     alias(libs.plugins.firebase.crashlytics)
 }
 
