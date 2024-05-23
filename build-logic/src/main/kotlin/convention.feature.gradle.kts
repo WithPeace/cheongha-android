@@ -14,5 +14,6 @@ dependencies{
     implementation(project(":core:domain"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:ui"))
+    implementation(project(":core:analytics"))
     testImplementation(project(":core:testing"))
 }

@@ -19,8 +19,10 @@ internal abstract class AnalyticsModule {
             prod: FirebaseAnalyticsHelper,
             debug: StubAnalyticsHelper,
         ): AnalyticsHelper {
-            return if (BuildConfig.DEBUG) debug
-            else prod
+            // return if (BuildConfig.DEBUG) debug
+            // else
+            //TODO("수정")
+                return prod
         }
 
         @Provides

@@ -14,6 +14,7 @@ dependencies {
     implementation(project(":core:permission"))
     implementation(project(":core:domain"))
     implementation(project(":core:designsystem"))
+    implementation(project(":core:analytics"))
     implementation(libs.skydoves.landscapist.glide)
     implementation(libs.skydoves.landscapist.bom)
     implementation(libs.kotlinx.serialization.json)

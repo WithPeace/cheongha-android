@@ -69,6 +69,7 @@ import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceCompleteButton
 import com.withpeace.withpeace.core.domain.model.error.ClientError
 import com.withpeace.withpeace.core.permission.ImagePermissionHelper
+import com.withpeace.withpeace.core.ui.analytics.TrackScreenViewEvent
 import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 import com.withpeace.withpeace.core.ui.post.RegisterPostUiModel
 import com.withpeace.withpeace.feature.registerpost.R.drawable
@@ -208,6 +209,7 @@ fun RegisterPostScreen(
             )
         }
     }
+    TrackScreenViewEvent(screenName = "post_register")
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -230,8 +232,10 @@ fun PostImageList(
                     .animateItemPlacement(),
             ) {
                 GlideImage(
-                    modifier = Modifier.align(Alignment.BottomStart)
-                        .size(110.dp).clip(RoundedCornerShape(10.dp)),
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .size(110.dp)
+                        .clip(RoundedCornerShape(10.dp)),
                     imageModel = { imageUrl },
                     previewPlaceholder = drawable.ic_camera,
                 )

@@ -50,6 +50,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.util.dropShadow
+import com.withpeace.withpeace.core.ui.analytics.TrackScreenViewEvent
 import com.withpeace.withpeace.feature.home.filtersetting.FilterBottomSheet
 import com.withpeace.withpeace.feature.home.filtersetting.uistate.ClassificationUiModel
 import com.withpeace.withpeace.feature.home.filtersetting.uistate.RegionUiModel
@@ -168,6 +169,7 @@ fun HomeScreen(
             }
         }
     }
+    TrackScreenViewEvent(screenName = "home")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
