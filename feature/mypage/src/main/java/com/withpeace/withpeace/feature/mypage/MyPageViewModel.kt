@@ -100,7 +100,6 @@ class MyPageViewModel @Inject constructor(
             }.collect {
                 _myPageUiEvent.send(MyPageUiEvent.WithdrawSuccess)
             }
-
         }
     }
 }

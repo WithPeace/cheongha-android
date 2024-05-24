@@ -46,7 +46,7 @@ fun TopicTabs(
                 selected = postTopic == currentTopic,
                 onClick = {
                     onClick(postTopic)
-                    analyticsEvent.topicClick("post_list", currentTopic)
+                    analyticsEvent.topicClick(currentTopic)
                 },
                 text = {
                     Text(

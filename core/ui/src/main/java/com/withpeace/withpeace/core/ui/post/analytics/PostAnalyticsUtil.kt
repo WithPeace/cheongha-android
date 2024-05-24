@@ -7,12 +7,11 @@ import com.withpeace.withpeace.core.analytics.AnalyticsHelper
 import com.withpeace.withpeace.core.analytics.LocalAnalyticsHelper
 import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 
-fun AnalyticsHelper.topicClick(screenName: String, topic: PostTopicUiModel) {
+fun AnalyticsHelper.topicClick(topic: PostTopicUiModel) {
     logEvent(
         AnalyticsEvent(
-            type = AnalyticsEvent.Types.TOPIC_CLICK,
+            type = AnalyticsEvent.Type.TOPIC_CLICK.eventTitle,
             extras = listOf(
-                AnalyticsEvent.Param(AnalyticsEvent.ParamKeys.SCREEN_NAME, screenName),
                 AnalyticsEvent.Param(
                     AnalyticsEvent.ParamKeys.POST_TOPIC,
                     topic.convertToAnalyticsTopic(),
@@ -25,11 +24,11 @@ fun AnalyticsHelper.topicClick(screenName: String, topic: PostTopicUiModel) {
 fun AnalyticsHelper.logPostDetailScreenView(screenName: String, postId: String, postTopic: String) {
     logEvent(
         AnalyticsEvent(
-            type = AnalyticsEvent.Types.SCREEN_VIEW,
+            type = AnalyticsEvent.Type.SCREEN_VIEW.eventTitle,
             extras = listOf(
-                AnalyticsEvent.Param(AnalyticsEvent.ParamKeys.SCREEN_NAME, screenName),
-                AnalyticsEvent.Param(AnalyticsEvent.ParamKeys.POST_ID, postId),
                 AnalyticsEvent.Param(AnalyticsEvent.ParamKeys.POST_TOPIC, postTopic),
+                AnalyticsEvent.Param(AnalyticsEvent.ParamKeys.POST_ID, postId),
+                AnalyticsEvent.Param(AnalyticsEvent.ParamKeys.SCREEN_NAME, screenName),
             ),
         ),
     )

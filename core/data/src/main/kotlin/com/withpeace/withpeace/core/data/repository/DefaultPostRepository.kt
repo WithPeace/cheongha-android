@@ -5,6 +5,9 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.skydoves.sandwich.suspendMapSuccess
+import com.withpeace.withpeace.core.analytics.AnalyticsEvent
+import com.withpeace.withpeace.core.analytics.AnalyticsHelper
+import com.withpeace.withpeace.core.data.analytics.event
 import com.withpeace.withpeace.core.data.mapper.toDomain
 import com.withpeace.withpeace.core.data.paging.PostPagingSource
 import com.withpeace.withpeace.core.data.util.convertToFile
@@ -38,6 +41,7 @@ class DefaultPostRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     private val postService: PostService,
     private val userRepository: UserRepository,
+    private val analyticsHelper: AnalyticsHelper,
 ) : PostRepository {
     override fun getPosts(
         postTopic: PostTopic,
@@ -67,6 +71,7 @@ class DefaultPostRepository @Inject constructor(
                 postService.registerPost(postRequestBodies, imageRequestBodies)
                     .suspendMapSuccess {
                         emit(data.postId)
+                        analyticsHelper.event(AnalyticsEvent.Type.REGISTER_POST)
                     }.handleApiFailure {
                         onErrorWithAuthExpired(it, onError)
                     }

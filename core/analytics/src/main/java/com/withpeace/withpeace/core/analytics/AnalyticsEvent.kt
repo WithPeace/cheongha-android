@@ -4,16 +4,17 @@ data class AnalyticsEvent(
     val type: String,
     val extras: List<Param> = emptyList(),
 ) {
-    class Types {
-        companion object {
-            const val SCREEN_VIEW = "screen_view"
-            const val BUTTON_CLICK = "button_click"
-            const val TOPIC_CLICK = "topic_click"
-            const val SIGN_UP = "sign_up"
-            const val LOGIN = "login"
-
-        }
+    enum class Type(val eventTitle: String) {
+        SCREEN_VIEW("screen_view"),
+        BUTTON_CLICK("button_click"),
+        TOPIC_CLICK("topic_click"),
+        SIGN_UP("sign_up"),
+        LOGIN("login"),
+        LOGOUT("logout"),
+        WITHDRAW("withdraw"),
+        REGISTER_POST("register_post");
     }
+
     data class Param(val key: String, val value: String)
     class ParamKeys {
         companion object {

@@ -62,6 +62,7 @@ import kotlinx.coroutines.launch
 fun HomeRoute(
     onShowSnackBar: (message: String) -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel(),
+    onPolicyClick: () -> Unit,
 ) {
     val youthPolicyPagingData = viewModel.youthPolicyPagingFlow.collectAsLazyPagingItems()
     val selectedFilterUiState = viewModel.selectingFilters.collectAsStateWithLifecycle()
@@ -74,6 +75,7 @@ fun HomeRoute(
         onFilterAllOff = viewModel::onFilterAllOff,
         onSearchWithFilter = viewModel::onCompleteFilter,
         onCloseFilter = viewModel::onCancelFilter,
+        onPolicyClick = onPolicyClick
     )
 }
 
@@ -88,6 +90,7 @@ fun HomeScreen(
     onFilterAllOff: () -> Unit,
     onSearchWithFilter: () -> Unit,
     onCloseFilter: () -> Unit,
+    onPolicyClick: () -> Unit,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         HomeHeader(
@@ -144,6 +147,7 @@ fun HomeScreen(
                             YouthPolicyCard(
                                 modifier = modifier,
                                 youthPolicy = youthPolicy,
+                                onPolicyClick = onPolicyClick
                             )
                         }
                         item {
@@ -248,6 +252,7 @@ private fun HomeHeader(
 private fun YouthPolicyCard(
     modifier: Modifier,
     youthPolicy: YouthPolicyUiModel,
+    onPolicyClick: () -> Unit,
 ) {
     Card(
         modifier = modifier
@@ -260,8 +265,11 @@ private fun YouthPolicyCard(
                 color = Color(0x1A000000),
                 blurRadius = 4.dp,
                 spreadRadius = 2.dp,
-                borderRadius = 10.dp
-            ),
+                borderRadius = 10.dp,
+            )
+            .clickable {
+                onPolicyClick()
+            },
     ) {
         ConstraintLayout(
             modifier = modifier
