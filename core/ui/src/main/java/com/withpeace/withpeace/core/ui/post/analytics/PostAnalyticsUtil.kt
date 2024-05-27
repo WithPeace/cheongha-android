@@ -2,10 +2,12 @@ package com.withpeace.withpeace.core.ui.post.analytics
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.platform.LocalContext
+import com.withpeace.withpeace.core.analytics.AnalyticsEntryPoint
 import com.withpeace.withpeace.core.analytics.AnalyticsEvent
 import com.withpeace.withpeace.core.analytics.AnalyticsHelper
-import com.withpeace.withpeace.core.analytics.LocalAnalyticsHelper
 import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
+import dagger.hilt.android.EntryPointAccessors
 
 fun AnalyticsHelper.topicClick(topic: PostTopicUiModel) {
     logEvent(
@@ -48,7 +50,10 @@ fun TrackPostDetailScreenViewEvent(
     screenName: String,
     postId: Long,
     postTopicUiModel: PostTopicUiModel,
-    analyticsHelper: AnalyticsHelper = LocalAnalyticsHelper.current,
+    analyticsHelper: AnalyticsHelper = EntryPointAccessors.fromApplication(
+        LocalContext.current,
+        AnalyticsEntryPoint::class.java,
+    ).get(),
 ) = DisposableEffect(Unit) {
     analyticsHelper.logPostDetailScreenView(
         screenName,

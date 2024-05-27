@@ -4,31 +4,22 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.withpeace.withpeace.core.analytics.AnalyticsHelper
-import com.withpeace.withpeace.core.analytics.LocalAnalyticsHelper
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.feature.home.navigation.HOME_ROUTE
 import com.withpeace.withpeace.feature.login.navigation.LOGIN_ROUTE
-import com.withpeace.withpeace.feature.registerpost.navigation.REGISTER_POST_ROUTE
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel by viewModels<MainViewModel>()
     private lateinit var splashScreen: SplashScreen
-
-    @Inject
-    lateinit var analyticsHelper: AnalyticsHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,12 +46,8 @@ class MainActivity : ComponentActivity() {
 
     private fun ComponentActivity.composeStart(startDestination: String) {
         setContent {
-            CompositionLocalProvider(
-                LocalAnalyticsHelper provides analyticsHelper,
-            ) {
-                WithpeaceTheme {
-                    WithpeaceApp(startDestination = startDestination)
-                }
+            WithpeaceTheme {
+                WithpeaceApp(startDestination = startDestination)
             }
         }
     }
