@@ -4,7 +4,6 @@ plugins {
     id("convention.android.compose")
     alias(libs.plugins.kotlin.serialization)
     id("kotlin-parcelize")
-    id("convention.android.hilt")
 }
 
 android {

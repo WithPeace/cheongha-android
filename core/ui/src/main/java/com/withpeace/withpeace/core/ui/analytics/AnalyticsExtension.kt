@@ -2,11 +2,9 @@ package com.withpeace.withpeace.core.ui.analytics
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.ui.platform.LocalContext
 import com.withpeace.withpeace.core.analytics.AnalyticsEvent
 import com.withpeace.withpeace.core.analytics.AnalyticsHelper
-import com.withpeace.withpeace.core.analytics.AnalyticsEntryPoint
-import dagger.hilt.android.EntryPointAccessors
+import com.withpeace.withpeace.core.analytics.LocalAnalyticsHelper
 
 fun AnalyticsHelper.logScreenView(screenName: String) {
     logEvent(
@@ -36,10 +34,7 @@ fun AnalyticsHelper.buttonClick(screenName: String, buttonId: String) {
 @Composable
 fun TrackScreenViewEvent(
     screenName: String,
-    analyticsHelper: AnalyticsHelper = EntryPointAccessors.fromApplication(
-        LocalContext.current,
-        AnalyticsEntryPoint::class.java,
-    ).get(),
+    analyticsHelper: AnalyticsHelper = LocalAnalyticsHelper.current,
 ) = DisposableEffect(Unit) {
     analyticsHelper.logScreenView(screenName)
     onDispose {}

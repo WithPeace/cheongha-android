@@ -15,7 +15,6 @@ import javax.inject.Singleton
 internal abstract class AnalyticsModule {
     companion object {
         @Provides
-        @Singleton
         fun bindsAnalyticsHelper(
             prod: FirebaseAnalyticsHelper,
             debug: StubAnalyticsHelper,
