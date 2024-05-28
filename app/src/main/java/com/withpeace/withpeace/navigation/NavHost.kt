@@ -19,6 +19,8 @@ import com.withpeace.withpeace.feature.mypage.navigation.MY_PAGE_CHANGED_IMAGE_A
 import com.withpeace.withpeace.feature.mypage.navigation.MY_PAGE_CHANGED_NICKNAME_ARGUMENT
 import com.withpeace.withpeace.feature.mypage.navigation.MY_PAGE_ROUTE
 import com.withpeace.withpeace.feature.mypage.navigation.myPageNavGraph
+import com.withpeace.withpeace.feature.policydetail.navigation.navigateToPolicyDetail
+import com.withpeace.withpeace.feature.policydetail.navigation.policyDetailNavGraph
 import com.withpeace.withpeace.feature.postdetail.navigation.POST_DETAIL_ROUTE_WITH_ARGUMENT
 import com.withpeace.withpeace.feature.postdetail.navigation.navigateToPostDetail
 import com.withpeace.withpeace.feature.postdetail.navigation.postDetailGraph
@@ -128,7 +130,15 @@ fun WithpeaceNavHost(
             },
             onShowSnackBar = onShowSnackBar,
         )
-        homeNavGraph(onShowSnackBar)
+        homeNavGraph(
+            onShowSnackBar = onShowSnackBar,
+            onPolicyClick = {
+                navController.navigateToPolicyDetail()
+            },
+        )
+        policyDetailNavGraph(
+            onShowSnackBar = onShowSnackBar,
+        )
         navigation(startDestination = MY_PAGE_ROUTE, MY_PAGE_NESTED_ROUTE) {
             myPageNavGraph(
                 onShowSnackBar = onShowSnackBar,

@@ -90,5 +90,3 @@ class HomeViewModel @Inject constructor(
         }
     }
 }
-
-//TODO("검색이 끝나지 않았을 때 필터걸면?")

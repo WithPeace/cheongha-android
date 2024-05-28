@@ -17,5 +17,6 @@ fun PolicyDetailScreen(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
+
     }
 }
