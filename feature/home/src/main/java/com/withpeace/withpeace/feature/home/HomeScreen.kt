@@ -52,10 +52,10 @@ import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.util.dropShadow
 import com.withpeace.withpeace.core.ui.analytics.TrackScreenViewEvent
 import com.withpeace.withpeace.feature.home.filtersetting.FilterBottomSheet
-import com.withpeace.withpeace.feature.home.filtersetting.uistate.ClassificationUiModel
-import com.withpeace.withpeace.feature.home.filtersetting.uistate.RegionUiModel
+import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
+import com.withpeace.withpeace.core.ui.policy.RegionUiModel
 import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
-import com.withpeace.withpeace.feature.home.uistate.YouthPolicyUiModel
+import com.withpeace.withpeace.core.ui.policy.YouthPolicyUiModel
 import kotlinx.coroutines.launch
 
 @Composable

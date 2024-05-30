@@ -28,4 +28,23 @@ data class YouthPolicyEntity(
     val regionCode: String?,
     @PropertyElement(name = "ageInfo", writeAsCData = true)
     val ageInfo: String?,
+
+    @PropertyElement(name = "prcpCn", writeAsCData = true)
+    val residenceAndIncome: String?,
+    @PropertyElement(name = "accrRqisCn", writeAsCData = true)
+    val education: String?,
+    @PropertyElement(name = "splzRlmRqisCn", writeAsCData = true)
+    val specialization: String?,
+    @PropertyElement(name = "aditRscn", writeAsCData = true)
+    val additionalNotes: String?,
+    @PropertyElement(name = "prcpLmttTrgtCn", writeAsCData = true)
+    val participationRestrictions: String?,
+    @PropertyElement(name = "rqutProcCn", writeAsCData = true)
+    val applicationProcess: String?,
+    @PropertyElement(name = "jdgnPresCn", writeAsCData = true)
+    val screeningAndAnnouncement: String?,
+    @PropertyElement(name = "rqutUrla", writeAsCData = true)
+    val applicationSite: String?,
+    @PropertyElement(name = "pstnPaprCn", writeAsCData = true)
+    val submissionDocuments: String?
 )

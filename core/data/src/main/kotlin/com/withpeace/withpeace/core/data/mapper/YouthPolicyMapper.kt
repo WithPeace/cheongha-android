@@ -13,6 +13,15 @@ fun YouthPolicyEntity.toDomain(): YouthPolicy {
         region = regionCode.codeToRegion(),
         policyClassification = classification.codeToPolicyClassification(),
         ageInfo = ageInfo ?: "",
+        residenceAndIncome = residenceAndIncome ?: "",
+        education = education ?: "",
+        specialization = specialization ?: "",
+        additionalNotes = additionalNotes ?: "",
+        participationRestrictions = participationRestrictions ?: "",
+        applicationProcess = applicationProcess ?: "",
+        screeningAndAnnouncement = screeningAndAnnouncement ?: "",
+        applicationSite = applicationSite ?: "",
+        submissionDocuments = submissionDocuments ?: ""
     )
 }
 

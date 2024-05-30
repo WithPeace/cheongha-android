@@ -1,8 +1,8 @@
-package com.withpeace.withpeace.feature.home.filtersetting.uistate
+package com.withpeace.withpeace.core.ui.policy
 
 import androidx.annotation.StringRes
 import com.withpeace.withpeace.core.domain.model.policy.PolicyClassification
-import com.withpeace.withpeace.feature.home.R
+import com.withpeace.withpeace.core.ui.R
 
 enum class ClassificationUiModel(@StringRes val resId: Int) {
     JOB(R.string.classification_job),

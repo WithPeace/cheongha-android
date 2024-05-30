@@ -1,4 +1,4 @@
-package com.withpeace.withpeace.feature.home.filtersetting.uistate
+package com.withpeace.withpeace.core.ui.policy
 
 import com.withpeace.withpeace.core.domain.model.policy.PolicyRegion
 

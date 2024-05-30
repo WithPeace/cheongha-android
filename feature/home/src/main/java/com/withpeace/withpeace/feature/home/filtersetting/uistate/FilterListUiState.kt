@@ -1,5 +1,7 @@
 package com.withpeace.withpeace.feature.home.filtersetting.uistate
 
+import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
+import com.withpeace.withpeace.core.ui.policy.RegionUiModel
 import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
 
 data class FilterListUiState(

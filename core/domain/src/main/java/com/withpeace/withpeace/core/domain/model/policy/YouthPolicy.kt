@@ -7,4 +7,15 @@ data class YouthPolicy(
     val region: PolicyRegion,
     val policyClassification: PolicyClassification,
     val ageInfo: String,
+
+    val residenceAndIncome: String,
+    val education: String,
+    val specialization: String,
+    val additionalNotes: String,
+    val participationRestrictions: String,
+    val applicationProcess: String,
+    val screeningAndAnnouncement: String,
+    val applicationSite: String,
+    val submissionDocuments: String
+
 )

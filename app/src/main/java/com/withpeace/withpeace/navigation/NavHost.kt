@@ -138,6 +138,7 @@ fun WithpeaceNavHost(
         )
         policyDetailNavGraph(
             onShowSnackBar = onShowSnackBar,
+            onClickBackButton = { navController.popBackStack() },
         )
         navigation(startDestination = MY_PAGE_ROUTE, MY_PAGE_NESTED_ROUTE) {
             myPageNavGraph(
