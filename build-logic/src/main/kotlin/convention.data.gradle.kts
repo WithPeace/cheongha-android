@@ -5,3 +5,7 @@ plugins {
     id("convention.coroutine")
     id("convention.android.hilt")
 }
+
+dependencies {
+    implementation(project(":core:analytics"))
+}

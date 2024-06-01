@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
+import com.withpeace.withpeace.core.ui.analytics.TrackScreenViewEvent
 import com.withpeace.withpeace.core.ui.profile.NickNameEditor
 import com.withpeace.withpeace.core.ui.profile.ProfileImageEditor
 import com.withpeace.withpeace.core.ui.profile.ProfileNicknameValidUiState
@@ -112,6 +113,7 @@ fun SignUpScreen(
         }
         SignUpButton(onClick = onSignUpClick)
     }
+    TrackScreenViewEvent(screenName = "sign_up")
 }
 
 @Composable

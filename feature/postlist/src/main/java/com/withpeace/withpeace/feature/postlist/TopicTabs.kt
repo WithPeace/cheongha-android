@@ -14,8 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.withpeace.withpeace.core.analytics.LocalAnalyticsHelper
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
+import com.withpeace.withpeace.core.ui.post.analytics.topicClick
 
 @Composable
 fun TopicTabs(
@@ -23,6 +25,7 @@ fun TopicTabs(
     tabPosition: Int,
     onClick: (PostTopicUiModel) -> Unit,
 ) {
+    val analyticsEvent = LocalAnalyticsHelper.current
     TabRow(
         modifier = Modifier.wrapContentSize(),
         selectedTabIndex = tabPosition,
@@ -41,7 +44,10 @@ fun TopicTabs(
             else WithpeaceTheme.colors.SystemGray2
             Tab(
                 selected = postTopic == currentTopic,
-                onClick = { onClick(postTopic) },
+                onClick = {
+                    onClick(postTopic)
+                    analyticsEvent.topicClick(currentTopic)
+                },
                 text = {
                     Text(
                         text = stringResource(id = postTopic.textResId),

@@ -53,6 +53,7 @@ import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.WithpeaceCard
 import com.withpeace.withpeace.core.ui.DateUiModel
 import com.withpeace.withpeace.core.ui.R
+import com.withpeace.withpeace.core.ui.analytics.TrackScreenViewEvent
 import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 import com.withpeace.withpeace.core.ui.post.PostUiModel
 import com.withpeace.withpeace.core.ui.toRelativeString
@@ -127,6 +128,7 @@ fun PostListScreen(
             }
         }
     }
+    TrackScreenViewEvent(screenName = "post_list")
 }
 
 @Composable

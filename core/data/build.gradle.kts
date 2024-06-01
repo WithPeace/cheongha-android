@@ -36,6 +36,7 @@ dependencies {
     implementation(project(":core:datastore"))
     implementation(project(":core:imagestorage"))
     implementation(project(":core:testing"))
+    implementation(project(":core:analytics"))
     implementation(libs.skydoves.sandwich)
     implementation(libs.androidx.paging)
     testImplementation(libs.androidx.paging.testing)

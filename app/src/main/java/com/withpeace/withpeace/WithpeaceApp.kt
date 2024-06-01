@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.withpeace.withpeace.core.analytics.FirebaseInstance
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.navigation.WithpeaceNavHost
 import kotlinx.coroutines.launch
@@ -34,12 +33,6 @@ fun WithpeaceApp(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val parentDestination = currentDestination?.parent
-
-    LaunchedEffect(currentDestination) {
-        currentDestination?.let {
-            FirebaseInstance.screenEvent(it.route.toString())
-        }
-    }
 
     Scaffold(
         bottomBar = {

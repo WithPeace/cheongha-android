@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -209,7 +210,7 @@ private fun EditCompletedButton(
                 end = WithpeaceTheme.padding.BasicHorizontalPadding,
                 start = WithpeaceTheme.padding.BasicHorizontalPadding,
             )
-            .fillMaxWidth(),
+            .fillMaxWidth().imePadding(),
         colors = ButtonDefaults.buttonColors(containerColor = if (isClickable) WithpeaceTheme.colors.MainPurple else WithpeaceTheme.colors.SystemGray2),
         shape = RoundedCornerShape(9.dp),
     ) {

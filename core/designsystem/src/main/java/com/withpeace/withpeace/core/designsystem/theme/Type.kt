@@ -2,11 +2,11 @@ package com.withpeace.withpeace.core.designsystem.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.sp
 import com.withpeace.withpeace.core.designsystem.R
 
@@ -151,5 +151,22 @@ data class WithPeaceTypography(
             fontFamily = PretendardFont,
             fontWeight = FontWeight.Normal,
             fontSize = 10.sp,
+        ),
+    val policyDetailCaption: TextStyle =
+        TextStyle(
+            fontFamily = PretendardFont,
+            fontWeight = FontWeight.Normal,
+            fontSize = 14.sp,
+            lineHeight = 20.sp,
+            lineHeightStyle = LineHeightStyle(
+                alignment = LineHeightStyle.Alignment.Center,
+                trim = LineHeightStyle.Trim.None,
+            ),
+        ),
+    val bold16Sp: TextStyle =
+        TextStyle(
+            fontFamily = PretendardFont,
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp,
         ),
 )

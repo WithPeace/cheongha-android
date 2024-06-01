@@ -50,17 +50,19 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.util.dropShadow
+import com.withpeace.withpeace.core.ui.analytics.TrackScreenViewEvent
 import com.withpeace.withpeace.feature.home.filtersetting.FilterBottomSheet
-import com.withpeace.withpeace.feature.home.filtersetting.uistate.ClassificationUiModel
-import com.withpeace.withpeace.feature.home.filtersetting.uistate.RegionUiModel
+import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
+import com.withpeace.withpeace.core.ui.policy.RegionUiModel
 import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
-import com.withpeace.withpeace.feature.home.uistate.YouthPolicyUiModel
+import com.withpeace.withpeace.core.ui.policy.YouthPolicyUiModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun HomeRoute(
     onShowSnackBar: (message: String) -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel(),
+    onPolicyClick: (YouthPolicyUiModel) -> Unit,
 ) {
     val youthPolicyPagingData = viewModel.youthPolicyPagingFlow.collectAsLazyPagingItems()
     val selectedFilterUiState = viewModel.selectingFilters.collectAsStateWithLifecycle()
@@ -73,6 +75,7 @@ fun HomeRoute(
         onFilterAllOff = viewModel::onFilterAllOff,
         onSearchWithFilter = viewModel::onCompleteFilter,
         onCloseFilter = viewModel::onCancelFilter,
+        onPolicyClick = onPolicyClick
     )
 }
 
@@ -87,6 +90,7 @@ fun HomeScreen(
     onFilterAllOff: () -> Unit,
     onSearchWithFilter: () -> Unit,
     onCloseFilter: () -> Unit,
+    onPolicyClick: (YouthPolicyUiModel) -> Unit,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         HomeHeader(
@@ -143,12 +147,14 @@ fun HomeScreen(
                             YouthPolicyCard(
                                 modifier = modifier,
                                 youthPolicy = youthPolicy,
+                                onPolicyClick = onPolicyClick
                             )
                         }
                         item {
                             if (youthPolicies.loadState.append is LoadState.Loading) {
                                 Column(
-                                    modifier = modifier.padding(top = 8.dp)
+                                    modifier = modifier
+                                        .padding(top = 8.dp)
                                         .fillMaxWidth()
                                         .background(
                                             Color.Transparent,
@@ -167,6 +173,7 @@ fun HomeScreen(
             }
         }
     }
+    TrackScreenViewEvent(screenName = "home")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -245,6 +252,7 @@ private fun HomeHeader(
 private fun YouthPolicyCard(
     modifier: Modifier,
     youthPolicy: YouthPolicyUiModel,
+    onPolicyClick: (YouthPolicyUiModel) -> Unit,
 ) {
     Card(
         modifier = modifier
@@ -257,8 +265,11 @@ private fun YouthPolicyCard(
                 color = Color(0x1A000000),
                 blurRadius = 4.dp,
                 spreadRadius = 2.dp,
-                borderRadius = 10.dp
-            ),
+                borderRadius = 10.dp,
+            )
+            .clickable {
+                onPolicyClick(youthPolicy)
+            },
     ) {
         ConstraintLayout(
             modifier = modifier
@@ -358,9 +369,9 @@ private fun YouthPolicyCard(
                             top.linkTo(parent.top)
                         },
                     ),
-                painter = painterResource(id = R.drawable.ic_home_thumbnail_example),
-                contentDescription = "임시",
-            ) //TODO("이미지 변경")
+                painter = painterResource(id = youthPolicy.classification.drawableResId),
+                contentDescription = stringResource(R.string.policy_classification_image),
+            )
         }
     }
 }

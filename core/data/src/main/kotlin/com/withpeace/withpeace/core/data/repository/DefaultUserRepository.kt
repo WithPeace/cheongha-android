@@ -3,6 +3,9 @@ package com.withpeace.withpeace.core.data.repository
 import android.content.Context
 import android.net.Uri
 import com.skydoves.sandwich.suspendMapSuccess
+import com.withpeace.withpeace.core.analytics.AnalyticsEvent
+import com.withpeace.withpeace.core.analytics.AnalyticsHelper
+import com.withpeace.withpeace.core.data.analytics.event
 import com.withpeace.withpeace.core.data.mapper.toDomain
 import com.withpeace.withpeace.core.data.util.convertToFile
 import com.withpeace.withpeace.core.data.util.handleApiFailure
@@ -20,11 +23,9 @@ import com.withpeace.withpeace.core.domain.repository.UserRepository
 import com.withpeace.withpeace.core.network.di.request.NicknameRequest
 import com.withpeace.withpeace.core.network.di.service.UserService
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -37,6 +38,7 @@ class DefaultUserRepository @Inject constructor(
     private val userService: UserService,
     private val tokenPreferenceDataSource: TokenPreferenceDataSource,
     private val userPreferenceDataSource: UserPreferenceDataSource,
+    private val analyticsHelper: AnalyticsHelper,
 ) : UserRepository {
     override fun getProfile(
         onError: suspend (CheonghaError) -> Unit,
@@ -70,12 +72,12 @@ class DefaultUserRepository @Inject constructor(
             tokenPreferenceDataSource.updateAccessToken(data.accessToken)
             tokenPreferenceDataSource.updateRefreshToken(data.refreshToken)
             emit(Unit)
+            analyticsHelper.event(AnalyticsEvent.Type.SIGN_UP)
         }.handleApiFailure(onError)
     }
 
-    override suspend fun getCurrentUserId(): Long = withContext(Dispatchers.IO) {
+    override suspend fun getCurrentUserId(): Long =
         userPreferenceDataSource.userId.firstOrNull() ?: throw IllegalStateException("로그인 되있지 않아요")
-    }
 
     override fun updateProfile(
         nickname: String,
@@ -138,6 +140,7 @@ class DefaultUserRepository @Inject constructor(
                     tokenPreferenceDataSource.removeAll()
                     userPreferenceDataSource.removeAll()
                     emit(Unit)
+                    analyticsHelper.event(AnalyticsEvent.Type.WITHDRAW)
                 } else {
                     onError(ResponseError.UNKNOWN_ERROR)
                 }
@@ -149,6 +152,7 @@ class DefaultUserRepository @Inject constructor(
             tokenPreferenceDataSource.removeAll()
             userPreferenceDataSource.removeAll()
             emit(Unit)
+            analyticsHelper.event(AnalyticsEvent.Type.LOGOUT)
         }.handleApiFailure(onError)
     }
 

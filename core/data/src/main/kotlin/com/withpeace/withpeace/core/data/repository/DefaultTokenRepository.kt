@@ -1,6 +1,10 @@
 package com.withpeace.withpeace.core.data.repository
 
+import android.util.Log
 import com.skydoves.sandwich.suspendMapSuccess
+import com.withpeace.withpeace.core.analytics.AnalyticsEvent
+import com.withpeace.withpeace.core.analytics.AnalyticsHelper
+import com.withpeace.withpeace.core.data.analytics.event
 import com.withpeace.withpeace.core.data.mapper.roleToDomain
 import com.withpeace.withpeace.core.data.util.handleApiFailure
 import com.withpeace.withpeace.core.datastore.dataStore.token.TokenPreferenceDataSource
@@ -10,17 +14,16 @@ import com.withpeace.withpeace.core.domain.model.role.Role
 import com.withpeace.withpeace.core.domain.repository.TokenRepository
 import com.withpeace.withpeace.core.network.di.response.LoginResponse
 import com.withpeace.withpeace.core.network.di.service.AuthService
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class DefaultTokenRepository @Inject constructor(
     private val tokenPreferenceDataSource: TokenPreferenceDataSource,
     private val userPreferenceDataSource: UserPreferenceDataSource,
     private val authService: AuthService,
+    private val analyticsHelper: AnalyticsHelper,
 ) : TokenRepository {
     override suspend fun isLogin(): Boolean {
         val token = tokenPreferenceDataSource.accessToken.firstOrNull()
@@ -36,8 +39,9 @@ class DefaultTokenRepository @Inject constructor(
             val data = this.data
             saveLocalLoginInfo(data)
             emit(data.role.roleToDomain())
+            analyticsHelper.event(AnalyticsEvent.Type.LOGIN)
         }.handleApiFailure(onError)
-    }.flowOn(Dispatchers.IO)
+    }
 
     private suspend fun saveLocalLoginInfo(data: LoginResponse) {
         tokenPreferenceDataSource.updateAccessToken(data.tokenResponse.accessToken)

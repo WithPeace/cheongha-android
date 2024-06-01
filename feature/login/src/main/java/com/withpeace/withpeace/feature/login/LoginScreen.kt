@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.withpeace.withpeace.core.analytics.LocalAnalyticsHelper
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.googlelogin.GoogleLoginManager
 import kotlinx.coroutines.launch
@@ -85,7 +86,6 @@ fun LoginScreen(
 ) {
     val googleLoginManager = GoogleLoginManager(context = LocalContext.current)
     val coroutineScope = rememberCoroutineScope()
-
     Column(
         modifier = Modifier
             .fillMaxSize()

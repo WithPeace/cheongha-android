@@ -42,9 +42,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.feature.home.R
-import com.withpeace.withpeace.feature.home.filtersetting.uistate.ClassificationUiModel
+import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.feature.home.filtersetting.uistate.FilterListUiState
-import com.withpeace.withpeace.feature.home.filtersetting.uistate.RegionUiModel
+import com.withpeace.withpeace.core.ui.policy.RegionUiModel
 import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
 
 @Composable
@@ -170,7 +170,7 @@ private fun ScrollableFilterSection(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = stringResource(id = it.resId),
+                        text = stringResource(id = it.stringResId),
                         style = WithpeaceTheme.typography.body,
                         color = WithpeaceTheme.colors.SystemBlack,
                     )

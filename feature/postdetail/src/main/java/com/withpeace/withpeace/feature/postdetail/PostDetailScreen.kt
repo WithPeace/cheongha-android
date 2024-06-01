@@ -58,6 +58,7 @@ import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 import com.withpeace.withpeace.core.ui.post.PostUserUiModel
 import com.withpeace.withpeace.core.ui.post.RegisterPostUiModel
 import com.withpeace.withpeace.core.ui.post.ReportTypeUiModel
+import com.withpeace.withpeace.core.ui.post.analytics.TrackPostDetailScreenViewEvent
 import com.withpeace.withpeace.feature.postdetail.R.drawable
 import com.withpeace.withpeace.feature.postdetail.R.string
 import java.time.LocalDateTime
@@ -204,6 +205,11 @@ fun PostDetailScreen(
                 }
 
                 is PostDetailUiState.Success -> {
+                    TrackPostDetailScreenViewEvent(
+                        screenName = "post_detail",
+                        postId = postUiState.postDetail.id,
+                        postTopicUiModel = postUiState.postDetail.postTopic,
+                    )
 
                     LazyColumn(state = lazyListState) {
                         PostSection(
