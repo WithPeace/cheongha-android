@@ -1,5 +1,8 @@
 package com.withpeace.withpeace.feature.policydetail
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -13,7 +16,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,7 +49,6 @@ fun PolicyDetailRoute(
         onClickBackButton = onClickBackButton,
         policy = policy,
     )
-
 }
 
 @Composable
@@ -50,19 +57,31 @@ fun PolicyDetailScreen(
     modifier: Modifier = Modifier,
     onClickBackButton: () -> Unit,
 ) {
-    //TODO 화면 로깅
     val scrollState = rememberScrollState()
+    val position = remember {
+        mutableStateOf(0)
+    }
+    val visibility = remember {
+        derivedStateOf {
+            scrollState.value >= position.value
+        }
+    }
     Column(modifier = modifier.fillMaxSize()) {
         WithPeaceBackButtonTopAppBar(
             onClickBackButton = onClickBackButton,
             title = {
-                //TODO(스크롤에 따라 투명도 조절)
-                Text(
-                    text = policy.title,
-                    style = WithpeaceTheme.typography.title1,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                AnimatedVisibility(
+                    visible = visibility.value, modifier = modifier,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                ) {
+                    Text(
+                        text = policy.title,
+                        style = WithpeaceTheme.typography.title1,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             },
         )
         HorizontalDivider(
@@ -81,7 +100,10 @@ fun PolicyDetailScreen(
                 modifier = modifier
                     .fillMaxWidth()
                     .height(4.dp)
-                    .background(WithpeaceTheme.colors.SystemGray3),
+                    .background(WithpeaceTheme.colors.SystemGray3)
+                    .onGloballyPositioned {
+                        position.value = it.positionInParent().y.toInt()
+                    },
             )
             PolicySummarySection(policy = policy)
             Spacer(
