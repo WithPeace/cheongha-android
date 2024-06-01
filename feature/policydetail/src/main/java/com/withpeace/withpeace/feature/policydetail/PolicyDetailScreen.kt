@@ -28,6 +28,7 @@ import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
 import com.withpeace.withpeace.core.ui.policy.YouthPolicyUiModel
 import com.withpeace.withpeace.feature.policydetail.component.DescriptionTitleAndContent
+import com.withpeace.withpeace.feature.policydetail.component.HyperLinkDescriptionTitleAndContent
 
 @Composable
 fun PolicyDetailRoute(
@@ -90,6 +91,13 @@ fun PolicyDetailScreen(
                     .background(WithpeaceTheme.colors.SystemGray3),
             )
             ApplyQualificationSection(policy = policy)
+            Spacer(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(4.dp)
+                    .background(WithpeaceTheme.colors.SystemGray3),
+            )
+            ApplicationGuideSection(policy = policy)
         }
     }
 }
@@ -197,12 +205,65 @@ fun ApplyQualificationSection(
             title = "거주지 및 소득",
             content = policy.residenceAndIncome,
         )
-
+        DescriptionTitleAndContent(
+            modifier = modifier,
+            title = "거주지 및 소득",
+            content = policy.residenceAndIncome,
+        )
+        DescriptionTitleAndContent(modifier = modifier, title = "학력", content = policy.education)
+        DescriptionTitleAndContent(
+            modifier = modifier,
+            title = "특화 분야",
+            content = policy.specialization,
+        )
+        DescriptionTitleAndContent(
+            modifier = modifier,
+            title = "추가 단서 사항",
+            content = policy.additionalNotes,
+        )
+        DescriptionTitleAndContent(
+            modifier = modifier,
+            title = "참여 제한 대상",
+            content = policy.participationRestrictions,
+        )
+        Spacer(modifier = modifier.height(8.dp))
     }
 }
 
 @Composable
-fun ApplicationGuideSection() {
+fun ApplicationGuideSection(
+    modifier: Modifier = Modifier,
+    policy: YouthPolicyUiModel,
+) {
+    Column(modifier = modifier.padding(horizontal = 24.dp)) {
+        Spacer(modifier = modifier.height(24.dp))
+        Text(
+            text = "이렇게 신청하세요",
+            style = WithpeaceTheme.typography.title2,
+            color = WithpeaceTheme.colors.SystemBlack,
+        )
+        Spacer(modifier = modifier.height(24.dp))
+        DescriptionTitleAndContent(
+            modifier = modifier,
+            title = "신청 절차",
+            content = policy.applicationProcess,
+        )
+        DescriptionTitleAndContent(
+            modifier = modifier,
+            title = "심사 및 발표",
+            content = policy.screeningAndAnnouncement,
+        )
+        HyperLinkDescriptionTitleAndContent(
+            modifier = modifier,
+            title = "신청 사이트",
+            content = policy.applicationSite,
+        )
+        DescriptionTitleAndContent(
+            modifier = modifier,
+            title = "제출 서류",
+            content = policy.submissionDocuments,
+        )
+    }
 }
 
 @Preview(showBackground = true)

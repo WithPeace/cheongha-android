@@ -2,6 +2,7 @@ package com.withpeace.withpeace.feature.policydetail.component
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,15 +20,22 @@ internal fun DescriptionTitleAndContent(
         style = WithpeaceTheme.typography.bold16Sp,
         color = WithpeaceTheme.colors.SystemBlack,
     )
+
     Spacer(modifier = modifier.height(8.dp))
-    if (content.isBlank()) {
-        Spacer(modifier = modifier.height(20.dp))
-    } else {
+    if (content.isBlank() || content == "null") {
         Text(
-            text = content,
+            text = "-",
             style = WithpeaceTheme.typography.policyDetailCaption,
             color = WithpeaceTheme.colors.SystemBlack,
         )
+    } else {
+        SelectionContainer {
+            Text(
+                text = content,
+                style = WithpeaceTheme.typography.policyDetailCaption,
+                color = WithpeaceTheme.colors.SystemBlack,
+            )
+        }
     }
     Spacer(modifier = modifier.height(16.dp))
 }
