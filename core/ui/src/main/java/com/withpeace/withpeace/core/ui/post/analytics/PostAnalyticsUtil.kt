@@ -21,7 +21,11 @@ fun AnalyticsHelper.topicClick(topic: PostTopicUiModel) {
     )
 }
 
-fun AnalyticsHelper.logPostDetailScreenView(screenName: String, postId: String, postTopic: String) {
+private fun AnalyticsHelper.logPostDetailScreenView(
+    screenName: String,
+    postId: String,
+    postTopic: String,
+) {
     logEvent(
         AnalyticsEvent(
             type = AnalyticsEvent.Type.SCREEN_VIEW.eventTitle,

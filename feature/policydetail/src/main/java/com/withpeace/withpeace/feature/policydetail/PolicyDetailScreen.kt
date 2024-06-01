@@ -35,6 +35,7 @@ import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
 import com.withpeace.withpeace.core.ui.policy.YouthPolicyUiModel
+import com.withpeace.withpeace.core.ui.policy.analytics.TrackPolicyDetailScreenViewEvent
 import com.withpeace.withpeace.feature.policydetail.component.DescriptionTitleAndContent
 import com.withpeace.withpeace.feature.policydetail.component.HyperLinkDescriptionTitleAndContent
 
@@ -122,6 +123,11 @@ fun PolicyDetailScreen(
             ApplicationGuideSection(policy = policy)
         }
     }
+    TrackPolicyDetailScreenViewEvent(
+        screenName = "policy_detail",
+        policyId = policy.id,
+        policyTitle = policy.title,
+    )
 }
 
 @Composable
