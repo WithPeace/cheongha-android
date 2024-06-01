@@ -3,16 +3,20 @@ package com.withpeace.withpeace.core.ui.policy
 import androidx.annotation.DrawableRes
 import com.withpeace.withpeace.core.domain.model.policy.PolicyClassification
 import com.withpeace.withpeace.core.domain.model.policy.YouthPolicy
-import com.withpeace.withpeace.core.ui.R
+import com.withpeace.withpeace.core.ui.serializable.parseNavigationValue
+import com.withpeace.withpeace.core.ui.serializable.toNavigationValue
+import java.io.Serializable
 
+@kotlinx.serialization.Serializable
 data class YouthPolicyUiModel(
     val id: String,
     val title: String,
     val content: String,
     val region: RegionUiModel,
     val ageInfo: String,
-    @DrawableRes val classification: Int,
+    @DrawableRes val classification: ClassificationUiModel,
 
+    val applicationDetails: String,
     val residenceAndIncome: String,
     val education: String,
     val specialization: String,
@@ -21,8 +25,16 @@ data class YouthPolicyUiModel(
     val applicationProcess: String,
     val screeningAndAnnouncement: String,
     val applicationSite: String,
-    val submissionDocuments: String
-)
+    val submissionDocuments: String,
+): Serializable {
+    companion object {
+        fun toNavigationValue(value: YouthPolicyUiModel): String =
+            value.toNavigationValue()
+
+        fun parseNavigationValue(value: String): YouthPolicyUiModel =
+            value.parseNavigationValue()
+    }
+}
 
 fun YouthPolicy.toUiModel(): YouthPolicyUiModel {
     return YouthPolicyUiModel(
@@ -31,15 +43,9 @@ fun YouthPolicy.toUiModel(): YouthPolicyUiModel {
         content = introduce,
         region = region.toUiModel(),
         ageInfo = ageInfo,
-        classification = when (policyClassification) {
-            PolicyClassification.JOB -> R.drawable.ic_policy_job
-            PolicyClassification.EDUCATION -> R.drawable.ic_policy_eductaion
-            PolicyClassification.RESIDENT -> R.drawable.ic_policy_resident
-            PolicyClassification.PARTICIPATION_AND_RIGHT -> R.drawable.ic_policy_participation_right
-            PolicyClassification.WELFARE_AND_CULTURE -> R.drawable.ic_policy_welfare_culture
-            else -> 0
-        },
+        classification = policyClassification.toUiModel(),
 
+        applicationDetails = applicationDetails,
         residenceAndIncome = residenceAndIncome,
         education = education,
         specialization = specialization,
@@ -48,7 +54,7 @@ fun YouthPolicy.toUiModel(): YouthPolicyUiModel {
         applicationProcess = applicationProcess,
         screeningAndAnnouncement = screeningAndAnnouncement,
         applicationSite = applicationSite,
-        submissionDocuments = submissionDocuments
+        submissionDocuments = submissionDocuments,
     )
 }
 
@@ -61,6 +67,7 @@ fun YouthPolicyUiModel.toDomain(): YouthPolicy {
         policyClassification = PolicyClassification.JOB, // Assuming this is a default or fixed value
         ageInfo = ageInfo,
 
+        applicationDetails = applicationDetails,
         residenceAndIncome = residenceAndIncome,
         education = education,
         specialization = specialization,
@@ -69,6 +76,6 @@ fun YouthPolicyUiModel.toDomain(): YouthPolicy {
         applicationProcess = applicationProcess,
         screeningAndAnnouncement = screeningAndAnnouncement,
         applicationSite = applicationSite,
-        submissionDocuments = submissionDocuments
+        submissionDocuments = submissionDocuments,
     )
 }

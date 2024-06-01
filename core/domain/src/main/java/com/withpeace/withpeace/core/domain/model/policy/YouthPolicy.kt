@@ -8,6 +8,7 @@ data class YouthPolicy(
     val policyClassification: PolicyClassification,
     val ageInfo: String,
 
+    val applicationDetails: String,
     val residenceAndIncome: String,
     val education: String,
     val specialization: String,
@@ -16,6 +17,5 @@ data class YouthPolicy(
     val applicationProcess: String,
     val screeningAndAnnouncement: String,
     val applicationSite: String,
-    val submissionDocuments: String
-
+    val submissionDocuments: String,
 )

@@ -29,6 +29,9 @@ data class YouthPolicyEntity(
     @PropertyElement(name = "ageInfo", writeAsCData = true)
     val ageInfo: String?,
 
+
+    @PropertyElement(name = "sporCn", writeAsCData = true)
+    val applicationDetails: String?,
     @PropertyElement(name = "prcpCn", writeAsCData = true)
     val residenceAndIncome: String?,
     @PropertyElement(name = "accrRqisCn", writeAsCData = true)

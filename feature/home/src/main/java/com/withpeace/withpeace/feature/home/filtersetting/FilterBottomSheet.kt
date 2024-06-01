@@ -170,7 +170,7 @@ private fun ScrollableFilterSection(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = stringResource(id = it.resId),
+                        text = stringResource(id = it.stringResId),
                         style = WithpeaceTheme.typography.body,
                         color = WithpeaceTheme.colors.SystemBlack,
                     )

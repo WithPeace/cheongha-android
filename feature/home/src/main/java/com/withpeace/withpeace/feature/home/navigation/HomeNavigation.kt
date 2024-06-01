@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.withpeace.withpeace.core.ui.policy.YouthPolicyUiModel
 import com.withpeace.withpeace.feature.home.HomeRoute
 
 const val HOME_ROUTE = "homeRoute"
@@ -14,7 +15,7 @@ fun NavController.navigateHome(navOptions: NavOptions? = null) {
 
 fun NavGraphBuilder.homeNavGraph(
     onShowSnackBar: (message: String) -> Unit,
-    onPolicyClick: () -> Unit,
+    onPolicyClick: (YouthPolicyUiModel) -> Unit,
 ) {
     composable(route = HOME_ROUTE) {
         HomeRoute(
