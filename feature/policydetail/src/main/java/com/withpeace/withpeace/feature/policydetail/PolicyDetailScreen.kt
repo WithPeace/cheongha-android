@@ -81,6 +81,7 @@ fun PolicyDetailScreen(
                         style = WithpeaceTheme.typography.title1,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
+                        modifier = modifier.padding(end = 24.dp),
                     )
                 }
             },
