@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Card
@@ -51,11 +50,11 @@ import androidx.paging.compose.itemKey
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.util.dropShadow
 import com.withpeace.withpeace.core.ui.analytics.TrackScreenViewEvent
-import com.withpeace.withpeace.feature.home.filtersetting.FilterBottomSheet
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
-import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
 import com.withpeace.withpeace.core.ui.policy.YouthPolicyUiModel
+import com.withpeace.withpeace.feature.home.filtersetting.FilterBottomSheet
+import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -194,13 +193,11 @@ private fun HomeHeader(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 10.dp, horizontal = 24.dp),
+            .padding(horizontal = 24.dp).padding(bottom = 16.dp),
     ) {
         Image(
-            modifier = modifier
-                .size(36.dp)
-                .clip(CircleShape)
-                .align(Alignment.Center),
+            modifier = modifier.align(Alignment.BottomCenter)
+                .size(47.dp),
             painter = painterResource(id = R.drawable.home_logo),
             contentDescription = stringResource(R.string.cheongha_logo),
         )
