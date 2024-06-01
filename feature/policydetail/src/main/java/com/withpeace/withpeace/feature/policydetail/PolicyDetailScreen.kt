@@ -64,7 +64,7 @@ fun PolicyDetailScreen(
     }
     val visibility = remember {
         derivedStateOf {
-            scrollState.value >= position.value
+            scrollState.value >= position.intValue
         }
     }
     Column(modifier = modifier.fillMaxSize()) {
@@ -104,7 +104,7 @@ fun PolicyDetailScreen(
                     .height(4.dp)
                     .background(WithpeaceTheme.colors.SystemGray3)
                     .onGloballyPositioned {
-                        position.value = it.positionInParent().y.toInt()
+                        position.intValue = it.positionInParent().y.toInt()
                     },
             )
             PolicySummarySection(policy = policy)
@@ -122,6 +122,13 @@ fun PolicyDetailScreen(
                     .background(WithpeaceTheme.colors.SystemGray3),
             )
             ApplicationGuideSection(policy = policy)
+            Spacer(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(4.dp)
+                    .background(WithpeaceTheme.colors.SystemGray3),
+            )
+            AdditionalInfoSection(policy = policy)
         }
     }
     TrackPolicyDetailScreenViewEvent(
@@ -292,6 +299,49 @@ fun ApplicationGuideSection(
             title = "제출 서류",
             content = policy.submissionDocuments,
         )
+        Spacer(modifier = modifier.height(8.dp))
+    }
+}
+
+@Composable
+fun AdditionalInfoSection(
+    modifier: Modifier = Modifier,
+    policy: YouthPolicyUiModel,
+) {
+    Column(modifier = modifier.padding(horizontal = 24.dp)) {
+        Spacer(modifier = modifier.height(24.dp))
+        Text(
+            text = "추가 정보를 확인해 보세요",
+            style = WithpeaceTheme.typography.title2,
+            color = WithpeaceTheme.colors.SystemBlack,
+        )
+        Spacer(modifier = modifier.height(24.dp))
+        DescriptionTitleAndContent(
+            modifier = modifier,
+            title = "기타 유익 정보",
+            content = policy.additionalUsefulInformation,
+        )
+        DescriptionTitleAndContent(
+            modifier = modifier,
+            title = "주관 기관",
+            content = policy.supervisingAuthority,
+        )
+        DescriptionTitleAndContent(
+            modifier = modifier,
+            title = "운영 기관",
+            content = policy.operatingOrganization,
+        )
+        HyperLinkDescriptionTitleAndContent(
+            modifier = modifier,
+            title = "사업관련 참고 사이트 1",
+            content = policy.businessRelatedReferenceSite1,
+        )
+        HyperLinkDescriptionTitleAndContent(
+            modifier = modifier,
+            title = "사업관련 참고 사이트 2",
+            content = policy.businessRelatedReferenceSite2,
+        )
+        Spacer(modifier = modifier.height(24.dp))
     }
 }
 
@@ -317,6 +367,11 @@ fun PolicyDetailPreview() {
                 applicationSite = "consul",
                 submissionDocuments = "an",
                 classification = ClassificationUiModel.JOB,
+                additionalUsefulInformation = "lorem",
+                supervisingAuthority = "congue",
+                operatingOrganization = "brute",
+                businessRelatedReferenceSite1 = "noluisse",
+                businessRelatedReferenceSite2 = "quo",
             ),
         ) {
         }
