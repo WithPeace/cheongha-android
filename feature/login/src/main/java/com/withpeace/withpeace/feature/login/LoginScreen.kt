@@ -33,7 +33,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.withpeace.withpeace.core.analytics.LocalAnalyticsHelper
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.googlelogin.GoogleLoginManager
 import kotlinx.coroutines.launch
@@ -99,7 +98,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(152.dp))
             Image(
                 modifier = Modifier.size(150.dp),
-                painter = painterResource(id = R.drawable.app_logo),
+                painter = painterResource(id = com.withpeace.withpeace.core.ui.R.drawable.ic_app_logo),
                 contentDescription = stringResource(R.string.app_logo_content_description),
             )
             Spacer(modifier = Modifier.height(40.dp))

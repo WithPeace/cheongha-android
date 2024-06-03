@@ -169,4 +169,9 @@ data class WithPeaceTypography(
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
         ),
+    val semiBold16Sp: TextStyle = TextStyle(
+        fontFamily = PretendardFont,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 16.sp,
+    ),
 )

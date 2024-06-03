@@ -11,7 +11,7 @@ const val PRIVACY_POLICY_ROUTE = "privacy_policy_route"
 fun NavController.navigateToPrivacyPolicy(navOptions: NavOptions? = null) =
     navigate(PRIVACY_POLICY_ROUTE, navOptions)
 
-fun NavGraphBuilder.policyConsentGraph(
+fun NavGraphBuilder.privacyPolicyGraph(
     onShowSnackBar: (String) -> Unit,
 ) {
     composable(PRIVACY_POLICY_ROUTE) {

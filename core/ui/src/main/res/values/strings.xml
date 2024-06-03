@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Common   -->
+    <string name="cheongha_logo">청하 로고</string>
+
     <!--  PostTopicUiState   -->
     <string name="free">자유</string>
     <string name="information">정보</string>

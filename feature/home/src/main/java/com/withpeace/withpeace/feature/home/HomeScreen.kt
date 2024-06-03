@@ -198,7 +198,7 @@ private fun HomeHeader(
         Image(
             modifier = modifier.align(Alignment.BottomCenter)
                 .size(47.dp),
-            painter = painterResource(id = R.drawable.home_logo),
+            painter = painterResource(id = R.drawable.ic_home_logo),
             contentDescription = stringResource(R.string.cheongha_logo),
         )
         Image(
