@@ -7,4 +7,5 @@ android {
 }
 
 dependencies {
+    implementation(libs.text.flow)
 }

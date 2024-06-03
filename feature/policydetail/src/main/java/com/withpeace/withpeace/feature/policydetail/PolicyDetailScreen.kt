@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
@@ -24,9 +25,12 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -38,6 +42,8 @@ import com.withpeace.withpeace.core.ui.policy.YouthPolicyUiModel
 import com.withpeace.withpeace.core.ui.policy.analytics.TrackPolicyDetailScreenViewEvent
 import com.withpeace.withpeace.feature.policydetail.component.DescriptionTitleAndContent
 import com.withpeace.withpeace.feature.policydetail.component.HyperLinkDescriptionTitleAndContent
+import eu.wewox.textflow.TextFlow
+import eu.wewox.textflow.TextFlowObstacleAlignment
 
 @Composable
 fun PolicyDetailRoute(
@@ -147,7 +153,6 @@ private fun TitleSection(
         modifier = modifier.padding(horizontal = 24.dp),
     ) {
         Spacer(modifier = modifier.height(24.dp))
-        // TODO(Tobbar 스크롤 체크)
         Text(
             text = policy.title,
             style = WithpeaceTheme.typography.title1,
@@ -158,39 +163,27 @@ private fun TitleSection(
                 .fillMaxWidth()
                 .height(16.dp),
         )
-        ConstraintLayout(modifier = modifier.fillMaxWidth()) {
-            val (content, image) = createRefs()
-            Text(
-                modifier = modifier.constrainAs(
-                    ref = content,
-                    constrainBlock = {
-                        width = Dimension.fillToConstraints
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(image.start)
-                    },
-                ),
-                overflow = TextOverflow.Ellipsis,
-                text = policy.content + policy.content + policy.content,
-                maxLines = 2,
-                style = WithpeaceTheme.typography.body,
-                color = WithpeaceTheme.colors.SystemBlack,
-            )
-            Image(
-                modifier = modifier
-                    .constrainAs(
-                        ref = image,
-                        constrainBlock = {
-                            top.linkTo(parent.top)
-                            start.linkTo(content.end)
-                            end.linkTo(parent.end)
-                        },
-                    )
-                    .padding(start = 16.dp),
-                painter = painterResource(policy.classification.drawableResId),
-                contentDescription = "정책 분류 이미지",
-            )
-        }
+        TextFlow(text = policy.content,
+            style = WithpeaceTheme.typography.body.merge(
+                TextStyle(
+                    lineHeight = 21.sp,
+                    letterSpacing = 0.16.sp,
+                    lineHeightStyle = LineHeightStyle(
+                        alignment = LineHeightStyle.Alignment.Center,
+                        trim = LineHeightStyle.Trim.None,
+                    ),
+                )
+            ),
+            modifier = Modifier.fillMaxWidth(),
+            obstacleAlignment = TextFlowObstacleAlignment.TopEnd,
+            obstacleContent = {
+                Image(
+                    modifier = modifier.padding(start = 16.dp),
+                    painter = painterResource(policy.classification.drawableResId),
+                    contentDescription = "정책 분류 이미지",
+                )
+            }
+        )
         Spacer(modifier = modifier.height(16.dp))
     }
 }
@@ -353,7 +346,7 @@ fun PolicyDetailPreview() {
             policy = YouthPolicyUiModel(
                 id = "sociosqu",
                 title = "facilis",
-                content = "civibuscivibuscivibuscivibuscivibuscivibuscivibuscivibuscivibuscivibuscivibuscivibus",
+                content = "가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바",
                 region = RegionUiModel.대구,
                 ageInfo = "cum",
                 applicationDetails = "지원내용들.....",
