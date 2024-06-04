@@ -3,7 +3,6 @@ package com.withpeace.withpeace.core.analytics
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,10 +18,8 @@ internal abstract class AnalyticsModule {
             prod: FirebaseAnalyticsHelper,
             debug: StubAnalyticsHelper,
         ): AnalyticsHelper {
-            // return if (BuildConfig.DEBUG) debug
-            // else
-            //TODO("수정")
-                return prod
+            return if (BuildConfig.DEBUG) debug
+            else return prod
         }
 
         @Provides
