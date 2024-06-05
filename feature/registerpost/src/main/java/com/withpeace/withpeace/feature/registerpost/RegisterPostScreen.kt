@@ -262,7 +262,6 @@ fun RegisterPostTopAppBar(
 ) {
     Column {
         WithPeaceBackButtonTopAppBar(
-            modifier = modifier.padding(end = 24.dp),
             onClickBackButton = onClickBackButton,
             title = {
                 Text(
@@ -272,6 +271,7 @@ fun RegisterPostTopAppBar(
             },
             actions = {
                 WithPeaceCompleteButton(
+                    modifier = modifier.padding(end = 24.dp),
                     onClick = onCompleteRegisterPost,
                     enabled = !isLoading,
                 )
