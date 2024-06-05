@@ -1,6 +1,7 @@
 package com.withpeace.withpeace.feature.policyconsent
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -42,14 +43,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.CheonghaCheckbox
+import com.withpeace.withpeace.core.ui.analytics.TrackScreenViewEvent
 import com.withpeace.withpeace.feature.policyconsent.uistate.PolicyConsentUiEvent
 import com.withpeace.withpeace.feature.policyconsent.uistate.PolicyConsentUiState
 
 @Composable
 fun PolicyConsentRoute(
     onShowSnackBar: (String) -> Unit,
-    onPrivacyPolicyClick: () -> Unit,
-    onTermsOfServiceClick: () -> Unit,
+    onShowPrivacyPolicyClick: () -> Unit,
+    onShowTermsOfServiceClick: () -> Unit,
     onSuccessToNext: () -> Unit,
     viewModel: PolicyConsentViewModel = hiltViewModel(),
 ) {
@@ -60,6 +62,8 @@ fun PolicyConsentRoute(
         onTermsOfServiceChecked = viewModel::onTermsOfServiceChecked,
         onAllChecked = viewModel::onAllChecked,
         onClickToNext = viewModel::checkToNext,
+        onShowPrivacyPolicyClick = onShowPrivacyPolicyClick,
+        onShowTermsOfServiceClick = onShowTermsOfServiceClick,
     )
 
     LaunchedEffect(key1 = viewModel.policyConsentEvent) {
@@ -81,6 +85,8 @@ fun PolicyConsentScreen(
     onTermsOfServiceChecked: (Boolean) -> Unit,
     onAllChecked: (Boolean) -> Unit,
     onClickToNext: () -> Unit,
+    onShowPrivacyPolicyClick: () -> Unit,
+    onShowTermsOfServiceClick: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -171,7 +177,10 @@ fun PolicyConsentScreen(
                 }
                 Text(
                     text = "보기",
-                    modifier = modifier.padding(start = 8.dp).align(Alignment.CenterVertically),
+                    modifier = modifier
+                        .padding(start = 8.dp)
+                        .align(Alignment.CenterVertically)
+                        .clickable { onShowTermsOfServiceClick() },
                     textDecoration = TextDecoration.Underline,
                     style = WithpeaceTheme.typography.caption,
                     color = WithpeaceTheme.colors.SystemGray2,
@@ -208,7 +217,10 @@ fun PolicyConsentScreen(
                 }
                 Text(
                     text = "보기",
-                    modifier = modifier.padding(start = 8.dp).align(Alignment.CenterVertically),
+                    modifier = modifier
+                        .padding(start = 8.dp)
+                        .align(Alignment.CenterVertically)
+                        .clickable { onShowPrivacyPolicyClick() },
                     textDecoration = TextDecoration.Underline,
                     style = WithpeaceTheme.typography.caption,
                     color = WithpeaceTheme.colors.SystemGray2,
@@ -217,6 +229,7 @@ fun PolicyConsentScreen(
         }
         NextButton(onClick = onClickToNext)
     }
+    TrackScreenViewEvent(screenName = "policy_consent")
 }
 
 @Composable
@@ -262,6 +275,8 @@ private fun PolicyConsentPreview() {
             onTermsOfServiceChecked = {},
             onAllChecked = {},
             onClickToNext = {},
+            onShowPrivacyPolicyClick = {},
+            onShowTermsOfServiceClick = {},
         )
     }
 }

@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId = "com.withpeace.withpeace"
         targetSdk = 34
-        versionCode = 2
+        versionCode = 3
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -20,7 +20,6 @@ android {
     }
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
             merges += "META-INF/LICENSE.md"
             merges += "META-INF/LICENSE-notice.md"
         }
@@ -61,4 +60,7 @@ dependencies {
     implementation(project(":core:analytics"))
     implementation(project(":core:designsystem"))
     testImplementation(project(":core:testing"))
+
+    implementation("com.google.android.play:app-update:2.1.0")
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
 }

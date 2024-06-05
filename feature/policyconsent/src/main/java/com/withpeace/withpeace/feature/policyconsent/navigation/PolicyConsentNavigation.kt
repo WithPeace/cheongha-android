@@ -13,15 +13,15 @@ fun NavController.navigateToPolicyConsent(navOptions: NavOptions? = null) =
 
 fun NavGraphBuilder.policyConsentGraph(
     onShowSnackBar: (String) -> Unit,
-    onPrivacyPolicyClick: () -> Unit,
-    onTermsOfServiceClick: () -> Unit,
+    onShowPrivacyPolicyClick: () -> Unit,
+    onShowTermsOfServiceClick: () -> Unit,
     onSuccessToNext: () -> Unit,
 ) {
     composable(POLICY_CONSENT_ROUTE) {
         PolicyConsentRoute(
             onShowSnackBar = onShowSnackBar,
-            onPrivacyPolicyClick = onPrivacyPolicyClick,
-            onTermsOfServiceClick = onTermsOfServiceClick,
+            onShowPrivacyPolicyClick = onShowPrivacyPolicyClick,
+            onShowTermsOfServiceClick = onShowTermsOfServiceClick,
             onSuccessToNext = onSuccessToNext,
         )
     }

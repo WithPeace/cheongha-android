@@ -13,11 +13,13 @@ fun NavController.navigateToTermsOfService(navOptions: NavOptions? = null) =
 
 fun NavGraphBuilder.termsOfServiceGraph(
     onShowSnackBar: (String) -> Unit,
+    onClickBackButton: () -> Unit,
 ) {
     composable(TERMS_OF_SERVICE_ROUTE) {
 
         TermsOfServiceRoute(
             onShowSnackBar = onShowSnackBar,
+            onClickBackButton = onClickBackButton,
         )
     }
 }

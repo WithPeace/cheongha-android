@@ -1,10 +1,12 @@
 package com.withpeace.withpeace.core.data.di
 
+import com.withpeace.withpeace.core.data.repository.DefaultAppUpdateRepository
 import com.withpeace.withpeace.core.data.repository.DefaultImageRepository
 import com.withpeace.withpeace.core.data.repository.DefaultPostRepository
 import com.withpeace.withpeace.core.data.repository.DefaultTokenRepository
 import com.withpeace.withpeace.core.data.repository.DefaultUserRepository
 import com.withpeace.withpeace.core.data.repository.DefaultYouthPolicyRepository
+import com.withpeace.withpeace.core.domain.repository.AppUpdateRepository
 import com.withpeace.withpeace.core.domain.repository.ImageRepository
 import com.withpeace.withpeace.core.domain.repository.PostRepository
 import com.withpeace.withpeace.core.domain.repository.TokenRepository
@@ -43,4 +45,10 @@ interface RepositoryModule {
     fun bindsYouthPolicyRepository(
         defaultYouthPolicyRepository: DefaultYouthPolicyRepository
     ): YouthPolicyRepository
+
+    @Binds
+    @Singleton
+    fun bindsAppUpdateRepository(
+        appUpdateRepository: DefaultAppUpdateRepository,
+    ): AppUpdateRepository
 }

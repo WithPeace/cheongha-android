@@ -74,15 +74,26 @@ fun WithpeaceNavHost(
             onSuccessToNext = {
                 navController.navigateSignUp()
             },
-            onTermsOfServiceClick = {
+            onShowTermsOfServiceClick = {
                 navController.navigateToTermsOfService()
             },
-            onPrivacyPolicyClick = {
+            onShowPrivacyPolicyClick = {
                 navController.navigateToPrivacyPolicy()
             },
         )
-        termsOfServiceGraph(onShowSnackBar = onShowSnackBar)
-        privacyPolicyGraph(onShowSnackBar = onShowSnackBar)
+        termsOfServiceGraph(
+            onShowSnackBar = onShowSnackBar,
+            onClickBackButton = {
+                navController.popBackStack()
+            },
+        )
+
+        privacyPolicyGraph(
+            onShowSnackBar = onShowSnackBar,
+            onClickBackButton = {
+                navController.popBackStack()
+            },
+        )
 
         signUpNavGraph(
             onShowSnackBar = onShowSnackBar,

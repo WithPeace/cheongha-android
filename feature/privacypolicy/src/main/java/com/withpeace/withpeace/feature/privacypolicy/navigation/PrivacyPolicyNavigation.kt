@@ -13,10 +13,12 @@ fun NavController.navigateToPrivacyPolicy(navOptions: NavOptions? = null) =
 
 fun NavGraphBuilder.privacyPolicyGraph(
     onShowSnackBar: (String) -> Unit,
+    onClickBackButton: () -> Unit,
 ) {
     composable(PRIVACY_POLICY_ROUTE) {
         PrivacyPolicyRoute(
             onShowSnackBar = onShowSnackBar,
+            onClickBackButton = onClickBackButton,
         )
     }
 }
