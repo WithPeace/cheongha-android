@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.core.ui.policy
 
+import android.annotation.SuppressLint
 import androidx.annotation.DrawableRes
 import com.withpeace.withpeace.core.domain.model.policy.PolicyClassification
 import com.withpeace.withpeace.core.domain.model.policy.YouthPolicy
@@ -7,6 +8,7 @@ import com.withpeace.withpeace.core.ui.serializable.parseNavigationValue
 import com.withpeace.withpeace.core.ui.serializable.toNavigationValue
 import java.io.Serializable
 
+@SuppressLint("SupportAnnotationUsage")
 @kotlinx.serialization.Serializable
 data class YouthPolicyUiModel(
     val id: String,
@@ -26,6 +28,13 @@ data class YouthPolicyUiModel(
     val screeningAndAnnouncement: String,
     val applicationSite: String,
     val submissionDocuments: String,
+
+    //추가 정보를 확인해 보세요
+    val additionalUsefulInformation: String,
+    val supervisingAuthority: String,
+    val operatingOrganization: String,
+    val businessRelatedReferenceSite1: String,
+    val businessRelatedReferenceSite2: String,
 ): Serializable {
     companion object {
         fun toNavigationValue(value: YouthPolicyUiModel): String =
@@ -55,6 +64,11 @@ fun YouthPolicy.toUiModel(): YouthPolicyUiModel {
         screeningAndAnnouncement = screeningAndAnnouncement,
         applicationSite = applicationSite,
         submissionDocuments = submissionDocuments,
+        additionalUsefulInformation = additionalUsefulInformation,
+        supervisingAuthority = supervisingAuthority,
+        operatingOrganization = operatingOrganization,
+        businessRelatedReferenceSite1 = businessRelatedReferenceSite1,
+        businessRelatedReferenceSite2 = businessRelatedReferenceSite2,
     )
 }
 
@@ -77,5 +91,10 @@ fun YouthPolicyUiModel.toDomain(): YouthPolicy {
         screeningAndAnnouncement = screeningAndAnnouncement,
         applicationSite = applicationSite,
         submissionDocuments = submissionDocuments,
+        additionalUsefulInformation = additionalUsefulInformation,
+        supervisingAuthority = supervisingAuthority,
+        operatingOrganization = operatingOrganization,
+        businessRelatedReferenceSite1 = businessRelatedReferenceSite1,
+        businessRelatedReferenceSite2 = businessRelatedReferenceSite2,
     )
 }

@@ -71,6 +71,8 @@ firebasePlugin = "4.3.15"
 firebaseBom = "32.7.4"
 firebaseCrashlytics = "2.9.9"
 
+textflow = "1.1.2"
+
 [libraries]
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 android-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "androidDesugarJdkLibs" }
@@ -132,6 +134,7 @@ skydoves-landscapist-placeholder = { group = "com.github.skydoves", name = "land
 landscapist-animation = { group = "com.github.skydoves", name = "landscapist-animation" }
 compose-shimmer = { group = "com.valentinilk.shimmer", name = "compose-shimmer", version.ref = "composeShimmer" }
 skydoves-sandwich = { group = "com.github.skydoves", name = "sandwich", version.ref = "sandwich" }
+text-flow = { group = "io.github.oleksandrbalan", name = "textflow", version.ref = "textflow" }
 
 truth = { group = "com.google.truth", name = "truth", version.ref = "truth" }
 junit4 = { group = "junit", name = "junit", version.ref = "junit4" }

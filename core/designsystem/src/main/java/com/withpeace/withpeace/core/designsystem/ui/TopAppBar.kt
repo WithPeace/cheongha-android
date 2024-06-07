@@ -28,7 +28,6 @@ fun WithPeaceBackButtonTopAppBar(
 ) {
     TopAppBar(
         title = title,
-        modifier = modifier.padding(end = 24.dp),
         navigationIcon = {
             Icon(
                 modifier =

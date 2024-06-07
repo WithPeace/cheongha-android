@@ -49,5 +49,18 @@ data class YouthPolicyEntity(
     @PropertyElement(name = "rqutUrla", writeAsCData = true)
     val applicationSite: String?,
     @PropertyElement(name = "pstnPaprCn", writeAsCData = true)
-    val submissionDocuments: String?
+    val submissionDocuments: String?,
+
+    @PropertyElement(name = "etct", writeAsCData = true)
+    val etc: String?, // 기타 유익 정보
+    @PropertyElement(name = "mngtMson", writeAsCData = true)
+    val managingInstitution: String?, // 주관 기관
+    @PropertyElement(name = "cnsgNmor", writeAsCData = true)
+    val operatingOrganization: String?, // 운영 기관
+    @PropertyElement(name = "rfcSiteUrla1", writeAsCData = true)
+    val businessReferenceSite1: String?, // 사업관련 참고 사이트 1
+    @PropertyElement(name = "rfcSiteUrla2", writeAsCData = true)
+    val businessReferenceSite2: String? // 사업관련 참고 사이트 2
+
+
 )

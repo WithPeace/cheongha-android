@@ -19,6 +19,8 @@ import com.withpeace.withpeace.feature.mypage.navigation.MY_PAGE_CHANGED_IMAGE_A
 import com.withpeace.withpeace.feature.mypage.navigation.MY_PAGE_CHANGED_NICKNAME_ARGUMENT
 import com.withpeace.withpeace.feature.mypage.navigation.MY_PAGE_ROUTE
 import com.withpeace.withpeace.feature.mypage.navigation.myPageNavGraph
+import com.withpeace.withpeace.feature.policyconsent.navigation.navigateToPolicyConsent
+import com.withpeace.withpeace.feature.policyconsent.navigation.policyConsentGraph
 import com.withpeace.withpeace.feature.policydetail.navigation.navigateToPolicyDetail
 import com.withpeace.withpeace.feature.policydetail.navigation.policyDetailNavGraph
 import com.withpeace.withpeace.feature.postdetail.navigation.POST_DETAIL_ROUTE_WITH_ARGUMENT
@@ -27,6 +29,8 @@ import com.withpeace.withpeace.feature.postdetail.navigation.postDetailGraph
 import com.withpeace.withpeace.feature.postlist.navigation.POST_LIST_DELETED_POST_ID_ARGUMENT
 import com.withpeace.withpeace.feature.postlist.navigation.POST_LIST_ROUTE
 import com.withpeace.withpeace.feature.postlist.navigation.postListGraph
+import com.withpeace.withpeace.feature.privacypolicy.navigation.navigateToPrivacyPolicy
+import com.withpeace.withpeace.feature.privacypolicy.navigation.privacyPolicyGraph
 import com.withpeace.withpeace.feature.registerpost.navigation.IMAGE_LIST_ARGUMENT
 import com.withpeace.withpeace.feature.registerpost.navigation.REGISTER_POST_ARGUMENT
 import com.withpeace.withpeace.feature.registerpost.navigation.REGISTER_POST_ROUTE
@@ -34,6 +38,8 @@ import com.withpeace.withpeace.feature.registerpost.navigation.navigateToRegiste
 import com.withpeace.withpeace.feature.registerpost.navigation.registerPostNavGraph
 import com.withpeace.withpeace.feature.signup.navigation.navigateSignUp
 import com.withpeace.withpeace.feature.signup.navigation.signUpNavGraph
+import com.withpeace.withpeace.feature.termsofservice.navigation.navigateToTermsOfService
+import com.withpeace.withpeace.feature.termsofservice.navigation.termsOfServiceGraph
 
 @Composable
 fun WithpeaceNavHost(
@@ -50,7 +56,7 @@ fun WithpeaceNavHost(
         loginNavGraph(
             onShowSnackBar = onShowSnackBar,
             onSignUpNeeded = {
-                navController.navigateSignUp()
+                navController.navigateToPolicyConsent()
             },
             onLoginSuccess = {
                 navController.navigateHome(
@@ -63,6 +69,32 @@ fun WithpeaceNavHost(
                 )
             },
         )
+        policyConsentGraph(
+            onShowSnackBar = onShowSnackBar,
+            onSuccessToNext = {
+                navController.navigateSignUp()
+            },
+            onShowTermsOfServiceClick = {
+                navController.navigateToTermsOfService()
+            },
+            onShowPrivacyPolicyClick = {
+                navController.navigateToPrivacyPolicy()
+            },
+        )
+        termsOfServiceGraph(
+            onShowSnackBar = onShowSnackBar,
+            onClickBackButton = {
+                navController.popBackStack()
+            },
+        )
+
+        privacyPolicyGraph(
+            onShowSnackBar = onShowSnackBar,
+            onClickBackButton = {
+                navController.popBackStack()
+            },
+        )
+
         signUpNavGraph(
             onShowSnackBar = onShowSnackBar,
             onNavigateToGallery = {

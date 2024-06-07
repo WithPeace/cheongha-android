@@ -23,6 +23,11 @@ fun YouthPolicyEntity.toDomain(): YouthPolicy {
         screeningAndAnnouncement = screeningAndAnnouncement ?: "",
         applicationSite = applicationSite ?: "",
         submissionDocuments = submissionDocuments ?: "",
+        additionalUsefulInformation = etc ?: "",
+        supervisingAuthority = managingInstitution ?: "",
+        operatingOrganization = operatingOrganization ?: "",
+        businessRelatedReferenceSite1 = businessReferenceSite1 ?: "",
+        businessRelatedReferenceSite2 = businessReferenceSite2 ?: "",
     )
 }
 

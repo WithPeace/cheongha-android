@@ -18,4 +18,10 @@ data class YouthPolicy(
     val screeningAndAnnouncement: String,
     val applicationSite: String,
     val submissionDocuments: String,
+
+    val additionalUsefulInformation: String,
+    val supervisingAuthority: String,
+    val operatingOrganization: String,
+    val businessRelatedReferenceSite1: String,
+    val businessRelatedReferenceSite2: String,
 )

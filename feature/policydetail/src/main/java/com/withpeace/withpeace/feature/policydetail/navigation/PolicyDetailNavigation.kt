@@ -40,18 +40,6 @@ fun NavGraphBuilder.policyDetailNavGraph(
         val policy: YouthPolicyUiModel = YouthPolicyUiModel.parseNavigationValue(
             it.arguments?.getString(POLICY_DETAIL_YOUTH_POLICY_ARGUMENT) ?: ""
         )
-        // val arguments = requireNotNull(it.arguments)
-        // val policy: YouthPolicyUiModel =
-        //     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        //         requireNotNull(
-        //             arguments.getSerializable(
-        //                 POLICY_DETAIL_YOUTH_POLICY_ARGUMENT,
-        //                 YouthPolicyUiModel::class.java,
-        //             ),
-        //         )
-        //     } else ({
-        //         arguments.getSerializable(POLICY_DETAIL_YOUTH_POLICY_ARGUMENT)
-        //     }) as YouthPolicyUiModel
 
         PolicyDetailRoute(
             onShowSnackBar = onShowSnackBar,
