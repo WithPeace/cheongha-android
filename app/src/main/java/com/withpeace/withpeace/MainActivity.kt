@@ -40,7 +40,14 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
-    val appUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
+    private val appUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
+
+    private val updateActivityResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result: ActivityResult ->
+            if (result.resultCode != RESULT_OK) {
+                finish()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,7 +88,6 @@ class MainActivity : ComponentActivity() {
         }
     }
     private fun compulsionUpdate() {
-        val appUpdateManager = AppUpdateManagerFactory.create(this)
         val appUpdateInfoTask: Task<AppUpdateInfo> = appUpdateManager.appUpdateInfo
 
         appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
@@ -97,13 +103,6 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun startUpdateFlow(appUpdateManager: AppUpdateManager, appUpdateInfo: AppUpdateInfo) {
-        val updateActivityResultLauncher =
-            registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result: ActivityResult ->
-                if (result.resultCode != RESULT_OK) {
-                    finish()
-                }
-            }
-
         try {
             appUpdateManager.startUpdateFlowForResult(
                 appUpdateInfo,
@@ -129,6 +128,23 @@ class MainActivity : ComponentActivity() {
         }
         finish()
     }
-}
 
-// Update 로직, WebView 적용(일단 임시), SwipeRefresh
+    override fun onResume() {
+        super.onResume()
+
+        appUpdateManager
+            .appUpdateInfo
+            .addOnSuccessListener { appUpdateInfo ->
+                if (appUpdateInfo.updateAvailability()
+                    == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
+                ) {
+                    // If an in-app update is already running, resume the update.
+                    appUpdateManager.startUpdateFlowForResult(
+                        appUpdateInfo,
+                        updateActivityResultLauncher,
+                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
+                    )
+                }
+            }
+    }
+}
