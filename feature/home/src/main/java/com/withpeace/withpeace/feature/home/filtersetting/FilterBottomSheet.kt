@@ -41,10 +41,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
-import com.withpeace.withpeace.feature.home.R
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
-import com.withpeace.withpeace.feature.home.filtersetting.uistate.FilterListUiState
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
+import com.withpeace.withpeace.feature.home.R
+import com.withpeace.withpeace.feature.home.filtersetting.uistate.FilterListUiState
 import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
 
 @Composable
@@ -63,7 +63,11 @@ fun FilterBottomSheet(
     val screenHeight = configuration.screenHeightDp.dp
     var footerHeight by remember { mutableStateOf(0.dp) }
     val localDensity = LocalDensity.current
-    Box(modifier = modifier.heightIn(0.dp, screenHeight).background(WithpeaceTheme.colors.SystemWhite)) {
+    Box(
+        modifier = modifier
+            .heightIn(0.dp, screenHeight)
+            .background(WithpeaceTheme.colors.SystemWhite),
+    ) {
         FilterFooter(
             modifier = modifier
                 .align(Alignment.BottomCenter)
@@ -142,10 +146,21 @@ private fun ScrollableFilterSection(
     onRegionMoreViewClick: () -> Unit,
     scrollState: ScrollState,
 ) {
+    val scrollSectionHeight = remember { mutableStateOf(0.dp) }
+    val localDensity = LocalDensity.current
+    val columnModifier = modifier.padding(horizontal = 24.dp)
     Column(
-        modifier = modifier
+        modifier =
+        if (scrollSectionHeight.value == 0.dp) columnModifier
+            .onSizeChanged {
+                if (!filterListUiState.isRegionExpanded && !filterListUiState.isClassificationExpanded) {
+                    scrollSectionHeight.value = with(localDensity) { it.height.toDp() }
+                }
+            }
             .verticalScroll(scrollState)
-            .padding(horizontal = 24.dp),
+        else columnModifier
+            .height(scrollSectionHeight.value)
+            .verticalScroll(scrollState),
     ) {
         Spacer(modifier = modifier.height(16.dp))
         Text(
@@ -325,3 +340,6 @@ private fun FilterFooter(
         }
     }
 }
+
+//TODO("최상단 스크롤 이벤트 완료 후 시트 닫히도록")
+//TODO("하단 내릴시에 점핑 되는 것")
