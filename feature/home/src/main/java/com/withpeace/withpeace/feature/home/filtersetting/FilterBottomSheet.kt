@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonColors
@@ -28,10 +27,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
@@ -49,6 +46,7 @@ import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
 
 @Composable
 fun FilterBottomSheet(
+    scrollState: ScrollState,
     modifier: Modifier,
     selectedFilterUiState: PolicyFiltersUiModel,
     onClassificationCheckChanged: (ClassificationUiModel) -> Unit,
@@ -58,10 +56,9 @@ fun FilterBottomSheet(
     onCloseFilter: () -> Unit,
 ) {
     val filterListUiState= remember { mutableStateOf(FilterListUiState().getStateByFilterState(selectedFilterUiState)) }
-    val scrollState = rememberScrollState()
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
-    var footerHeight by remember { mutableStateOf(0.dp) }
+    val footerHeight = remember { mutableStateOf(0.dp) }
     val localDensity = LocalDensity.current
     Box(
         modifier = modifier
@@ -72,7 +69,7 @@ fun FilterBottomSheet(
             modifier = modifier
                 .align(Alignment.BottomCenter)
                 .onSizeChanged {
-                    footerHeight = with(localDensity) { it.height.toDp() }
+                    footerHeight.value = with(localDensity) { it.height.toDp() }
                 },
             onFilterAllOff = onFilterAllOff,
             onSearchWithFilter = onSearchWithFilter,
@@ -80,7 +77,7 @@ fun FilterBottomSheet(
         Column(
             modifier = modifier
                 .align(Alignment.TopCenter)
-                .padding(bottom = footerHeight),
+                .padding(bottom = footerHeight.value),
         ) {
             FilterHeader(
                 modifier = modifier,
@@ -149,6 +146,7 @@ private fun ScrollableFilterSection(
     val scrollSectionHeight = remember { mutableStateOf(0.dp) }
     val localDensity = LocalDensity.current
     val columnModifier = modifier.padding(horizontal = 24.dp)
+
     Column(
         modifier =
         if (scrollSectionHeight.value == 0.dp) columnModifier

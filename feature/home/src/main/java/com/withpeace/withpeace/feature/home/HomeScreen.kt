@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Card
@@ -34,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -49,6 +51,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.util.dropShadow
+import com.withpeace.withpeace.core.designsystem.util.rememberBottomSheetNestedScrollInterceptor
 import com.withpeace.withpeace.core.ui.analytics.TrackScreenViewEvent
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
@@ -190,13 +193,20 @@ private fun HomeHeader(
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
+
+    val bottomSheetChildScrollState = rememberScrollState()
+    val bottomSheetScrollInterceptor =
+        rememberBottomSheetNestedScrollInterceptor(bottomSheetChildScrollState)
+
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp).padding(bottom = 16.dp),
+            .padding(horizontal = 24.dp)
+            .padding(bottom = 16.dp),
     ) {
         Image(
-            modifier = modifier.align(Alignment.BottomCenter)
+            modifier = modifier
+                .align(Alignment.BottomCenter)
                 .size(47.dp),
             painter = painterResource(id = R.drawable.ic_home_logo),
             contentDescription = stringResource(R.string.cheongha_logo),
@@ -214,16 +224,17 @@ private fun HomeHeader(
     }
     if (showBottomSheet) {
         ModalBottomSheet(
+            modifier = modifier.nestedScroll(bottomSheetScrollInterceptor),
             dragHandle = null,
             onDismissRequest = {
                 onDismissRequest()
                 showBottomSheet = false
             },
             sheetState = sheetState,
-            windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Bottom), // 바텀시트시 상태바의 색깔도 ScopeOut 색으로 바꾸기 위함
         ) {
             FilterBottomSheet(
                 modifier = modifier,
+                scrollState = bottomSheetChildScrollState,
                 selectedFilterUiState = selectedFilterUiState,
                 onClassificationCheckChanged = onClassificationCheckChanged,
                 onRegionCheckChanged = onRegionCheckChanged,
@@ -380,5 +391,3 @@ fun HomePreview() {
         // HomeScreen()
     }
 }
-// TODO(바텀 시트 스크롤 고려)
-//
