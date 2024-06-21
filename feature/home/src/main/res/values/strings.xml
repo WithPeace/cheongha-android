@@ -10,4 +10,5 @@
     <string name="search">검색하기</string>
     <string name="filter_fold">접기</string>
     <string name="policy_classification_image">정책 분류 이미지</string>
+    <string name="no_result">검색 결과 없음</string>
 </resources>

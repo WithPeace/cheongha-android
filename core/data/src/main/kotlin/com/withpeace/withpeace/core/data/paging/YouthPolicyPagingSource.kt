@@ -42,9 +42,9 @@ class YouthPolicyPagingSource(
 
         val data = (response as ApiResponse.Success).data
         return LoadResult.Page(
-            data = data.youthPolicyEntity.map { it.toDomain() },
+            data = data.youthPolicyEntity?.map { it.toDomain() } ?: emptyList(),
             prevKey = if (pageIndex == STARTING_PAGE_INDEX) null else pageIndex - 1,
-            nextKey = if (response.data.youthPolicyEntity.isEmpty()) null else pageIndex + (params.loadSize / pageSize),
+            nextKey = if (response.data.youthPolicyEntity.isNullOrEmpty()) null else pageIndex + (params.loadSize / pageSize),
         )
     }
 

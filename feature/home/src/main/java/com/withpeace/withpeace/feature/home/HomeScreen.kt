@@ -40,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -127,53 +128,91 @@ fun HomeScreen(
             }
 
             is LoadState.NotLoading -> {
-                Column(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .background(Color(0xFFF8F9FB))
-                        .padding(horizontal = 24.dp),
-                ) {
-                    Spacer(modifier = modifier.height(8.dp))
-                    LazyColumn(
+                if (youthPolicies.itemCount == 0) {
+                    Column(
                         modifier = modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(bottom = 16.dp)
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        items(
-                            count = youthPolicies.itemCount,
-                            key = youthPolicies.itemKey { it.id },
-                        ) {
-                            val youthPolicy = youthPolicies[it] ?: throw IllegalStateException()
-                            Spacer(modifier = modifier.height(8.dp))
-                            YouthPolicyCard(
-                                modifier = modifier,
-                                youthPolicy = youthPolicy,
-                                onPolicyClick = onPolicyClick
-                            )
-                        }
-                        item {
-                            if (youthPolicies.loadState.append is LoadState.Loading) {
-                                Column(
-                                    modifier = modifier
-                                        .padding(top = 8.dp)
-                                        .fillMaxWidth()
-                                        .background(
-                                            Color.Transparent,
-                                        ),
-                                ) {
-                                    CircularProgressIndicator(
-                                        modifier.align(Alignment.CenterHorizontally),
-                                        color = WithpeaceTheme.colors.MainPurple,
-                                    )
-                                }
-                            }
-                        }
+                        Spacer(modifier = modifier.height(213.dp))
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_no_result),
+                            contentDescription = stringResource(
+                                R.string.no_result,
+                            ),
+                        )
+                        Spacer(modifier = modifier.height(24.dp))
+                        Text(
+                            text = "조건에 맞는 정책이 없어요.",
+                            style = WithpeaceTheme.typography.semiBold16Sp,
+                            color = WithpeaceTheme.colors.SystemBlack,
+                            letterSpacing = 0.16.sp,
+                            lineHeight = 21.sp,
+                        )
+                        Spacer(modifier = modifier.height(8.dp))
+                        Text(
+                            text = "필터 조건을 변경한 후 다시 시도해 보세요.",
+                            style = WithpeaceTheme.typography.caption,
+                            color = WithpeaceTheme.colors.SystemBlack,
+                        )
                     }
-
+                } else {
+                    PolicyItems(modifier, youthPolicies, onPolicyClick)
                 }
             }
         }
     }
     TrackScreenViewEvent(screenName = "home")
+}
+
+@Composable
+private fun PolicyItems(
+    modifier: Modifier,
+    youthPolicies: LazyPagingItems<YouthPolicyUiModel>,
+    onPolicyClick: (YouthPolicyUiModel) -> Unit,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color(0xFFF8F9FB))
+            .padding(horizontal = 24.dp),
+    ) {
+        Spacer(modifier = modifier.height(8.dp))
+        LazyColumn(
+            modifier = modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 16.dp),
+        ) {
+            items(
+                count = youthPolicies.itemCount,
+                key = youthPolicies.itemKey { it.id },
+            ) {
+                val youthPolicy = youthPolicies[it] ?: throw IllegalStateException()
+                Spacer(modifier = modifier.height(8.dp))
+                YouthPolicyCard(
+                    modifier = modifier,
+                    youthPolicy = youthPolicy,
+                    onPolicyClick = onPolicyClick,
+                )
+            }
+            item {
+                if (youthPolicies.loadState.append is LoadState.Loading) {
+                    Column(
+                        modifier = modifier
+                            .padding(top = 8.dp)
+                            .fillMaxWidth()
+                            .background(
+                                Color.Transparent,
+                            ),
+                    ) {
+                        CircularProgressIndicator(
+                            modifier.align(Alignment.CenterHorizontally),
+                            color = WithpeaceTheme.colors.MainPurple,
+                        )
+                    }
+                }
+            }
+        }
+
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
