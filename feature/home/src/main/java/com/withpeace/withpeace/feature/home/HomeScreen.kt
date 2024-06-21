@@ -1,22 +1,22 @@
 package com.withpeace.withpeace.feature.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.stopScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,6 +25,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -188,15 +189,28 @@ private fun HomeHeader(
     onCloseFilter: () -> Unit,
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val bottomSheetChildScrollState = rememberScrollState()
+
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+    )
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(bottomSheetChildScrollState.canScrollBackward) {
+        if (bottomSheetChildScrollState.value == 0) {
+            bottomSheetChildScrollState.stopScroll(MutatePriority.PreventUserInput)
+        }
+    }
+
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp).padding(bottom = 16.dp),
+            .padding(horizontal = 24.dp)
+            .padding(bottom = 16.dp),
     ) {
         Image(
-            modifier = modifier.align(Alignment.BottomCenter)
+            modifier = modifier
+                .align(Alignment.BottomCenter)
                 .size(47.dp),
             painter = painterResource(id = R.drawable.ic_home_logo),
             contentDescription = stringResource(R.string.cheongha_logo),
@@ -214,16 +228,17 @@ private fun HomeHeader(
     }
     if (showBottomSheet) {
         ModalBottomSheet(
+            modifier = modifier,
             dragHandle = null,
             onDismissRequest = {
                 onDismissRequest()
                 showBottomSheet = false
             },
             sheetState = sheetState,
-            windowInsets = BottomSheetDefaults.windowInsets.only(WindowInsetsSides.Bottom), // 바텀시트시 상태바의 색깔도 ScopeOut 색으로 바꾸기 위함
         ) {
             FilterBottomSheet(
                 modifier = modifier,
+                scrollState = bottomSheetChildScrollState,
                 selectedFilterUiState = selectedFilterUiState,
                 onClassificationCheckChanged = onClassificationCheckChanged,
                 onRegionCheckChanged = onRegionCheckChanged,
@@ -380,5 +395,3 @@ fun HomePreview() {
         // HomeScreen()
     }
 }
-// TODO(바텀 시트 스크롤 고려)
-//

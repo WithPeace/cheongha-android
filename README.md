@@ -4,7 +4,16 @@
 우리 청년들이 이루고자 하는 목표를 위해 함께 날아가고자 만들어진 서비스예요.
 청하에서 여러분이 이루고자 하는 목표를 위한 첫걸음을 시작해 보세요.
 
+## Environment
+- Android Studio Jellyfish
+- Kotlin 1.9.0
 
+## Skill
+- Jetpack Compose, Multi-Module, Corotuine/Flow, Hilt, DataStore, Sandwich, TikXml
+- Junit, Turbin, Mockk
+- Firebase Analytics/Crashlytics, Github Action, OAuth(JWT), Ktlint
+
+## Demo Video
 |홈|필터|프로필수정|
 |:-:|:-:|:-:|
 |<video src = https://github.com/WithPeace/with-peace-android/assets/33768873/10fe1c39-bb5f-44c2-9fb7-b97b24289b61 width = 50% align="center">| <video src = https://github.com/WithPeace/with-peace-android/assets/33768873/510414a5-345b-452c-8284-88ef4a6fff76 width = 50% align="center">|<video src = https://github.com/WithPeace/with-peace-android/assets/33768873/c36e0976-ace8-4927-95e9-62a1e131b61d width = 50% align="center">|
