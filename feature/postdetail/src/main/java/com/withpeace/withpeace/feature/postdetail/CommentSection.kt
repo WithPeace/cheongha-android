@@ -171,8 +171,6 @@ fun CommentBottomSheet(
         if (isMyComment) {
             Column(
                 modifier = Modifier.padding(
-                    start = WithpeaceTheme.padding.BasicHorizontalPadding,
-                    end = WithpeaceTheme.padding.BasicHorizontalPadding,
                     top = 24.dp,
                 ),
             ) {
@@ -182,6 +180,10 @@ fun CommentBottomSheet(
                             onClickDeleteButton()
                             onDismissRequest()
                         }
+                        .padding(
+                            start = WithpeaceTheme.padding.BasicHorizontalPadding,
+                            end = WithpeaceTheme.padding.BasicHorizontalPadding,
+                        )
                         .padding(vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -199,17 +201,19 @@ fun CommentBottomSheet(
         } else {
             Column(
                 modifier = Modifier.padding(
-                    start = WithpeaceTheme.padding.BasicHorizontalPadding,
-                    end = WithpeaceTheme.padding.BasicHorizontalPadding,
                     top = 24.dp,
                 ),
             ) {
                 Row(
                     modifier = Modifier
+                        .fillMaxWidth()
                         .clickable {
                             showReportBottomSheet = true
                         }
-                        .fillMaxWidth()
+                        .padding(
+                            start = WithpeaceTheme.padding.BasicHorizontalPadding,
+                            end = WithpeaceTheme.padding.BasicHorizontalPadding,
+                        )
                         .padding(vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
