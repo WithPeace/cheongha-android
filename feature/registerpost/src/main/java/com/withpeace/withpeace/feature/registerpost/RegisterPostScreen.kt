@@ -337,9 +337,6 @@ fun RegisterPostTopic(
             containerColor = WithpeaceTheme.colors.SystemWhite,
             sheetState = bottomSheetState,
             onDismissRequest = { onShowBottomSheetChanged(false) },
-            windowInsets = WindowInsets(
-                bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
-            ),
             shape = RoundedCornerShape(topStart = 20.dp,topEnd = 20.dp),
         ) {
             TopicBottomSheetContent(
