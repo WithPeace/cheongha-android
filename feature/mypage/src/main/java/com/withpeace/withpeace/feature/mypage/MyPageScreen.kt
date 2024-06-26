@@ -205,7 +205,7 @@ fun MyPageSections(
     onWithdrawClick: () -> Unit,
     email: String,
 ) {
-    Column(modifier = modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding)) {
+    Column(modifier = modifier) {
         AccountSection(modifier, email = email)
         HorizontalDivider(
             modifier = modifier
@@ -219,9 +219,11 @@ fun MyPageSections(
 
 @Composable
 private fun AccountSection(modifier: Modifier, email: String) {
-    Section(title = stringResource(R.string.account)) {
+    Section(
+        title = stringResource(R.string.account),
+    ) {
         Spacer(modifier = modifier.height(16.dp))
-        Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(modifier = modifier.fillMaxWidth().padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(
                 text = stringResource(R.string.connected_account),
                 style = WithpeaceTheme.typography.body,
@@ -253,7 +255,7 @@ private fun EtcSection(
                 .fillMaxWidth()
                 .clickable {
                     onLogoutClick()
-                }
+                }.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding)
                 .padding(vertical = 8.dp),
         )
         Text(
@@ -264,7 +266,7 @@ private fun EtcSection(
                 .fillMaxWidth()
                 .clickable {
                     showDialog = true
-                }
+                }.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding)
                 .padding(vertical = 8.dp),
         )
     }
@@ -290,9 +292,9 @@ private fun Section(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit = {},
 ) {
-    Column {
+    Column(modifier = modifier) {
         Spacer(modifier = modifier.height(16.dp))
-        Text(text = title, style = WithpeaceTheme.typography.caption, color = Color(0xFF858585))
+        Text(text = title, style = WithpeaceTheme.typography.caption, color = Color(0xFF858585), modifier = modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding))
         content()
         Spacer(modifier = modifier.height(16.dp))
     }

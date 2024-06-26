@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             splashScreen = installSplashScreen()
             splashScreen.setKeepOnScreenCondition { true }
-            // 처음 앱 켰을때만 2초기다림, 화면회전에는 기다리면 안됨
+
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { uiState ->
                     when (uiState) {

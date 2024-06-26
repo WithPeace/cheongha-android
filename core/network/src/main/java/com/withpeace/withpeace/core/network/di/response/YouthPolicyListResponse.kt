@@ -11,7 +11,7 @@ data class YouthPolicyListResponse(
     @PropertyElement(name = "totalCount")
     val totalDataCount: Int,
     @Element
-    val youthPolicyEntity: List<YouthPolicyEntity>,
+    val youthPolicyEntity: List<YouthPolicyEntity>?,
 )
 
 @Xml(name = "youthPolicy")

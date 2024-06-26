@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -341,22 +342,25 @@ fun PostDetailPostBottomSheet(
         containerColor = WithpeaceTheme.colors.SystemWhite,
         onDismissRequest = onDismissRequest,
         sheetState = bottomSheetState,
-        shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
     ) {
         if(isMyPost){
             Column(
-                modifier = Modifier.padding(
-                    start = WithpeaceTheme.padding.BasicHorizontalPadding,
-                    end = WithpeaceTheme.padding.BasicHorizontalPadding,
-                    top = 24.dp,
-                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        top = 24.dp,
+                    )
+                    .clickable {
+                        onClickEditButton()
+                        onDismissRequest()
+                    },
             ) {
                 Row(
                     modifier = Modifier
-                        .clickable {
-                            onClickEditButton()
-                            onDismissRequest()
-                        }
+                        .padding(
+                            start = WithpeaceTheme.padding.BasicHorizontalPadding,
+                            end = WithpeaceTheme.padding.BasicHorizontalPadding,
+                        )
                         .padding(vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -370,13 +374,23 @@ fun PostDetailPostBottomSheet(
                         style = WithpeaceTheme.typography.body,
                     )
                 }
+            }
                 HorizontalDivider(color = WithpeaceTheme.colors.SystemGray3)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        onClickDeleteButton()
+                        onDismissRequest()
+                    },
+            ) {
                 Row(
                     modifier = Modifier
-                        .clickable {
-                            onClickDeleteButton()
-                            onDismissRequest()
-                        }
+
+                        .padding(
+                            start = WithpeaceTheme.padding.BasicHorizontalPadding,
+                            end = WithpeaceTheme.padding.BasicHorizontalPadding,
+                        )
                         .padding(vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -393,18 +407,21 @@ fun PostDetailPostBottomSheet(
             }
         } else {
             Column(
-                modifier = Modifier.padding(
-                    start = WithpeaceTheme.padding.BasicHorizontalPadding,
-                    end = WithpeaceTheme.padding.BasicHorizontalPadding,
-                    top = 24.dp,
-                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        top = 24.dp,
+                    )
+                    .clickable {
+                        showReportBottomSheet = true
+                    },
             ) {
                 Row(
                     modifier = Modifier
-                        .clickable {
-                            showReportBottomSheet = true
-                        }
-                        .fillMaxWidth()
+                        .padding(
+                            start = WithpeaceTheme.padding.BasicHorizontalPadding,
+                            end = WithpeaceTheme.padding.BasicHorizontalPadding,
+                        )
                         .padding(vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -460,7 +477,7 @@ fun PostDetailReportBottomSheet(
 ) {
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
-        dragHandle = {},
+        contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
         containerColor = WithpeaceTheme.colors.SystemWhite,
         onDismissRequest = onDismissRequest,
         sheetState = bottomSheetState,
@@ -478,8 +495,7 @@ fun PostDetailReportBottomSheet(
             HorizontalDivider(Modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding))
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
+                    .fillMaxWidth(),
             ) {
                 ReportTypeUiModel.entries.forEach { reportTypeUiModel ->
                     ReportTypeItem(
@@ -511,7 +527,7 @@ fun ReportTypeItem(
     Column(
         modifier = modifier.clickable {
             showReportDialog = true
-        },
+        }.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
     ) {
         Text(
             text = title,
