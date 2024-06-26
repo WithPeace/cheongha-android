@@ -11,7 +11,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -19,6 +22,7 @@ import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.navigation.WithpeaceNavHost
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun WithpeaceApp(
     startDestination: String,
@@ -47,7 +51,9 @@ fun WithpeaceApp(
                 )
             }
         },
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().semantics {
+            testTagsAsResourceId = true
+        },
         snackbarHost = { SnackbarHost(snackBarHostState) },
         containerColor = WithpeaceTheme.colors.SystemWhite,
     ) { innerPadding ->
