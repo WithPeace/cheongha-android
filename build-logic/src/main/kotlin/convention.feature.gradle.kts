@@ -1,0 +1,19 @@
+plugins {
+    id("com.android.library")
+    id("convention.android.base")
+    id("convention.test.library")
+    id("convention.coroutine")
+    id("convention.android.compose")
+    id("convention.android.hilt")
+    id("kotlin-parcelize")
+    id ("kotlin-kapt")
+}
+
+dependencies{
+    implementation(project(":core:data"))
+    implementation(project(":core:domain"))
+    implementation(project(":core:designsystem"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:analytics"))
+    testImplementation(project(":core:testing"))
+}
