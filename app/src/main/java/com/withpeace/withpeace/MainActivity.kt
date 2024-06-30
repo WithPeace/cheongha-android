@@ -53,7 +53,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         // System Bar에 가려지는 뷰 영역을 개발자가 제어하겠다.
         WindowCompat.setDecorFitsSystemWindows(window, false)
-
         lifecycleScope.launch {
             splashScreen = installSplashScreen()
             splashScreen.setKeepOnScreenCondition { true }
@@ -63,9 +62,7 @@ class MainActivity : ComponentActivity() {
                     when (uiState) {
                         MainUiState.Home -> composeStart(HOME_ROUTE)
                         MainUiState.Login -> composeStart(LOGIN_ROUTE)
-                        MainUiState.Update -> {
-                            compulsionUpdate()
-                        }
+                        MainUiState.Update -> {}
 
                         MainUiState.Error -> finish()
                         MainUiState.Loading -> {}

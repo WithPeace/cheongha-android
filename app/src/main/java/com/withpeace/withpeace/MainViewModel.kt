@@ -6,7 +6,11 @@ import com.withpeace.withpeace.core.domain.usecase.CheckAppUpdateUseCase
 import com.withpeace.withpeace.core.domain.usecase.IsLoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,8 +19,8 @@ class MainViewModel @Inject constructor(
     private val isLoginUseCase: IsLoginUseCase,
     private val checkAppUpdateUseCase: CheckAppUpdateUseCase,
 ) : ViewModel() {
-    private val _uiState: Channel<MainUiState> = Channel()
-    val uiState = _uiState.receiveAsFlow()
+    private val _uiState: MutableStateFlow<MainUiState> = MutableStateFlow(MainUiState.Loading)
+    val uiState = _uiState.asStateFlow()
 
     init  {
         checkUpdate()
@@ -27,18 +31,18 @@ class MainViewModel @Inject constructor(
             checkAppUpdateUseCase(
                 currentVersion = BuildConfig.VERSION_CODE,
                 onError = {
-                    _uiState.send(MainUiState.Error)
+                    _uiState.update { MainUiState.Error }
                 },
             ).collect { shouldUpdate ->
                 if (shouldUpdate) {
-                    _uiState.send(MainUiState.Update)
+                    _uiState.update {MainUiState.Update  }
                     return@collect
                 }
                 val isLogin = isLoginUseCase()
                 if (isLogin) {
-                    _uiState.send(MainUiState.Home)
+                    _uiState.update { MainUiState.Home }
                 } else {
-                    _uiState.send(MainUiState.Login)
+                    _uiState.update { MainUiState.Login }
                 }
             }
         }
