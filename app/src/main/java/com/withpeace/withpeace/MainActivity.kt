@@ -40,14 +40,14 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
-    // private val appUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
-    //
-    // private val updateActivityResultLauncher =
-    //     registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result: ActivityResult ->
-    //         if (result.resultCode != RESULT_OK) {
-    //             finish()
-    //         }
-    //     }
+    private val appUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
+
+    private val updateActivityResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result: ActivityResult ->
+            if (result.resultCode != RESULT_OK) {
+                finish()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,32 +84,32 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-    // private fun compulsionUpdate() {
-    //     val appUpdateInfoTask: Task<AppUpdateInfo> = appUpdateManager.appUpdateInfo
-    //
-    //     appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
-    //         if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-    //             && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
-    //         ) {
-    //             startUpdateFlow(appUpdateManager, appUpdateInfo)
-    //         } else {
-    //             Toast.makeText(this, "앱을 사용하려면 업데이트가 필요해요!", Toast.LENGTH_LONG).show()
-    //             redirectToPlayStore()
-    //         }
-    //     }
-    // }
-    //
-    // private fun startUpdateFlow(appUpdateManager: AppUpdateManager, appUpdateInfo: AppUpdateInfo) {
-    //     try {
-    //         appUpdateManager.startUpdateFlowForResult(
-    //             appUpdateInfo,
-    //             updateActivityResultLauncher,
-    //             AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
-    //         )
-    //     } catch (e: Exception) {
-    //         e.printStackTrace()
-    //     }
-    // }
+    private fun compulsionUpdate() {
+        val appUpdateInfoTask: Task<AppUpdateInfo> = appUpdateManager.appUpdateInfo
+
+        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+            ) {
+                startUpdateFlow(appUpdateManager, appUpdateInfo)
+            } else {
+                Toast.makeText(this, "앱을 사용하려면 업데이트가 필요해요!", Toast.LENGTH_LONG).show()
+                redirectToPlayStore()
+            }
+        }
+    }
+
+    private fun startUpdateFlow(appUpdateManager: AppUpdateManager, appUpdateInfo: AppUpdateInfo) {
+        try {
+            appUpdateManager.startUpdateFlowForResult(
+                appUpdateInfo,
+                updateActivityResultLauncher,
+                AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
     private fun redirectToPlayStore() {
         val packageName = packageName
@@ -126,22 +126,22 @@ class MainActivity : ComponentActivity() {
         finish()
     }
 
-    // override fun onResume() {
-    //     super.onResume()
-    //
-    //     appUpdateManager
-    //         .appUpdateInfo
-    //         .addOnSuccessListener { appUpdateInfo ->
-    //             if (appUpdateInfo.updateAvailability()
-    //                 == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
-    //             ) {
-    //                 // If an in-app update is already running, resume the update.
-    //                 appUpdateManager.startUpdateFlowForResult(
-    //                     appUpdateInfo,
-    //                     updateActivityResultLauncher,
-    //                     AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
-    //                 )
-    //             }
-    //         }
-    // }
+    override fun onResume() {
+        super.onResume()
+
+        appUpdateManager
+            .appUpdateInfo
+            .addOnSuccessListener { appUpdateInfo ->
+                if (appUpdateInfo.updateAvailability()
+                    == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
+                ) {
+                    // If an in-app update is already running, resume the update.
+                    appUpdateManager.startUpdateFlowForResult(
+                        appUpdateInfo,
+                        updateActivityResultLauncher,
+                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
+                    )
+                }
+            }
+    }
 }
