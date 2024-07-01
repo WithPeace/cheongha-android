@@ -110,7 +110,7 @@ fun PolicyConsentScreen(
             Text(
                 modifier = modifier.align(Alignment.CenterHorizontally),
                 textAlign = TextAlign.Center,
-                text = "청하(청춘하랑)에 어서오세요!\n" +
+                text = "청하(청년하랑)에 어서오세요!\n" +
                     "약관에 동의하시면 청하와의 여정을\n" +
                     "시작할 수 있어요!",
                 style = WithpeaceTheme.typography.title2.merge(
