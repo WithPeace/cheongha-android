@@ -9,7 +9,24 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
@@ -56,19 +73,90 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             splashScreen = installSplashScreen()
             splashScreen.setKeepOnScreenCondition { true }
-
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { uiState ->
                     when (uiState) {
                         MainUiState.Home -> composeStart(HOME_ROUTE)
                         MainUiState.Login -> composeStart(LOGIN_ROUTE)
-                        MainUiState.Update -> {}
+                        MainUiState.Update -> {
+                            showForceUpdateDialog()
+                        }
 
-                        MainUiState.Error -> finish()
+                        MainUiState.Error -> {
+                            //TODO 에러 화면으로 이동
+                            Toast.makeText(
+                                this@MainActivity,
+                                "네트워크 상태가 원활하지 않습니다.",
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                            finish()
+                        }
                         MainUiState.Loading -> {}
                     }
                     splashScreen.setKeepOnScreenCondition { false }
                 }
+            }
+        }
+    }
+
+    private fun showForceUpdateDialog() {
+        setContent {
+            WithpeaceTheme {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(WithpeaceTheme.colors.SystemWhite),
+                ) {
+                    Dialog(
+                        onDismissRequest = {
+
+                        },
+                    ) {
+                        Surface(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(WithpeaceTheme.colors.SystemWhite)
+                                .padding(24.dp),
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.background(WithpeaceTheme.colors.SystemWhite),
+                            ) {
+                                Text(
+                                    color = WithpeaceTheme.colors.SystemBlack,
+                                    text = "새로운 버전이 업데이트 되었어요",
+                                    textAlign = TextAlign.Center,
+                                    style = WithpeaceTheme.typography.title2,
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    color = WithpeaceTheme.colors.SystemGray1,
+                                    text = "더 나아진 청하를 이용하기 위해\n 지금 업데이트 해주세요.",
+                                    textAlign = TextAlign.Center,
+                                    style = WithpeaceTheme.typography.body,
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                TextButton(
+                                    onClick = {
+                                        redirectToPlayStore()
+                                    },
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .background(WithpeaceTheme.colors.MainPurple)
+                                        .width(264.dp),
+                                ) {
+                                    Text(
+                                        color = WithpeaceTheme.colors.SystemWhite,
+                                        text = "업데이트하기",
+                                        textAlign = TextAlign.Center,
+                                        style = WithpeaceTheme.typography.body,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
             }
         }
     }
@@ -94,7 +182,7 @@ class MainActivity : ComponentActivity() {
                 startUpdateFlow(appUpdateManager, appUpdateInfo)
             } else {
                 Toast.makeText(this, "앱을 사용하려면 업데이트가 필요해요!", Toast.LENGTH_LONG).show()
-                redirectToPlayStore()
+                // redirectToPlayStore()
             }
         }
     }
