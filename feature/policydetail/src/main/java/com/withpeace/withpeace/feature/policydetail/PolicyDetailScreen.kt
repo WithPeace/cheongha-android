@@ -234,11 +234,6 @@ fun ApplyQualificationSection(
             title = "거주지 및 소득",
             content = policy.residenceAndIncome,
         )
-        DescriptionTitleAndContent(
-            modifier = modifier,
-            title = "거주지 및 소득",
-            content = policy.residenceAndIncome,
-        )
         DescriptionTitleAndContent(modifier = modifier, title = "학력", content = policy.education)
         DescriptionTitleAndContent(
             modifier = modifier,

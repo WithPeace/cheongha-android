@@ -8,6 +8,7 @@ import androidx.navigation.navOptions
 import androidx.navigation.navigation
 import com.app.profileeditor.navigation.navigateProfileEditor
 import com.app.profileeditor.navigation.profileEditorNavGraph
+import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarState
 import com.withpeace.withpeace.feature.gallery.navigation.galleryNavGraph
 import com.withpeace.withpeace.feature.gallery.navigation.navigateToGallery
 import com.withpeace.withpeace.feature.home.navigation.homeNavGraph
@@ -46,7 +47,7 @@ fun WithpeaceNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     startDestination: String = LOGIN_ROUTE,
-    onShowSnackBar: (message: String) -> Unit,
+    onShowSnackBar: (SnackbarState) -> Unit,
 ) {
     NavHost(
         modifier = modifier,
@@ -54,7 +55,7 @@ fun WithpeaceNavHost(
         startDestination = startDestination,
     ) {
         loginNavGraph(
-            onShowSnackBar = onShowSnackBar,
+            onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
             onSignUpNeeded = {
                 navController.navigateToPolicyConsent()
             },
@@ -70,7 +71,7 @@ fun WithpeaceNavHost(
             },
         )
         policyConsentGraph(
-            onShowSnackBar = onShowSnackBar,
+            onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
             onSuccessToNext = {
                 navController.navigateSignUp()
             },
@@ -82,21 +83,21 @@ fun WithpeaceNavHost(
             },
         )
         termsOfServiceGraph(
-            onShowSnackBar = onShowSnackBar,
+            onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
             onClickBackButton = {
                 navController.popBackStack()
             },
         )
 
         privacyPolicyGraph(
-            onShowSnackBar = onShowSnackBar,
+            onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
             onClickBackButton = {
                 navController.popBackStack()
             },
         )
 
         signUpNavGraph(
-            onShowSnackBar = onShowSnackBar,
+            onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
             onNavigateToGallery = {
                 navController.navigateToGallery(imageLimit = 1)
             },
@@ -112,7 +113,7 @@ fun WithpeaceNavHost(
             },
         )
         registerPostNavGraph(
-            onShowSnackBar = onShowSnackBar,
+            onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
             onCompleteRegisterPost = { postId ->
                 navController.navigateToPostDetail(
                     postId,
@@ -160,21 +161,21 @@ fun WithpeaceNavHost(
                 )
                 navController.popBackStack()
             },
-            onShowSnackBar = onShowSnackBar,
+            onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
         )
         homeNavGraph(
-            onShowSnackBar = onShowSnackBar,
+            onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
             onPolicyClick = {
                 navController.navigateToPolicyDetail(policy = it)
             },
         )
         policyDetailNavGraph(
-            onShowSnackBar = onShowSnackBar,
+            onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
             onClickBackButton = { navController.popBackStack() },
         )
         navigation(startDestination = MY_PAGE_ROUTE, MY_PAGE_NESTED_ROUTE) {
             myPageNavGraph(
-                onShowSnackBar = onShowSnackBar,
+                onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
                 onEditProfile = { nickname, profileImageUrl ->
                     navController.navigateProfileEditor(
                         nickname = nickname,
@@ -204,7 +205,7 @@ fun WithpeaceNavHost(
                 },
             )
             profileEditorNavGraph(
-                onShowSnackBar = onShowSnackBar,
+                onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
                 onClickBackButton = {
                     navController.popBackStack()
                 },
@@ -225,7 +226,7 @@ fun WithpeaceNavHost(
             )
         }
         postDetailGraph(
-            onShowSnackBar = onShowSnackBar,
+            onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
             onClickBackButton = navController::popBackStack,
             onClickEditButton = {
                 navController.currentBackStackEntry?.savedStateHandle?.set(
@@ -242,10 +243,10 @@ fun WithpeaceNavHost(
                     set(POST_LIST_DELETED_POST_ID_ARGUMENT, it)
                 }
                 navController.popBackStack()
-            }
+            },
         )
         postListGraph(
-            onShowSnackBar = onShowSnackBar,
+            onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
             navigateToPostDetail = navController::navigateToPostDetail,
             onAuthExpired = {
                 onAuthExpired(onShowSnackBar, navController)
@@ -255,10 +256,10 @@ fun WithpeaceNavHost(
 }
 
 private fun onAuthExpired(
-    onShowSnackBar: (message: String) -> Unit,
+    onShowSnackBar: (SnackbarState) -> Unit,
     navController: NavHostController,
 ) {
-    onShowSnackBar("세션이 만료되었습니다. 로그인 후 다시 시도해 주세요.")
+    onShowSnackBar(SnackbarState("세션이 만료되었습니다. 로그인 후 다시 시도해 주세요."))
     navController.navigateLogin(
         navOptions = navOptions {
             popUpTo(navController.graph.id) {
