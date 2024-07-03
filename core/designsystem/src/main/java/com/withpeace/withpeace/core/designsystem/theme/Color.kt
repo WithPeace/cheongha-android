@@ -27,6 +27,8 @@ val systemError = Color(0xFFF0474B)
 val systemSuccess = Color(0xFF3BD569)
 val systemHyperLink = Color(0xFF20BCBB)
 
+val snackbarBlack = Color(0xFF000000)
+
 data class WithPeaceColor(
     val MainPurple: Color = mainPurple,
     val SubPurple: Color = subPurple,
@@ -43,6 +45,7 @@ data class WithPeaceColor(
     val SystemGray4: Color = systemGray4,
     val SystemSuccess: Color = systemSuccess,
     val SystemHyperLink: Color = systemHyperLink,
+    val SnackbarBlack: Color = snackbarBlack,
 )
 
 val lightColor = WithPeaceColor()
