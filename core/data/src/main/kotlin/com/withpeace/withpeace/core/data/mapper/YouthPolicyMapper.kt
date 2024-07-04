@@ -3,7 +3,7 @@ package com.withpeace.withpeace.core.data.mapper
 import com.withpeace.withpeace.core.domain.model.policy.PolicyClassification
 import com.withpeace.withpeace.core.domain.model.policy.PolicyRegion
 import com.withpeace.withpeace.core.domain.model.policy.YouthPolicy
-import com.withpeace.withpeace.core.network.di.response.YouthPolicyEntity
+import com.withpeace.withpeace.core.network.di.response.policy.YouthPolicyEntity
 
 fun YouthPolicyEntity.toDomain(): YouthPolicy {
     return YouthPolicy(

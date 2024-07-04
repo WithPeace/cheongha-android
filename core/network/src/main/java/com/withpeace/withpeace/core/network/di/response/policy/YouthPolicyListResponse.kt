@@ -1,4 +1,4 @@
-package com.withpeace.withpeace.core.network.di.response
+package com.withpeace.withpeace.core.network.di.response.policy
 
 import com.tickaroo.tikxml.annotation.Element
 import com.tickaroo.tikxml.annotation.PropertyElement
@@ -61,6 +61,4 @@ data class YouthPolicyEntity(
     val businessReferenceSite1: String?, // 사업관련 참고 사이트 1
     @PropertyElement(name = "rfcSiteUrla2", writeAsCData = true)
     val businessReferenceSite2: String? // 사업관련 참고 사이트 2
-
-
 )

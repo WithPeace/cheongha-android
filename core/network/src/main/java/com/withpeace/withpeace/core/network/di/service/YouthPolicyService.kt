@@ -1,7 +1,7 @@
 package com.withpeace.withpeace.core.network.di.service
 
 import com.skydoves.sandwich.ApiResponse
-import com.withpeace.withpeace.core.network.di.response.YouthPolicyListResponse
+import com.withpeace.withpeace.core.network.di.response.policy.YouthPolicyListResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
