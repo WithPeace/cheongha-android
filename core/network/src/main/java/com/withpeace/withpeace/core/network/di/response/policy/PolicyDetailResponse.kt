@@ -1,5 +1,8 @@
 package com.withpeace.withpeace.core.network.di.response.policy
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class PolicyDetailResponse(
     val id: String, // 정책 id
     val title: String, // 정책 제목

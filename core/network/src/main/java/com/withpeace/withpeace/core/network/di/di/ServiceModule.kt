@@ -39,6 +39,6 @@ object ServiceModule {
 
     @Provides
     @Singleton
-    fun providesYouthPolicyService(@Named("youth_policy") retrofit: Retrofit): YouthPolicyService =
+    fun providesYouthPolicyService(@Named("general") retrofit: Retrofit): YouthPolicyService =
         retrofit.create(YouthPolicyService::class.java)
 }

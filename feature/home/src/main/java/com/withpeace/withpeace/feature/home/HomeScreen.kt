@@ -55,7 +55,7 @@ import com.withpeace.withpeace.core.designsystem.util.dropShadow
 import com.withpeace.withpeace.core.ui.analytics.TrackScreenViewEvent
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
-import com.withpeace.withpeace.core.ui.policy.YouthPolicyUiModel
+import com.withpeace.withpeace.feature.home.uistate.YouthPolicyUiModel
 import com.withpeace.withpeace.feature.home.filtersetting.FilterBottomSheet
 import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
 import kotlinx.coroutines.launch
@@ -64,7 +64,7 @@ import kotlinx.coroutines.launch
 fun HomeRoute(
     onShowSnackBar: (message: String) -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel(),
-    onPolicyClick: (YouthPolicyUiModel) -> Unit,
+    onPolicyClick: (String) -> Unit,
 ) {
     val youthPolicyPagingData = viewModel.youthPolicyPagingFlow.collectAsLazyPagingItems()
     val selectedFilterUiState = viewModel.selectingFilters.collectAsStateWithLifecycle()
@@ -92,7 +92,7 @@ fun HomeScreen(
     onFilterAllOff: () -> Unit,
     onSearchWithFilter: () -> Unit,
     onCloseFilter: () -> Unit,
-    onPolicyClick: (YouthPolicyUiModel) -> Unit,
+    onPolicyClick: (String) -> Unit,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         HomeHeader(
@@ -169,7 +169,7 @@ fun HomeScreen(
 private fun PolicyItems(
     modifier: Modifier,
     youthPolicies: LazyPagingItems<YouthPolicyUiModel>,
-    onPolicyClick: (YouthPolicyUiModel) -> Unit,
+    onPolicyClick: (String) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -304,7 +304,7 @@ private fun HomeHeader(
 private fun YouthPolicyCard(
     modifier: Modifier,
     youthPolicy: YouthPolicyUiModel,
-    onPolicyClick: (YouthPolicyUiModel) -> Unit,
+    onPolicyClick: (String) -> Unit,
 ) {
     Card(
         modifier = modifier
@@ -320,7 +320,7 @@ private fun YouthPolicyCard(
                 borderRadius = 10.dp,
             )
             .clickable {
-                onPolicyClick(youthPolicy)
+                onPolicyClick(youthPolicy.id)
             },
     ) {
         ConstraintLayout(

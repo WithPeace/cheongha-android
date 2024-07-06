@@ -166,7 +166,7 @@ fun WithpeaceNavHost(
         homeNavGraph(
             onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
             onPolicyClick = {
-                navController.navigateToPolicyDetail(policy = it)
+                navController.navigateToPolicyDetail(policyId = it)
             },
         )
         policyDetailNavGraph(
