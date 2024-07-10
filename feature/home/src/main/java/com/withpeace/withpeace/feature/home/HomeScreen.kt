@@ -54,6 +54,7 @@ import androidx.paging.compose.itemKey
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.util.dropShadow
 import com.withpeace.withpeace.core.ui.analytics.TrackScreenViewEvent
+import com.withpeace.withpeace.core.ui.bookmark.BookmarkButton
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
 import com.withpeace.withpeace.feature.home.filtersetting.FilterBottomSheet
@@ -371,7 +372,7 @@ private fun YouthPolicyCard(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 2,
             )
-            Image(
+            BookmarkButton(
                 modifier = modifier.constrainAs(
                     heart,
                 ) {
@@ -379,8 +380,6 @@ private fun YouthPolicyCard(
                     start.linkTo(parent.start)
                     bottom.linkTo(parent.bottom)
                 },
-                painter = painterResource(id = com.withpeace.withpeace.core.ui.R.drawable.ic_empty_heart),
-                contentDescription = "찜하기",
             )
 
             Text(
