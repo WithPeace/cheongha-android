@@ -335,7 +335,7 @@ private fun YouthPolicyCard(
         ) {
             val (
                 title, content,
-                region, ageRange, thumbnail,
+                region, ageRange, thumbnail, heart,
             ) = createRefs()
 
             Text(
@@ -371,6 +371,17 @@ private fun YouthPolicyCard(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 2,
             )
+            Image(
+                modifier = modifier.constrainAs(
+                    heart,
+                ) {
+                    top.linkTo(content.bottom, margin = 8.dp)
+                    start.linkTo(parent.start)
+                    bottom.linkTo(parent.bottom)
+                },
+                painter = painterResource(id = com.withpeace.withpeace.core.ui.R.drawable.ic_empty_heart),
+                contentDescription = "찜하기",
+            )
 
             Text(
                 text = youthPolicy.region.name,
@@ -379,9 +390,9 @@ private fun YouthPolicyCard(
                     .constrainAs(
                         region,
                         constrainBlock = {
-                            top.linkTo(content.bottom, margin = 8.dp)
-                            start.linkTo(parent.start)
-                            bottom.linkTo(parent.bottom)
+                            top.linkTo(heart.top)
+                            start.linkTo(heart.end, margin = 8.dp)
+                            bottom.linkTo(heart.bottom)
                         },
                     )
                     .background(
