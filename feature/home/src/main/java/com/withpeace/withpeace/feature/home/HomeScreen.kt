@@ -47,6 +47,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -55,9 +56,10 @@ import com.withpeace.withpeace.core.designsystem.util.dropShadow
 import com.withpeace.withpeace.core.ui.analytics.TrackScreenViewEvent
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
-import com.withpeace.withpeace.feature.home.uistate.YouthPolicyUiModel
 import com.withpeace.withpeace.feature.home.filtersetting.FilterBottomSheet
 import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
+import com.withpeace.withpeace.feature.home.uistate.YouthPolicyUiModel
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
 @Composable
@@ -179,7 +181,9 @@ private fun PolicyItems(
     ) {
         Spacer(modifier = modifier.height(8.dp))
         LazyColumn(
-            modifier = modifier.fillMaxSize().testTag("home:policies"),
+            modifier = modifier
+                .fillMaxSize()
+                .testTag("home:policies"),
             contentPadding = PaddingValues(bottom = 16.dp),
         ) {
             items(
@@ -429,9 +433,33 @@ private fun YouthPolicyCard(
 }
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun HomePreview() {
     WithpeaceTheme {
-        // HomeScreen()
+        HomeScreen(
+            youthPolicies =
+            flowOf(
+                PagingData.from(
+                    listOf(
+                        YouthPolicyUiModel(
+                            id = "deterruisset",
+                            title = "epicurei",
+                            content = "interdum",
+                            region = RegionUiModel.대구,
+                            ageInfo = "quo",
+                            classification = ClassificationUiModel.JOB,
+                        ),
+                    ),
+                ),
+            ).collectAsLazyPagingItems(),
+            selectedFilterUiState = PolicyFiltersUiModel(),
+            onDismissRequest = { },
+            onClassificationCheckChanged = {},
+            onRegionCheckChanged = {},
+            onFilterAllOff = {},
+            onSearchWithFilter = {},
+            onCloseFilter = {},
+            onPolicyClick = {},
+        )
     }
 }

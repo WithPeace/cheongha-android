@@ -53,6 +53,7 @@ class HomeViewModel @Inject constructor(
                 youthPoliciesUseCase(
                     filterInfo = completedFilters,
                     onError = {
+                        //TODO 로그아웃, 네트워크 에러
                     },
                 ).map {
                     it.map { youthPolicy ->
