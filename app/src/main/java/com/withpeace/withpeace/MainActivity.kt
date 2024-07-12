@@ -89,7 +89,7 @@ class MainActivity : ComponentActivity() {
                                 "네트워크 상태가 원활하지 않습니다.",
                                 Toast.LENGTH_SHORT,
                             ).show()
-                            finish()
+                            finish() // 강제 업데이트
                         }
                         MainUiState.Loading -> {}
                     }

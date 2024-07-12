@@ -31,12 +31,12 @@ fun WithPeaceBackButtonTopAppBar(
         navigationIcon = {
             Icon(
                 modifier =
-                    Modifier
-                        .padding(start = 20.dp, bottom = 16.dp, top = 16.dp, end = 28.dp)
-                        .clickable {
-                            onClickBackButton()
-                        }
-                        .padding(4.dp),
+                Modifier
+                    .padding(start = 20.dp, bottom = 16.dp, top = 16.dp, end = 28.dp)
+                    .clickable {
+                        onClickBackButton()
+                    }
+                    .padding(4.dp),
                 painter = painterResource(id = R.drawable.ic_backarrow_left),
                 contentDescription = "BackArrowLeft",
             )

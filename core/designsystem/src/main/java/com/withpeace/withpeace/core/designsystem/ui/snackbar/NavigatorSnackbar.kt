@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 
@@ -40,5 +41,13 @@ fun NavigatorSnackbar(data: SnackbarState) {
             color = WithpeaceTheme.colors.SubSkyBlue,
             textDecoration = TextDecoration.Underline,
         )
+    }
+}
+
+@Composable
+@Preview
+fun NavigationSnackbarPreview() {
+    WithpeaceTheme {
+        NavigatorSnackbar(data = SnackbarState("장충동 왕족발 보쌈", SnackbarType.Navigator("먹기",{})))
     }
 }

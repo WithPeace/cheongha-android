@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.model.policy.PolicyFilters
 import com.withpeace.withpeace.core.domain.usecase.GetYouthPoliciesUseCase
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
@@ -53,7 +54,14 @@ class HomeViewModel @Inject constructor(
                 youthPoliciesUseCase(
                     filterInfo = completedFilters,
                     onError = {
-                        //TODO 로그아웃, 네트워크 에러
+                        when (it) {
+                            ResponseError.EXPIRED_TOKEN_ERROR -> {
+                                //TODO 로그아웃, 네트워크 에러
+                            }
+
+                            else -> {
+                            }
+                        }
                     },
                 ).map {
                     it.map { youthPolicy ->
