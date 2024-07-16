@@ -41,6 +41,8 @@ import com.withpeace.withpeace.feature.signup.navigation.navigateSignUp
 import com.withpeace.withpeace.feature.signup.navigation.signUpNavGraph
 import com.withpeace.withpeace.feature.termsofservice.navigation.navigateToTermsOfService
 import com.withpeace.withpeace.feature.termsofservice.navigation.termsOfServiceGraph
+import navigatePolicyBookmarks
+import policyBookmarksNavGraph
 
 @Composable
 fun WithpeaceNavHost(
@@ -203,6 +205,9 @@ fun WithpeaceNavHost(
                 onAuthExpired = {
                     onAuthExpired(onShowSnackBar, navController)
                 },
+                onDibsOfPolicyClick = {
+                    navController.navigatePolicyBookmarks()
+                },
             )
             profileEditorNavGraph(
                 onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
@@ -223,6 +228,9 @@ fun WithpeaceNavHost(
                     navController.popBackStack()
 
                 },
+            )
+            policyBookmarksNavGraph(
+                onShowSnackBar = { onShowSnackBar(SnackbarState(it)) }
             )
         }
         postDetailGraph(

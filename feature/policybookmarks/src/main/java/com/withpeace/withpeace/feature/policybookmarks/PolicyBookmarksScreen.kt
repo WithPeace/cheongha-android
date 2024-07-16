@@ -7,7 +7,9 @@ import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.ui.bookmark.BookmarkButton
 
 @Composable
-fun PolicyBookmarksRoute() {
+fun PolicyBookmarksRoute(
+    onShowSnackBar: (message: String) -> Unit,
+) {
     PolicyBookmarksScreen()
 }
 
