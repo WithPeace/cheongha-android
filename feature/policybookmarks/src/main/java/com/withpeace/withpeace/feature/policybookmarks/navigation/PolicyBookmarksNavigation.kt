@@ -1,4 +1,3 @@
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -13,10 +12,12 @@ fun NavController.navigatePolicyBookmarks(navOptions: NavOptions? = null) {
 
 fun NavGraphBuilder.policyBookmarksNavGraph(
     onShowSnackBar: (message: String) -> Unit,
+    onClickBackButton: () -> Unit,
 ) {
     composable(route = POLICY_BOOKMARKS_ROUTE) {
         PolicyBookmarksRoute(
             onShowSnackBar = onShowSnackBar,
+            onClickBackButton = onClickBackButton,
         )
     }
 }

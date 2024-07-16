@@ -230,7 +230,10 @@ fun WithpeaceNavHost(
                 },
             )
             policyBookmarksNavGraph(
-                onShowSnackBar = { onShowSnackBar(SnackbarState(it)) }
+                onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
+                onClickBackButton = {
+                    navController.popBackStack()
+                }
             )
         }
         postDetailGraph(
