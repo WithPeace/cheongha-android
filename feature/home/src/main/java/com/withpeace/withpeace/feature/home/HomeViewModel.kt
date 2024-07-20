@@ -5,14 +5,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.model.policy.PolicyFilters
 import com.withpeace.withpeace.core.domain.usecase.GetYouthPoliciesUseCase
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
 import com.withpeace.withpeace.core.ui.policy.toDomain
 import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
-import com.withpeace.withpeace.core.ui.policy.YouthPolicyUiModel
-import com.withpeace.withpeace.core.ui.policy.toUiModel
+import com.withpeace.withpeace.feature.home.uistate.YouthPolicyUiModel
 import com.withpeace.withpeace.feature.home.uistate.toDomain
 import com.withpeace.withpeace.feature.home.uistate.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -54,6 +54,14 @@ class HomeViewModel @Inject constructor(
                 youthPoliciesUseCase(
                     filterInfo = completedFilters,
                     onError = {
+                        when (it) {
+                            ResponseError.EXPIRED_TOKEN_ERROR -> {
+                                //TODO 로그아웃, 네트워크 에러
+                            }
+
+                            else -> {
+                            }
+                        }
                     },
                 ).map {
                     it.map { youthPolicy ->

@@ -1,22 +1,16 @@
-package com.withpeace.withpeace.core.ui.policy
+package com.withpeace.withpeace.feature.policydetail.uistate
 
-import android.annotation.SuppressLint
-import androidx.annotation.DrawableRes
-import com.withpeace.withpeace.core.domain.model.policy.PolicyClassification
-import com.withpeace.withpeace.core.domain.model.policy.YouthPolicy
-import com.withpeace.withpeace.core.ui.serializable.parseNavigationValue
-import com.withpeace.withpeace.core.ui.serializable.toNavigationValue
-import java.io.Serializable
+import com.withpeace.withpeace.core.domain.model.policy.YouthPolicyDetail
+import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
+import com.withpeace.withpeace.core.ui.policy.toDomain
+import com.withpeace.withpeace.core.ui.policy.toUiModel
 
-@SuppressLint("SupportAnnotationUsage")
-@kotlinx.serialization.Serializable
-data class YouthPolicyUiModel(
+data class YouthPolicyDetailUiModel(
     val id: String,
     val title: String,
     val content: String,
-    val region: RegionUiModel,
     val ageInfo: String,
-    @DrawableRes val classification: ClassificationUiModel,
+    val classification: ClassificationUiModel,
 
     val applicationDetails: String,
     val residenceAndIncome: String,
@@ -35,24 +29,15 @@ data class YouthPolicyUiModel(
     val operatingOrganization: String,
     val businessRelatedReferenceSite1: String,
     val businessRelatedReferenceSite2: String,
-): Serializable {
-    companion object {
-        fun toNavigationValue(value: YouthPolicyUiModel): String =
-            value.toNavigationValue()
+)
 
-        fun parseNavigationValue(value: String): YouthPolicyUiModel =
-            value.parseNavigationValue()
-    }
-}
-
-fun YouthPolicy.toUiModel(): YouthPolicyUiModel {
-    return YouthPolicyUiModel(
+fun YouthPolicyDetail.toUiModel(): YouthPolicyDetailUiModel {
+    return YouthPolicyDetailUiModel(
         id = id,
         title = title,
         content = introduce,
-        region = region.toUiModel(),
         ageInfo = ageInfo,
-        classification = policyClassification.toUiModel(),
+        classification = classification.toUiModel(),
 
         applicationDetails = applicationDetails,
         residenceAndIncome = residenceAndIncome,
@@ -72,14 +57,13 @@ fun YouthPolicy.toUiModel(): YouthPolicyUiModel {
     )
 }
 
-fun YouthPolicyUiModel.toDomain(): YouthPolicy {
-    return YouthPolicy(
+fun YouthPolicyDetailUiModel.toDomain(): YouthPolicyDetail {
+    return YouthPolicyDetail(
         id = id,
         title = title,
         introduce = content,
-        region = region.toDomain(),
-        policyClassification = PolicyClassification.JOB, // Assuming this is a default or fixed value
         ageInfo = ageInfo,
+        classification = classification.toDomain(),
 
         applicationDetails = applicationDetails,
         residenceAndIncome = residenceAndIncome,

@@ -55,6 +55,7 @@ fun MyPageRoute(
     onLogoutSuccess: () -> Unit,
     onWithdrawSuccess: () -> Unit,
     onAuthExpired: () -> Unit,
+    onDibsOfPolicyClick: () -> Unit,
 ) {
     val profileInfo by viewModel.profileUiState.collectAsStateWithLifecycle()
     LaunchedEffect(viewModel.myPageUiEvent) {
@@ -85,6 +86,7 @@ fun MyPageRoute(
         },
         onWithdrawClick = viewModel::withdraw,
         profileInfo = profileInfo,
+        onDibsOfPolicyClick = onDibsOfPolicyClick
     )
 }
 
@@ -95,6 +97,7 @@ fun MyPageScreen(
     onLogoutClick: () -> Unit,
     onWithdrawClick: () -> Unit,
     profileInfo: ProfileUiState,
+    onDibsOfPolicyClick: () -> Unit,
 ) {
     Column {
         TitleBar(title = stringResource(R.string.my_page))
@@ -106,6 +109,7 @@ fun MyPageScreen(
                     onEditProfile,
                     onLogoutClick,
                     onWithdrawClick,
+                    onDibsOfPolicyClick = onDibsOfPolicyClick
                 )
             }
 
@@ -138,6 +142,7 @@ private fun MyPageContent(
     onEditProfile: (ProfileInfoUiModel) -> Unit,
     onLogoutClick: () -> Unit,
     onWithdrawClick: () -> Unit,
+    onDibsOfPolicyClick: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
     Column(modifier = modifier.verticalScroll(scrollState)) {
@@ -194,6 +199,7 @@ private fun MyPageContent(
             onLogoutClick = onLogoutClick,
             onWithdrawClick = onWithdrawClick,
             email = profileInfo.email,
+            onDibsOfPolicyClick = onDibsOfPolicyClick,
         )
     }
 }
@@ -203,10 +209,18 @@ fun MyPageSections(
     modifier: Modifier,
     onLogoutClick: () -> Unit,
     onWithdrawClick: () -> Unit,
+    onDibsOfPolicyClick: () -> Unit,
     email: String,
 ) {
     Column(modifier = modifier) {
         AccountSection(modifier, email = email)
+        HorizontalDivider(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(1.dp),
+            color = WithpeaceTheme.colors.SystemGray3,
+        )
+        FavoriteSection(onDibsOfPolicyClick = onDibsOfPolicyClick)
         HorizontalDivider(
             modifier = modifier
                 .fillMaxWidth()
@@ -223,7 +237,12 @@ private fun AccountSection(modifier: Modifier, email: String) {
         title = stringResource(R.string.account),
     ) {
         Spacer(modifier = modifier.height(16.dp))
-        Row(modifier = modifier.fillMaxWidth().padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding), horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
             Text(
                 text = stringResource(R.string.connected_account),
                 style = WithpeaceTheme.typography.body,
@@ -236,6 +255,30 @@ private fun AccountSection(modifier: Modifier, email: String) {
             )
         }
     }
+    Spacer(modifier = modifier.height(16.dp))
+}
+
+@Composable
+private fun FavoriteSection(
+    modifier: Modifier = Modifier,
+    onDibsOfPolicyClick: () -> Unit,
+) {
+    Section(title = stringResource(R.string.interested_list)) {
+        Spacer(modifier = modifier.height(8.dp))
+        Text(
+            text = stringResource(R.string.my_dibs_of_policy),
+            style = WithpeaceTheme.typography.body,
+            color = WithpeaceTheme.colors.SystemBlack,
+            modifier = modifier
+                .fillMaxWidth()
+                .clickable {
+                    onDibsOfPolicyClick()
+                }
+                .padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding)
+                .padding(vertical = 8.dp),
+        )
+    }
+    Spacer(modifier = modifier.height(8.dp))
 }
 
 @Composable
@@ -255,7 +298,8 @@ private fun EtcSection(
                 .fillMaxWidth()
                 .clickable {
                     onLogoutClick()
-                }.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding)
+                }
+                .padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding)
                 .padding(vertical = 8.dp),
         )
         Text(
@@ -266,7 +310,8 @@ private fun EtcSection(
                 .fillMaxWidth()
                 .clickable {
                     showDialog = true
-                }.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding)
+                }
+                .padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding)
                 .padding(vertical = 8.dp),
         )
     }
@@ -296,7 +341,6 @@ private fun Section(
         Spacer(modifier = modifier.height(16.dp))
         Text(text = title, style = WithpeaceTheme.typography.caption, color = Color(0xFF858585), modifier = modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding))
         content()
-        Spacer(modifier = modifier.height(16.dp))
     }
 
 }
@@ -312,6 +356,7 @@ fun MyPagePreview() {
             onLogoutClick = {},
             onWithdrawClick = {},
             profileInfo = ProfileUiState.Success(ProfileInfoUiModel("닉네임닉네임", "", "abc@gmail.com")),
+            onDibsOfPolicyClick = {}
         )
     }
 }

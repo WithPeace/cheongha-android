@@ -108,20 +108,4 @@ object NetworkModule {
             .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
             .build()
     }
-
-    @Named("youth_policy")
-    @Provides
-    @Singleton
-    fun provideXmlRetrofitClient(
-        @Named("logging_client") okHttpClient: OkHttpClient,
-    ): Retrofit {
-        val parser = TikXml.Builder().exceptionOnUnreadXml(false).build()
-
-        return Retrofit.Builder()
-            .client(okHttpClient)
-            .baseUrl("https://www.youthcenter.go.kr/opi/")
-            .addConverterFactory(TikXmlConverterFactory.create(parser))
-            .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
-            .build()
-    }
 }

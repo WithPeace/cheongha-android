@@ -47,24 +47,27 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.util.dropShadow
 import com.withpeace.withpeace.core.ui.analytics.TrackScreenViewEvent
+import com.withpeace.withpeace.core.ui.bookmark.BookmarkButton
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
-import com.withpeace.withpeace.core.ui.policy.YouthPolicyUiModel
 import com.withpeace.withpeace.feature.home.filtersetting.FilterBottomSheet
 import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
+import com.withpeace.withpeace.feature.home.uistate.YouthPolicyUiModel
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
 @Composable
 fun HomeRoute(
     onShowSnackBar: (message: String) -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel(),
-    onPolicyClick: (YouthPolicyUiModel) -> Unit,
+    onPolicyClick: (String) -> Unit,
 ) {
     val youthPolicyPagingData = viewModel.youthPolicyPagingFlow.collectAsLazyPagingItems()
     val selectedFilterUiState = viewModel.selectingFilters.collectAsStateWithLifecycle()
@@ -92,7 +95,7 @@ fun HomeScreen(
     onFilterAllOff: () -> Unit,
     onSearchWithFilter: () -> Unit,
     onCloseFilter: () -> Unit,
-    onPolicyClick: (YouthPolicyUiModel) -> Unit,
+    onPolicyClick: (String) -> Unit,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         HomeHeader(
@@ -169,7 +172,7 @@ fun HomeScreen(
 private fun PolicyItems(
     modifier: Modifier,
     youthPolicies: LazyPagingItems<YouthPolicyUiModel>,
-    onPolicyClick: (YouthPolicyUiModel) -> Unit,
+    onPolicyClick: (String) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -179,7 +182,9 @@ private fun PolicyItems(
     ) {
         Spacer(modifier = modifier.height(8.dp))
         LazyColumn(
-            modifier = modifier.fillMaxSize().testTag("home:policies"),
+            modifier = modifier
+                .fillMaxSize()
+                .testTag("home:policies"),
             contentPadding = PaddingValues(bottom = 16.dp),
         ) {
             items(
@@ -304,7 +309,7 @@ private fun HomeHeader(
 private fun YouthPolicyCard(
     modifier: Modifier,
     youthPolicy: YouthPolicyUiModel,
-    onPolicyClick: (YouthPolicyUiModel) -> Unit,
+    onPolicyClick: (String) -> Unit,
 ) {
     Card(
         modifier = modifier
@@ -320,7 +325,7 @@ private fun YouthPolicyCard(
                 borderRadius = 10.dp,
             )
             .clickable {
-                onPolicyClick(youthPolicy)
+                onPolicyClick(youthPolicy.id)
             },
     ) {
         ConstraintLayout(
@@ -331,7 +336,7 @@ private fun YouthPolicyCard(
         ) {
             val (
                 title, content,
-                region, ageRange, thumbnail,
+                region, ageRange, thumbnail, heart,
             ) = createRefs()
 
             Text(
@@ -367,6 +372,15 @@ private fun YouthPolicyCard(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 2,
             )
+            BookmarkButton(
+                modifier = modifier.constrainAs(
+                    heart,
+                ) {
+                    top.linkTo(content.bottom, margin = 8.dp)
+                    start.linkTo(parent.start)
+                    bottom.linkTo(parent.bottom)
+                },
+            )
 
             Text(
                 text = youthPolicy.region.name,
@@ -375,9 +389,9 @@ private fun YouthPolicyCard(
                     .constrainAs(
                         region,
                         constrainBlock = {
-                            top.linkTo(content.bottom, margin = 8.dp)
-                            start.linkTo(parent.start)
-                            bottom.linkTo(parent.bottom)
+                            top.linkTo(heart.top)
+                            start.linkTo(heart.end, margin = 8.dp)
+                            bottom.linkTo(heart.bottom)
                         },
                     )
                     .background(
@@ -429,9 +443,33 @@ private fun YouthPolicyCard(
 }
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 fun HomePreview() {
     WithpeaceTheme {
-        // HomeScreen()
+        HomeScreen(
+            youthPolicies =
+            flowOf(
+                PagingData.from(
+                    listOf(
+                        YouthPolicyUiModel(
+                            id = "deterruisset",
+                            title = "epicurei",
+                            content = "interdum",
+                            region = RegionUiModel.대구,
+                            ageInfo = "quo",
+                            classification = ClassificationUiModel.JOB,
+                        ),
+                    ),
+                ),
+            ).collectAsLazyPagingItems(),
+            selectedFilterUiState = PolicyFiltersUiModel(),
+            onDismissRequest = { },
+            onClassificationCheckChanged = {},
+            onRegionCheckChanged = {},
+            onFilterAllOff = {},
+            onSearchWithFilter = {},
+            onCloseFilter = {},
+            onPolicyClick = {},
+        )
     }
 }

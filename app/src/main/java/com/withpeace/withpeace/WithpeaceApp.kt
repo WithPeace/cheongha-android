@@ -34,6 +34,7 @@ fun WithpeaceApp(
     val snackBarHostState = remember { SnackbarHostState() }
     var snackBarState: SnackbarState =
         remember { SnackbarState("", SnackbarType.Normal) }
+
     val coroutineScope = rememberCoroutineScope()
     fun showSnackBar(snackbarState: SnackbarState) = coroutineScope.launch {
         snackBarState = snackbarState

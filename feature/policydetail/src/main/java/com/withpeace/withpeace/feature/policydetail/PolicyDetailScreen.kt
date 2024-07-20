@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
@@ -31,38 +30,53 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
-import com.withpeace.withpeace.core.ui.policy.RegionUiModel
-import com.withpeace.withpeace.core.ui.policy.YouthPolicyUiModel
 import com.withpeace.withpeace.core.ui.policy.analytics.TrackPolicyDetailScreenViewEvent
 import com.withpeace.withpeace.feature.policydetail.component.DescriptionTitleAndContent
 import com.withpeace.withpeace.feature.policydetail.component.HyperLinkDescriptionTitleAndContent
+import com.withpeace.withpeace.feature.policydetail.uistate.YouthPolicyDetailUiModel
+import com.withpeace.withpeace.feature.policydetail.uistate.YouthPolicyDetailUiState
 import eu.wewox.textflow.TextFlow
 import eu.wewox.textflow.TextFlowObstacleAlignment
 
 @Composable
 fun PolicyDetailRoute(
-    policy: YouthPolicyUiModel,
     onShowSnackBar: (message: String) -> Unit,
     viewModel: PolicyDetailViewModel = hiltViewModel(),
     onClickBackButton: () -> Unit,
 ) {
+    val policyDetailUiState = viewModel.policyDetailUiState.collectAsStateWithLifecycle()
     PolicyDetailScreen(
         onClickBackButton = onClickBackButton,
-        policy = policy,
+        policyUiState = policyDetailUiState.value,
     )
 }
 
 @Composable
 fun PolicyDetailScreen(
-    policy: YouthPolicyUiModel,
+    policyUiState: YouthPolicyDetailUiState,
     modifier: Modifier = Modifier,
     onClickBackButton: () -> Unit,
+) {
+    when (policyUiState) {
+        is YouthPolicyDetailUiState.Success -> {
+            PolicyDetailContent(modifier, onClickBackButton, policyUiState.youthPolicyDetail)
+        }
+
+        YouthPolicyDetailUiState.Failure -> {}
+        YouthPolicyDetailUiState.Loading -> {}
+    }
+}
+
+@Composable
+private fun PolicyDetailContent(
+    modifier: Modifier = Modifier,
+    onClickBackButton: () -> Unit,
+    policy: YouthPolicyDetailUiModel,
 ) {
     val scrollState = rememberScrollState()
     val position = remember {
@@ -147,7 +161,7 @@ fun PolicyDetailScreen(
 @Composable
 private fun TitleSection(
     modifier: Modifier,
-    policy: YouthPolicyUiModel,
+    policy: YouthPolicyDetailUiModel,
 ) {
     Column(
         modifier = modifier.padding(horizontal = 24.dp),
@@ -189,7 +203,7 @@ private fun TitleSection(
 }
 
 @Composable
-fun PolicySummarySection(modifier: Modifier = Modifier, policy: YouthPolicyUiModel) {
+fun PolicySummarySection(modifier: Modifier = Modifier, policy: YouthPolicyDetailUiModel) {
     Column(modifier = modifier.padding(horizontal = 24.dp)) {
         Spacer(modifier = modifier.height(24.dp))
         Text(
@@ -218,7 +232,7 @@ fun PolicySummarySection(modifier: Modifier = Modifier, policy: YouthPolicyUiMod
 @Composable
 fun ApplyQualificationSection(
     modifier: Modifier = Modifier,
-    policy: YouthPolicyUiModel,
+    policy: YouthPolicyDetailUiModel,
 ) {
     Column(modifier = modifier.padding(horizontal = 24.dp)) {
         Spacer(modifier = modifier.height(24.dp))
@@ -257,7 +271,7 @@ fun ApplyQualificationSection(
 @Composable
 fun ApplicationGuideSection(
     modifier: Modifier = Modifier,
-    policy: YouthPolicyUiModel,
+    policy: YouthPolicyDetailUiModel,
 ) {
     Column(modifier = modifier.padding(horizontal = 24.dp)) {
         Spacer(modifier = modifier.height(24.dp))
@@ -294,7 +308,7 @@ fun ApplicationGuideSection(
 @Composable
 fun AdditionalInfoSection(
     modifier: Modifier = Modifier,
-    policy: YouthPolicyUiModel,
+    policy: YouthPolicyDetailUiModel,
 ) {
     Column(modifier = modifier.padding(horizontal = 24.dp)) {
         Spacer(modifier = modifier.height(24.dp))
@@ -337,12 +351,11 @@ fun AdditionalInfoSection(
 @Composable
 fun PolicyDetailPreview() {
     WithpeaceTheme {
-        PolicyDetailScreen(
-            policy = YouthPolicyUiModel(
+        PolicyDetailContent(
+            policy = YouthPolicyDetailUiModel(
                 id = "sociosqu",
                 title = "facilis",
                 content = "가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바",
-                region = RegionUiModel.대구,
                 ageInfo = "cum",
                 applicationDetails = "지원내용들.....",
                 residenceAndIncome = "sale",
@@ -361,7 +374,7 @@ fun PolicyDetailPreview() {
                 businessRelatedReferenceSite1 = "noluisse",
                 businessRelatedReferenceSite2 = "quo",
             ),
-        ) {
-        }
+            onClickBackButton = {},
+        )
     }
 }

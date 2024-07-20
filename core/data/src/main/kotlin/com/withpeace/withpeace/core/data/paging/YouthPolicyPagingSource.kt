@@ -1,12 +1,10 @@
 package com.withpeace.withpeace.core.data.paging
 
-import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.skydoves.sandwich.ApiResponse
-import com.withpeace.withpeace.core.data.BuildConfig
-import com.withpeace.withpeace.core.data.mapper.toCode
-import com.withpeace.withpeace.core.data.mapper.toDomain
+import com.withpeace.withpeace.core.data.mapper.youthpolicy.toCode
+import com.withpeace.withpeace.core.data.mapper.youthpolicy.toDomain
 import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.model.policy.PolicyFilters
@@ -23,14 +21,11 @@ class YouthPolicyPagingSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, YouthPolicy> {
         val pageIndex = params.key ?: 1
         val response = youthPolicyService.getPolicies(
-            apiKey = BuildConfig.YOUTH_POLICY_API_KEY,
-            pageSize = params.loadSize,
+            display = params.loadSize,
             pageIndex = pageIndex,
-            classification = filterInfo.classifications.joinToString(",") { it.toCode() },
             region = filterInfo.regions.joinToString(",") { it.toCode() },
+            classification = filterInfo.classifications.joinToString(",") { it.toCode() },
         )
-
-
 
         if (response is ApiResponse.Failure) {
             val error: CheonghaError =
@@ -40,11 +35,11 @@ class YouthPolicyPagingSource(
             return LoadResult.Error(IllegalStateException("API response error that $error"))
         }
 
-        val data = (response as ApiResponse.Success).data
+        val successResponse = (response as ApiResponse.Success).data
         return LoadResult.Page(
-            data = data.youthPolicyEntity?.map { it.toDomain() } ?: emptyList(),
+            data = successResponse.data.map { it.toDomain() },
             prevKey = if (pageIndex == STARTING_PAGE_INDEX) null else pageIndex - 1,
-            nextKey = if (response.data.youthPolicyEntity.isNullOrEmpty()) null else pageIndex + (params.loadSize / pageSize),
+            nextKey = if (successResponse.data.isEmpty()) null else pageIndex + (params.loadSize / pageSize),
         )
     }
 

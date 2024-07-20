@@ -22,6 +22,7 @@ fun NavGraphBuilder.myPageNavGraph(
     onLogoutSuccess: () -> Unit,
     onWithdrawSuccess: () -> Unit,
     onAuthExpired: () -> Unit,
+    onDibsOfPolicyClick: () -> Unit,
 ) {
     composable(route = MY_PAGE_ROUTE) {
         val nickname = it.savedStateHandle.get<String>(MY_PAGE_CHANGED_NICKNAME_ARGUMENT)
@@ -34,7 +35,8 @@ fun NavGraphBuilder.myPageNavGraph(
             onLogoutSuccess = onLogoutSuccess,
             onWithdrawSuccess = onWithdrawSuccess,
             viewModel = viewModel,
-            onAuthExpired = onAuthExpired
+            onAuthExpired = onAuthExpired,
+            onDibsOfPolicyClick = onDibsOfPolicyClick,
         )
     }
 }

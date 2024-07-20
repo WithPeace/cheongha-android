@@ -3,7 +3,6 @@ package com.app.profileeditor
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -61,6 +60,8 @@ fun ProfileEditorRoute(
     BackHandler {
         if (profileInfo.isChanged) {
             showAlertDialog = true
+        } else {
+            onClickBackButton()
         }
     }
     if (showAlertDialog) {
@@ -210,7 +211,8 @@ private fun EditCompletedButton(
                 end = WithpeaceTheme.padding.BasicHorizontalPadding,
                 start = WithpeaceTheme.padding.BasicHorizontalPadding,
             )
-            .fillMaxWidth().imePadding(),
+            .fillMaxWidth()
+            .imePadding(),
         colors = ButtonDefaults.buttonColors(containerColor = if (isClickable) WithpeaceTheme.colors.MainPurple else WithpeaceTheme.colors.SystemGray2),
         shape = RoundedCornerShape(9.dp),
     ) {
@@ -234,7 +236,8 @@ fun ModifySaveDialog(
         Surface(
             modifier = modifier
                 .width(327.dp)
-                .clip(RoundedCornerShape(10.dp)),
+                .clip(RoundedCornerShape(10.dp))
+                .background(WithpeaceTheme.colors.SystemWhite),
         ) {
             ModifySaveDialogContent(
                 modifier = modifier,
