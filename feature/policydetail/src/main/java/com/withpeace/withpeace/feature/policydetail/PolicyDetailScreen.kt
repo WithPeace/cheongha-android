@@ -84,10 +84,12 @@ private fun PolicyDetailContent(
     }
     val visibility = remember {
         derivedStateOf {
-            scrollState.value >= position.intValue
+            scrollState.value > position.intValue
         }
     }
-    Column(modifier = modifier.fillMaxSize().background(WithpeaceTheme.colors.SystemWhite)) {
+    Column(modifier = modifier
+        .fillMaxSize()
+        .background(WithpeaceTheme.colors.SystemWhite)) {
         WithPeaceBackButtonTopAppBar(
             onClickBackButton = onClickBackButton,
             title = {
@@ -103,6 +105,7 @@ private fun PolicyDetailContent(
                         overflow = TextOverflow.Ellipsis,
                         modifier = modifier.padding(end = 24.dp),
                     )
+
                 }
             },
         )
