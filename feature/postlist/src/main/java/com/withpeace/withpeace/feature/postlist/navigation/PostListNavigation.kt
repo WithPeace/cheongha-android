@@ -19,7 +19,9 @@ fun NavGraphBuilder.postListGraph(
     navigateToPostDetail: (postId: Long) -> Unit,
     onAuthExpired: () -> Unit,
 ) {
-    composable(POST_LIST_ROUTE) {
+    composable(
+        route = POST_LIST_ROUTE,
+    ) {
         val deletedId = it.savedStateHandle.get<Long>(POST_LIST_DELETED_POST_ID_ARGUMENT)
         val viewModel: PostListViewModel = hiltViewModel()
         deletedId?.let { id ->

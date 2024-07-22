@@ -24,7 +24,9 @@ fun NavGraphBuilder.myPageNavGraph(
     onAuthExpired: () -> Unit,
     onDibsOfPolicyClick: () -> Unit,
 ) {
-    composable(route = MY_PAGE_ROUTE) {
+    composable(
+        route = MY_PAGE_ROUTE,
+    ) {
         val nickname = it.savedStateHandle.get<String>(MY_PAGE_CHANGED_NICKNAME_ARGUMENT)
         val profile = it.savedStateHandle.get<String>(MY_PAGE_CHANGED_IMAGE_ARGUMENT)
         val viewModel: MyPageViewModel = hiltViewModel()
