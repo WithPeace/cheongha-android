@@ -99,7 +99,9 @@ fun MyPageScreen(
     profileInfo: ProfileUiState,
     onDibsOfPolicyClick: () -> Unit,
 ) {
-    Column {
+    Column(modifier = modifier
+        .fillMaxSize()
+        .background(WithpeaceTheme.colors.SystemWhite)) {
         TitleBar(title = stringResource(R.string.my_page))
         when (profileInfo) {
             is ProfileUiState.Success -> {
