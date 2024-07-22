@@ -1,5 +1,7 @@
 package com.withpeace.withpeace.feature.registerpost.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -25,7 +27,21 @@ fun NavGraphBuilder.registerPostNavGraph(
     originPost: RegisterPostUiModel?,
     onAuthExpired: () -> Unit,
 ) {
-    composable(route = REGISTER_POST_ROUTE) { entry ->
+    composable(
+        route = REGISTER_POST_ROUTE,
+        enterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Up,
+                animationSpec = tween(500),
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Down,
+                animationSpec = tween(500),
+            )
+        },
+    ) { entry ->
         val viewModel: RegisterPostViewModel = hiltViewModel()
 
         viewModel.initRegisterPost(originPost)

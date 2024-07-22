@@ -1,5 +1,7 @@
 package com.app.profileeditor.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -41,6 +43,18 @@ fun NavGraphBuilder.profileEditorNavGraph(
             navArgument(PROFILE_NICKNAME_ARGUMENT) { type = NavType.StringType },
             navArgument(PROFILE_IMAGE_URL_ARGUMENT) { type = NavType.StringType },
         ),
+        enterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(500),
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(500),
+            )
+        },
     ) { entry ->
         val selectedImageUri =
             entry.savedStateHandle.get<List<String>>(IMAGE_LIST_ARGUMENT) ?: emptyList()

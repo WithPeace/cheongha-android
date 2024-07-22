@@ -1,5 +1,7 @@
 package com.withpeace.withpeace.feature.home.navigation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -18,6 +20,8 @@ fun NavGraphBuilder.homeNavGraph(
 ) {
     composable(
         route = HOME_ROUTE,
+        enterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None },
     ) {
         HomeRoute(
             onShowSnackBar = onShowSnackBar,

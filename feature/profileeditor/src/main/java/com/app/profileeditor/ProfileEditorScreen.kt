@@ -142,6 +142,7 @@ fun ProfileEditorScreen(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
             .fillMaxSize()
+            .background(WithpeaceTheme.colors.SystemWhite)
             .verticalScroll(rememberScrollState())
             .padding(top = 0.dp),
     ) {

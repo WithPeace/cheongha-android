@@ -87,7 +87,7 @@ private fun PolicyDetailContent(
             scrollState.value >= position.intValue
         }
     }
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize().background(WithpeaceTheme.colors.SystemWhite)) {
         WithPeaceBackButtonTopAppBar(
             onClickBackButton = onClickBackButton,
             title = {

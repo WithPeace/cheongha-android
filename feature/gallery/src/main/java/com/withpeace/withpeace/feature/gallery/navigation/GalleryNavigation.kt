@@ -1,5 +1,7 @@
 package com.withpeace.withpeace.feature.gallery.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -32,6 +34,18 @@ fun NavGraphBuilder.galleryNavGraph(
             navArgument(GALLERY_IMAGE_LIMIT_ARGUMENT) { type = NavType.IntType },
             navArgument(GALLERY_ALREADY_IMAGE_COUNT_ARGUMENT) { type = NavType.IntType },
         ),
+        enterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(500),
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(500),
+            )
+        },
     ) {
         GalleryRoute(
             onClickBackButton = onClickBackButton,

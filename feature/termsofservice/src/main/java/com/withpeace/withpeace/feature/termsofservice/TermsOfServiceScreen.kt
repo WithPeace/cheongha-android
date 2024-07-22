@@ -1,6 +1,8 @@
 package com.withpeace.withpeace.feature.termsofservice
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +26,11 @@ fun TermsOfServiceScreen(
     modifier: Modifier = Modifier,
     onClickBackButton: () -> Unit,
 ) {
-    Column {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(WithpeaceTheme.colors.SystemWhite),
+    ) {
         WithPeaceBackButtonTopAppBar(
             onClickBackButton = onClickBackButton,
             title = {
