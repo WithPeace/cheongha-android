@@ -94,7 +94,7 @@ fun PostListScreen(
     onTopicChanged: (PostTopicUiModel) -> Unit = {},
     navigateToDetail: (postId: Long) -> Unit = {},
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize().background(WithpeaceTheme.colors.SystemWhite)) {
         Spacer(modifier = Modifier.height(8.dp))
         TopicTabs(
             currentTopic = currentTopic,
