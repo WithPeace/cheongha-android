@@ -1,5 +1,7 @@
 package com.withpeace.withpeace.feature.privacypolicy.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -15,7 +17,21 @@ fun NavGraphBuilder.privacyPolicyGraph(
     onShowSnackBar: (String) -> Unit,
     onClickBackButton: () -> Unit,
 ) {
-    composable(PRIVACY_POLICY_ROUTE) {
+    composable(
+        route = PRIVACY_POLICY_ROUTE,
+        enterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(500),
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(500),
+            )
+        },
+    ) {
         PrivacyPolicyRoute(
             onShowSnackBar = onShowSnackBar,
             onClickBackButton = onClickBackButton,

@@ -1,6 +1,7 @@
 package com.withpeace.withpeace.feature.policyconsent
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -90,8 +91,10 @@ fun PolicyConsentScreen(
 ) {
     val scrollState = rememberScrollState()
     Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(WithpeaceTheme.colors.SystemWhite),
         verticalArrangement = Arrangement.SpaceBetween,
-        modifier = modifier.fillMaxSize(),
     ) {
         Column(
             modifier

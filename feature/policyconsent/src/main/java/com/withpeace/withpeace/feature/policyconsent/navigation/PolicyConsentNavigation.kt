@@ -1,5 +1,7 @@
 package com.withpeace.withpeace.feature.policyconsent.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -17,7 +19,21 @@ fun NavGraphBuilder.policyConsentGraph(
     onShowTermsOfServiceClick: () -> Unit,
     onSuccessToNext: () -> Unit,
 ) {
-    composable(POLICY_CONSENT_ROUTE) {
+    composable(
+        POLICY_CONSENT_ROUTE,
+        enterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(500),
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(500),
+            )
+        },
+    ) {
         PolicyConsentRoute(
             onShowSnackBar = onShowSnackBar,
             onShowPrivacyPolicyClick = onShowPrivacyPolicyClick,

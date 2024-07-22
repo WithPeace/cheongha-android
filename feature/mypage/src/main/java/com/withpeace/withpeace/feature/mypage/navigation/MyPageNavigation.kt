@@ -1,5 +1,7 @@
 package com.withpeace.withpeace.feature.mypage.navigation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -24,7 +26,11 @@ fun NavGraphBuilder.myPageNavGraph(
     onAuthExpired: () -> Unit,
     onDibsOfPolicyClick: () -> Unit,
 ) {
-    composable(route = MY_PAGE_ROUTE) {
+    composable(
+        route = MY_PAGE_ROUTE,
+        enterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None },
+    ) {
         val nickname = it.savedStateHandle.get<String>(MY_PAGE_CHANGED_NICKNAME_ARGUMENT)
         val profile = it.savedStateHandle.get<String>(MY_PAGE_CHANGED_IMAGE_ARGUMENT)
         val viewModel: MyPageViewModel = hiltViewModel()

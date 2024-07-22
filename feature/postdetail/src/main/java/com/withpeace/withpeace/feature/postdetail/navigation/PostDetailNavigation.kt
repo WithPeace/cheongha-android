@@ -39,6 +39,12 @@ fun NavGraphBuilder.postDetailGraph(
                 animationSpec = tween(500),
             )
         },
+        exitTransition = {
+            slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(500),
+            )
+        },
     ) {
         PostDetailRoute(
             onShowSnackBar = onShowSnackBar,
