@@ -2,6 +2,7 @@ package com.withpeace.withpeace.core.network.di.service
 
 import com.skydoves.sandwich.ApiResponse
 import com.withpeace.withpeace.core.network.di.response.BaseResponse
+import com.withpeace.withpeace.core.network.di.response.policy.BookmarkedPolicyResponse
 import com.withpeace.withpeace.core.network.di.response.policy.PolicyDetailResponse
 import com.withpeace.withpeace.core.network.di.response.policy.PolicyResponse
 import retrofit2.http.DELETE
@@ -27,4 +28,7 @@ interface YouthPolicyService {
 
     @DELETE("/api/v1/policies/{policyId}/favorites")
     suspend fun unBookmarkPolicy(@Path("policyId") policyId: String): ApiResponse<BaseResponse<Boolean>>
+
+    @GET("/api/v1/policies/favorites")
+    suspend fun getBookmarkedPolicies(): ApiResponse<BaseResponse<BookmarkedPolicyResponse>>
 }

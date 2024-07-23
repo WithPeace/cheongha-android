@@ -342,4 +342,3 @@ private fun FilterFooter(
     }
 }
 
-//TODO("최상단 스크롤 이벤트 완료 후 시트 닫히도록")

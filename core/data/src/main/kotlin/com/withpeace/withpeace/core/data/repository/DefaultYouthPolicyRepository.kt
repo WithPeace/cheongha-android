@@ -4,13 +4,14 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.skydoves.sandwich.suspendMapSuccess
-import com.skydoves.sandwich.suspendOnError
+import com.skydoves.sandwich.suspendOnFailure
 import com.withpeace.withpeace.core.data.mapper.youthpolicy.toDomain
 import com.withpeace.withpeace.core.data.paging.YouthPolicyPagingSource
 import com.withpeace.withpeace.core.data.util.handleApiFailure
 import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import com.withpeace.withpeace.core.domain.model.error.ClientError
 import com.withpeace.withpeace.core.domain.model.error.ResponseError
+import com.withpeace.withpeace.core.domain.model.policy.BookmarkedPolicy
 import com.withpeace.withpeace.core.domain.model.policy.PolicyFilters
 import com.withpeace.withpeace.core.domain.model.policy.YouthPolicy
 import com.withpeace.withpeace.core.domain.model.policy.YouthPolicyDetail
@@ -36,6 +37,7 @@ class DefaultYouthPolicyRepository @Inject constructor(
                 onError = onError,
                 pageSize = PAGE_SIZE,
                 filterInfo = filterInfo,
+                userRepository = userRepository,
             )
         },
     ).flow
@@ -46,6 +48,38 @@ class DefaultYouthPolicyRepository @Inject constructor(
     ): Flow<YouthPolicyDetail> = flow {
         youthPolicyService.getPolicyDetail(policyId).suspendMapSuccess {
             emit(data.toDomain())
+        }.handleApiFailure {
+            onErrorWithAuthExpired(it, onError)
+        }
+    }
+
+    override fun getBookmarkedPolicies(
+        onError: suspend (CheonghaError) -> Unit,
+    ): Flow<List<BookmarkedPolicy>> = flow {
+        youthPolicyService.getBookmarkedPolicies().suspendMapSuccess {
+            // emit(data.toDomain())
+        }.handleApiFailure {
+            onErrorWithAuthExpired(it, onError)
+        }
+    }
+
+    override fun bookmarkPolicy(
+        policyId: String,
+        onError: suspend (CheonghaError) -> Unit,
+    ): Flow<Unit> = flow {
+        youthPolicyService.bookmarkPolicy(policyId).suspendMapSuccess {
+            emit(Unit)
+        }.handleApiFailure {
+            onErrorWithAuthExpired(it, onError)
+        }
+    }
+
+    override fun unBookmarkPolicy(
+        policyId: String,
+        onError: suspend (CheonghaError) -> Unit,
+    ): Flow<Unit> = flow {
+        youthPolicyService.unBookmarkPolicy(policyId).suspendMapSuccess {
+            emit(Unit)
         }.handleApiFailure {
             onErrorWithAuthExpired(it, onError)
         }
