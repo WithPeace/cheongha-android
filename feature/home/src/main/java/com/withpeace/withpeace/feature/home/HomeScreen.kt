@@ -372,13 +372,20 @@ private fun YouthPolicyCard(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 2,
             )
+            val isChecked = remember {
+                mutableStateOf(false)
+            }
             BookmarkButton(
+                isClicked = isChecked.value,
                 modifier = modifier.constrainAs(
                     heart,
                 ) {
                     top.linkTo(content.bottom, margin = 8.dp)
                     start.linkTo(parent.start)
                     bottom.linkTo(parent.bottom)
+                },
+                onClick = { isClicked ->
+                    isChecked.value = isClicked
                 },
             )
 

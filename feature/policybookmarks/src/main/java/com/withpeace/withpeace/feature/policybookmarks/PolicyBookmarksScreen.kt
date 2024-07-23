@@ -16,6 +16,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -155,6 +157,7 @@ private fun YouthPolicyCard(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 2,
             )
+
             BookmarkButton(
                 modifier = modifier.constrainAs(
                     heart,
@@ -162,6 +165,8 @@ private fun YouthPolicyCard(
                     top.linkTo(content.bottom, margin = 8.dp)
                     start.linkTo(parent.start)
                     bottom.linkTo(parent.bottom)
+                },
+                onClick = {
                 },
             )
 
