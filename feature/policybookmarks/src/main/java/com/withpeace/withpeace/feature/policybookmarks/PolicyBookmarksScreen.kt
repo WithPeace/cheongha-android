@@ -81,6 +81,7 @@ fun PolicyBookmarksScreen(
                             region = RegionUiModel.대구,
                             ageInfo = "consetetur",
                             classification = ClassificationUiModel.JOB,
+                            isBookmarked = false
                         ),
                         onPolicyClick = {},
                     )

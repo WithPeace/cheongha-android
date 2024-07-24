@@ -7,4 +7,5 @@ data class YouthPolicy(
     val region: PolicyRegion,
     val policyClassification: PolicyClassification,
     val ageInfo: String,
+    val isBookmarked: Boolean,
 )

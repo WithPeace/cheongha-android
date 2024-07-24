@@ -13,6 +13,7 @@ data class YouthPolicyUiModel(
     val region: RegionUiModel,
     val ageInfo: String,
     val classification: ClassificationUiModel,
+    val isBookmarked: Boolean,
 )
 
 fun YouthPolicy.toUiModel(): YouthPolicyUiModel {
@@ -23,6 +24,7 @@ fun YouthPolicy.toUiModel(): YouthPolicyUiModel {
         region = region.toUiModel(),
         ageInfo = ageInfo,
         classification = policyClassification.toUiModel(),
+        isBookmarked = isBookmarked,
     )
 }
 
@@ -34,6 +36,7 @@ fun YouthPolicyUiModel.toDomain(): YouthPolicy {
         region = region.toDomain(),
         policyClassification = classification.toDomain(),
         ageInfo = ageInfo,
+        isBookmarked = isBookmarked,
     )
 }
 

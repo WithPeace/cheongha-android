@@ -9,5 +9,6 @@ data class PolicyResponse(
     val introduce: String,
     val classification: String,
     val region: String,
-    val ageInfo: String
+    val ageInfo: String,
+    val isBookmarked: Boolean = false,
 )

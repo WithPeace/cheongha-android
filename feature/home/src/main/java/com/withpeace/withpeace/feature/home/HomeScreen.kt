@@ -465,6 +465,7 @@ fun HomePreview() {
                             region = RegionUiModel.대구,
                             ageInfo = "quo",
                             classification = ClassificationUiModel.JOB,
+                            isBookmarked = false,
                         ),
                     ),
                 ),
