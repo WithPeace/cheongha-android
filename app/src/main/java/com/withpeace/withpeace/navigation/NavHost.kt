@@ -254,9 +254,10 @@ fun WithpeaceNavHost(
                 onAuthExpired(onShowSnackBar, navController)
             },
             onDeleteSuccess = {
-                navController.previousBackStackEntry?.savedStateHandle?.apply {
-                    set(POST_LIST_DELETED_POST_ID_ARGUMENT, it)
-                }
+                navController.previousBackStackEntry?.savedStateHandle?.set(
+                    POST_LIST_DELETED_POST_ID_ARGUMENT,
+                    it,
+                )
                 navController.popBackStack()
             },
         )

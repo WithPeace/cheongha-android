@@ -4,7 +4,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.skydoves.sandwich.suspendMapSuccess
-import com.skydoves.sandwich.suspendOnFailure
 import com.withpeace.withpeace.core.data.mapper.youthpolicy.toDomain
 import com.withpeace.withpeace.core.data.paging.YouthPolicyPagingSource
 import com.withpeace.withpeace.core.data.util.handleApiFailure
@@ -57,7 +56,7 @@ class DefaultYouthPolicyRepository @Inject constructor(
         onError: suspend (CheonghaError) -> Unit,
     ): Flow<List<BookmarkedPolicy>> = flow {
         youthPolicyService.getBookmarkedPolicies().suspendMapSuccess {
-            // emit(data.toDomain())
+            emit(data.map { it.toDomain() })
         }.handleApiFailure {
             onErrorWithAuthExpired(it, onError)
         }

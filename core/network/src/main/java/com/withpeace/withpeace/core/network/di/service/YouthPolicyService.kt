@@ -30,5 +30,5 @@ interface YouthPolicyService {
     suspend fun unBookmarkPolicy(@Path("policyId") policyId: String): ApiResponse<BaseResponse<Boolean>>
 
     @GET("/api/v1/policies/favorites")
-    suspend fun getBookmarkedPolicies(): ApiResponse<BaseResponse<BookmarkedPolicyResponse>>
+    suspend fun getBookmarkedPolicies(): ApiResponse<BaseResponse<List<BookmarkedPolicyResponse>>>
 }
