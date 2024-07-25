@@ -29,6 +29,8 @@ data class YouthPolicyDetailUiModel(
     val operatingOrganization: String,
     val businessRelatedReferenceSite1: String,
     val businessRelatedReferenceSite2: String,
+
+    val isBookmarked: Boolean,
 )
 
 fun YouthPolicyDetail.toUiModel(): YouthPolicyDetailUiModel {
@@ -54,6 +56,7 @@ fun YouthPolicyDetail.toUiModel(): YouthPolicyDetailUiModel {
         operatingOrganization = operatingOrganization,
         businessRelatedReferenceSite1 = businessRelatedReferenceSite1,
         businessRelatedReferenceSite2 = businessRelatedReferenceSite2,
+        isBookmarked = isBookmarked,
     )
 }
 
@@ -80,5 +83,6 @@ fun YouthPolicyDetailUiModel.toDomain(): YouthPolicyDetail {
         operatingOrganization = operatingOrganization,
         businessRelatedReferenceSite1 = businessRelatedReferenceSite1,
         businessRelatedReferenceSite2 = businessRelatedReferenceSite2,
+        isBookmarked = isBookmarked,
     )
 }

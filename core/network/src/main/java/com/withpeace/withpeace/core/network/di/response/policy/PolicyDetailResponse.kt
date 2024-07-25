@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.core.network.di.response.policy
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -24,4 +25,5 @@ data class PolicyDetailResponse(
     val operatingOrganization: String, // 운영 기관
     val businessRelatedReferenceSite1: String, // 사업관련 참고 사이트 1
     val businessRelatedReferenceSite2: String, // 사업관련 참고 사이트 2
+    @SerialName("isFavorite") val isBookmarked: Boolean,
 )

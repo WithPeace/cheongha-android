@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.core.network.di.response.policy
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -11,4 +12,5 @@ data class BookmarkedPolicyResponse(
     val region: String,
     val ageInfo: String,
     val isActive: Boolean,
+    @SerialName("isFavorite") val isBookmarked: Boolean,
 )

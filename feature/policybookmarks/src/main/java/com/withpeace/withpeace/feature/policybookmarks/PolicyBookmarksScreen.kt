@@ -16,8 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -34,7 +32,7 @@ import com.withpeace.withpeace.core.designsystem.util.dropShadow
 import com.withpeace.withpeace.core.ui.bookmark.BookmarkButton
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
-import com.withpeace.withpeace.feature.policybookmarks.uistate.YouthPolicyUiModel
+import com.withpeace.withpeace.feature.policybookmarks.uistate.BookmarkedYouthPolicyUiModel
 
 @Composable
 fun PolicyBookmarksRoute(
@@ -74,14 +72,15 @@ fun PolicyBookmarksScreen(
                 items(20) {
                     Spacer(modifier = modifier.height(8.dp))
                     YouthPolicyCard(
-                        youthPolicy = YouthPolicyUiModel(
+                        youthPolicy = BookmarkedYouthPolicyUiModel(
                             id = "conubia",
                             title = "reprehendunt",
                             content = "sem",
                             region = RegionUiModel.대구,
                             ageInfo = "consetetur",
                             classification = ClassificationUiModel.JOB,
-                            isBookmarked = false
+                            isBookmarked = false,
+                            isActive = false,
                         ),
                         onPolicyClick = {},
                     )
@@ -94,7 +93,7 @@ fun PolicyBookmarksScreen(
 @Composable
 private fun YouthPolicyCard(
     modifier: Modifier = Modifier,
-    youthPolicy: YouthPolicyUiModel,
+    youthPolicy: BookmarkedYouthPolicyUiModel,
     onPolicyClick: (String) -> Unit,
 ) {
     Card(

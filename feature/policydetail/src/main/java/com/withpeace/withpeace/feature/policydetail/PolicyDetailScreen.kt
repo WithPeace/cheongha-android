@@ -376,6 +376,7 @@ fun PolicyDetailPreview() {
                 operatingOrganization = "brute",
                 businessRelatedReferenceSite1 = "noluisse",
                 businessRelatedReferenceSite2 = "quo",
+                isBookmarked = false
             ),
             onClickBackButton = {},
         )

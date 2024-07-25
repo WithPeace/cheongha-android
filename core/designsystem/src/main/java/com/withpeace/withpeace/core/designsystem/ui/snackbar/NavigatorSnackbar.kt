@@ -37,7 +37,7 @@ fun NavigatorSnackbar(data: SnackbarState) {
         Text(
             modifier = Modifier.padding(vertical = 16.dp, horizontal = 24.dp),
             style = WithpeaceTheme.typography.caption,
-            text = data.message,
+            text = (data.snackbarType as SnackbarType.Navigator).actionName,
             color = WithpeaceTheme.colors.SubSkyBlue,
             textDecoration = TextDecoration.Underline,
         )

@@ -8,8 +8,10 @@ fun BookmarkedPolicyResponse.toDomain(): BookmarkedPolicy {
         id = id,
         title = title,
         introduce = introduce,
+        ageInfo = ageInfo,
         classification = classification.codeToPolicyClassification(),
         region = region.codeToRegion(),
         isActive = isActive,
+        isBookmarked = isBookmarked,
     )
 }

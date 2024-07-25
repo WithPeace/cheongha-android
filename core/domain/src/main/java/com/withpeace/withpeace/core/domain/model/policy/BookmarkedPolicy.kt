@@ -6,5 +6,7 @@ data class BookmarkedPolicy(
     val introduce: String,
     val classification: PolicyClassification,
     val region: PolicyRegion,
+    val ageInfo: String,
     val isActive: Boolean,
+    val isBookmarked: Boolean,
 )
