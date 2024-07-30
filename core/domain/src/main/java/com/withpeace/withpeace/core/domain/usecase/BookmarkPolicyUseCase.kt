@@ -10,6 +10,7 @@ class BookmarkPolicyUseCase @Inject constructor(
 ) {
     operator fun invoke(
         policyId: String,
+        isBookmarked: Boolean,
         onError: suspend (CheonghaError) -> Unit,
     ): Flow<Unit> {
         return policyRepository.bookmarkPolicy(policyId, onError)

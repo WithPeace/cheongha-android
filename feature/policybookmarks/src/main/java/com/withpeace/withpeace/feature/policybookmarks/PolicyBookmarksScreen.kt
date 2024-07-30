@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.designsystem.util.dropShadow
@@ -36,6 +37,7 @@ import com.withpeace.withpeace.feature.policybookmarks.uistate.BookmarkedYouthPo
 
 @Composable
 fun PolicyBookmarksRoute(
+    viewModel: PolicyBookmarkViewModel = hiltViewModel(),
     onShowSnackBar: (message: String) -> Unit,
     onClickBackButton: () -> Unit,
 ) {

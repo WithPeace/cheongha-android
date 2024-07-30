@@ -7,7 +7,9 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.model.policy.PolicyFilters
+import com.withpeace.withpeace.core.domain.usecase.BookmarkPolicyUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetYouthPoliciesUseCase
+import com.withpeace.withpeace.core.domain.usecase.UnBookmarkPolicyUseCase
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
 import com.withpeace.withpeace.core.ui.policy.toDomain
@@ -30,6 +32,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val youthPoliciesUseCase: GetYouthPoliciesUseCase,
+    private val bookmarkPolicyUseCase: BookmarkPolicyUseCase,
+    private val unBookmarkPolicyUseCase: UnBookmarkPolicyUseCase,
 ) : ViewModel() {
     private val _youthPolicyPagingFlow = MutableStateFlow(PagingData.empty<YouthPolicyUiModel>())
     val youthPolicyPagingFlow = _youthPolicyPagingFlow.asStateFlow()
@@ -56,7 +60,7 @@ class HomeViewModel @Inject constructor(
                     onError = {
                         when (it) {
                             ResponseError.EXPIRED_TOKEN_ERROR -> {
-                                //TODO 로그아웃, 네트워크 에러
+
                             }
 
                             else -> {
