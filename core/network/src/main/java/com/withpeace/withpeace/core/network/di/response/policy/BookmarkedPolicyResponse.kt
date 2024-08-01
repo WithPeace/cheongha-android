@@ -12,5 +12,4 @@ data class BookmarkedPolicyResponse(
     val region: String,
     val ageInfo: String,
     val isActive: Boolean,
-    @SerialName("isFavorite") val isBookmarked: Boolean,
 )

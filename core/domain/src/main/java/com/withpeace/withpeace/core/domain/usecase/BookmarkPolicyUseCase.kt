@@ -13,6 +13,7 @@ class BookmarkPolicyUseCase @Inject constructor(
         isBookmarked: Boolean,
         onError: suspend (CheonghaError) -> Unit,
     ): Flow<Unit> {
-        return policyRepository.bookmarkPolicy(policyId, onError)
+        return if (isBookmarked) policyRepository.bookmarkPolicy(policyId, onError)
+        else policyRepository.unBookmarkPolicy(policyId, onError)
     }
 }

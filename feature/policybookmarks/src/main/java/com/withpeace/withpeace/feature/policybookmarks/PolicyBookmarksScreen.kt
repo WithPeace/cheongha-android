@@ -27,12 +27,12 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.designsystem.util.dropShadow
 import com.withpeace.withpeace.core.ui.bookmark.BookmarkButton
-import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
-import com.withpeace.withpeace.core.ui.policy.RegionUiModel
+import com.withpeace.withpeace.feature.policybookmarks.uistate.BookmarkedPolicyUIState
 import com.withpeace.withpeace.feature.policybookmarks.uistate.BookmarkedYouthPolicyUiModel
 
 @Composable
@@ -41,15 +41,26 @@ fun PolicyBookmarksRoute(
     onShowSnackBar: (message: String) -> Unit,
     onClickBackButton: () -> Unit,
 ) {
-    PolicyBookmarksScreen(onClickBackButton = onClickBackButton)
+    val bookmarkedPolicyUiState = viewModel.bookmarkedPolicies.collectAsStateWithLifecycle()
+    PolicyBookmarksScreen(
+        onClickBackButton = onClickBackButton,
+        bookmarkedPolicyUIState = bookmarkedPolicyUiState.value,
+        onBookmarkClick = viewModel::bookmark,
+    )
 }
 
 @Composable
 fun PolicyBookmarksScreen(
     modifier: Modifier = Modifier,
     onClickBackButton: () -> Unit,
+    bookmarkedPolicyUIState: BookmarkedPolicyUIState,
+    onBookmarkClick: (id: String, isChecked: Boolean) -> Unit,
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(WithpeaceTheme.colors.SystemWhite),
+    ) {
         WithPeaceBackButtonTopAppBar(
             onClickBackButton = {
                 onClickBackButton()
@@ -62,31 +73,45 @@ fun PolicyBookmarksScreen(
                 )
             },
         )
+        when (bookmarkedPolicyUIState) {
+            is BookmarkedPolicyUIState.Success -> {
+                BookmarkedPolicyList(
+                    bookmarkedYouthPolicies = bookmarkedPolicyUIState.youthPolicies,
+                    onBookmarkClick = onBookmarkClick,
+                )
+            }
 
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .background(Color(0xFFF8F9FB))
-                .padding(horizontal = 24.dp)
-        ) {
-            Spacer(modifier = modifier.height(8.dp))
-            LazyColumn(contentPadding = PaddingValues(bottom = 8.dp)) {
-                items(20) {
-                    Spacer(modifier = modifier.height(8.dp))
-                    YouthPolicyCard(
-                        youthPolicy = BookmarkedYouthPolicyUiModel(
-                            id = "conubia",
-                            title = "reprehendunt",
-                            content = "sem",
-                            region = RegionUiModel.대구,
-                            ageInfo = "consetetur",
-                            classification = ClassificationUiModel.JOB,
-                            isBookmarked = false,
-                            isActive = false,
-                        ),
-                        onPolicyClick = {},
-                    )
-                }
+            is BookmarkedPolicyUIState.Loading -> {
+            }
+
+            is BookmarkedPolicyUIState.Failure -> {
+            }
+        }
+
+    }
+}
+
+@Composable
+private fun BookmarkedPolicyList(
+    modifier: Modifier = Modifier,
+    bookmarkedYouthPolicies: List<BookmarkedYouthPolicyUiModel>,
+    onBookmarkClick: (id: String, isChecked: Boolean) -> Unit,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color(0xFFF8F9FB))
+            .padding(horizontal = 24.dp),
+    ) {
+        Spacer(modifier = modifier.height(8.dp))
+        LazyColumn(contentPadding = PaddingValues(bottom = 8.dp)) {
+            items(bookmarkedYouthPolicies.size) {
+                Spacer(modifier = modifier.height(8.dp))
+                YouthPolicyCard(
+                    youthPolicy = bookmarkedYouthPolicies[it],
+                    onPolicyClick = {},
+                    onBookmarkClick = onBookmarkClick,
+                )
             }
         }
     }
@@ -97,6 +122,7 @@ private fun YouthPolicyCard(
     modifier: Modifier = Modifier,
     youthPolicy: BookmarkedYouthPolicyUiModel,
     onPolicyClick: (String) -> Unit,
+    onBookmarkClick: (id: String, isChecked: Boolean) -> Unit,
 ) {
     Card(
         modifier = modifier
@@ -168,7 +194,9 @@ private fun YouthPolicyCard(
                     start.linkTo(parent.start)
                     bottom.linkTo(parent.bottom)
                 },
-                onClick = {
+                isClicked = youthPolicy.isBookmarked,
+                onClick = { isClicked ->
+                    onBookmarkClick(youthPolicy.id, isClicked)
                 },
             )
 
@@ -236,7 +264,14 @@ private fun YouthPolicyCard(
 @Preview(showBackground = true)
 fun PolicyBookmarksPreview() {
     PolicyBookmarksScreen(
+        bookmarkedPolicyUIState = BookmarkedPolicyUIState.Success(
+            youthPolicies = listOf(),
+
+            ),
         onClickBackButton = {
+
+        },
+        onBookmarkClick = { id, ischecked ->
 
         },
     )

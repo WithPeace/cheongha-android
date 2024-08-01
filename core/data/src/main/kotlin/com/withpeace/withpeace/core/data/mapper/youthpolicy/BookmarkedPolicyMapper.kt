@@ -12,6 +12,6 @@ fun BookmarkedPolicyResponse.toDomain(): BookmarkedPolicy {
         classification = classification.codeToPolicyClassification(),
         region = region.codeToRegion(),
         isActive = isActive,
-        isBookmarked = isBookmarked,
+        isBookmarked = true, // Bookmarked 된 데이터들 이므로 true 설정
     )
 }
