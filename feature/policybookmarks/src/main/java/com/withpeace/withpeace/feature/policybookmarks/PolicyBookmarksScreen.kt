@@ -16,6 +16,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshots.SnapshotApplyResult
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -34,6 +36,7 @@ import com.withpeace.withpeace.core.designsystem.util.dropShadow
 import com.withpeace.withpeace.core.ui.bookmark.BookmarkButton
 import com.withpeace.withpeace.feature.policybookmarks.uistate.BookmarkedPolicyUIState
 import com.withpeace.withpeace.feature.policybookmarks.uistate.BookmarkedYouthPolicyUiModel
+import com.withpeace.withpeace.feature.policybookmarks.uistate.PolicyBookmarkUiEvent
 
 @Composable
 fun PolicyBookmarksRoute(
@@ -41,6 +44,16 @@ fun PolicyBookmarksRoute(
     onShowSnackBar: (message: String) -> Unit,
     onClickBackButton: () -> Unit,
 ) {
+    LaunchedEffect(viewModel.uiEvent) {
+        viewModel.uiEvent.collect {
+            when (it) {
+                PolicyBookmarkUiEvent.BookmarkSuccess -> {}
+                PolicyBookmarkUiEvent.UnBookmarkSuccess -> {}
+                PolicyBookmarkUiEvent.BookmarkFailure -> {}
+            }
+        }
+
+    }
     val bookmarkedPolicyUiState = viewModel.bookmarkedPolicies.collectAsStateWithLifecycle()
     PolicyBookmarksScreen(
         onClickBackButton = onClickBackButton,
@@ -258,6 +271,11 @@ private fun YouthPolicyCard(
             )
         }
     }
+}
+
+@Composable
+fun DisableYouthPolicyCard() {
+
 }
 
 @Composable
