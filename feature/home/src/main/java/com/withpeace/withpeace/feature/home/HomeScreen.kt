@@ -80,7 +80,8 @@ fun HomeRoute(
         onFilterAllOff = viewModel::onFilterAllOff,
         onSearchWithFilter = viewModel::onCompleteFilter,
         onCloseFilter = viewModel::onCancelFilter,
-        onPolicyClick = onPolicyClick
+        onPolicyClick = onPolicyClick,
+        onBookmarkClick = viewModel::bookmark
     )
 }
 
@@ -96,6 +97,8 @@ fun HomeScreen(
     onSearchWithFilter: () -> Unit,
     onCloseFilter: () -> Unit,
     onPolicyClick: (String) -> Unit,
+    onBookmarkClick: (id: String, isChecked: Boolean) -> Unit,
+
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         HomeHeader(
@@ -160,7 +163,12 @@ fun HomeScreen(
                         )
                     }
                 } else {
-                    PolicyItems(modifier, youthPolicies, onPolicyClick)
+                    PolicyItems(
+                        modifier,
+                        youthPolicies,
+                        onPolicyClick,
+                        onBookmarkClick = onBookmarkClick,
+                    )
                 }
             }
         }
@@ -173,6 +181,7 @@ private fun PolicyItems(
     modifier: Modifier,
     youthPolicies: LazyPagingItems<YouthPolicyUiModel>,
     onPolicyClick: (String) -> Unit,
+    onBookmarkClick: (id: String, isChecked: Boolean) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -197,6 +206,7 @@ private fun PolicyItems(
                     modifier = modifier,
                     youthPolicy = youthPolicy,
                     onPolicyClick = onPolicyClick,
+                    onBookmarkClick = onBookmarkClick,
                 )
             }
             item {
@@ -310,6 +320,7 @@ private fun YouthPolicyCard(
     modifier: Modifier,
     youthPolicy: YouthPolicyUiModel,
     onPolicyClick: (String) -> Unit,
+    onBookmarkClick: (id: String, isChecked: Boolean) -> Unit,
 ) {
     Card(
         modifier = modifier
@@ -372,11 +383,8 @@ private fun YouthPolicyCard(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 2,
             )
-            val isChecked = remember {
-                mutableStateOf(false)
-            }
             BookmarkButton(
-                isClicked = isChecked.value,
+                isClicked = youthPolicy.isBookmarked,
                 modifier = modifier.constrainAs(
                     heart,
                 ) {
@@ -385,7 +393,7 @@ private fun YouthPolicyCard(
                     bottom.linkTo(parent.bottom)
                 },
                 onClick = { isClicked ->
-                    isChecked.value = isClicked
+                    onBookmarkClick(youthPolicy.id, isClicked)
                 },
             )
 
@@ -478,6 +486,7 @@ fun HomePreview() {
             onSearchWithFilter = {},
             onCloseFilter = {},
             onPolicyClick = {},
+            onBookmarkClick = { id, isChecked->}
         )
     }
 }

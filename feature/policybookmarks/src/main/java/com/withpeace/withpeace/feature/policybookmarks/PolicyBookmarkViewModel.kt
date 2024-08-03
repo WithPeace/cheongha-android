@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.feature.policybookmarks
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.withpeace.withpeace.core.domain.extension.groupBy
@@ -16,9 +17,12 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.retry
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -37,7 +41,8 @@ class PolicyBookmarkViewModel @Inject constructor(
     private val _uiEvent = Channel<PolicyBookmarkUiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    private val lastSuccessByWhetherOfBookmarks = mutableMapOf<String, Boolean>()
+    private val lastByWhetherSuccessOfBookmarks =
+        mutableMapOf<String, Boolean>() // optimistic UI에서 실패시에 사용할 캐시 데이터
 
 
     private val debounceFlow =
@@ -45,10 +50,10 @@ class PolicyBookmarkViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            debounceFlow.groupBy { it.id }
+            debounceFlow.groupBy{ it.id }
                 .flatMapMerge { data ->
                     data.second.debounce(300L)
-                }.collect { bookmarkInfo ->
+                }.collectLatest { bookmarkInfo ->
                     bookmarkPolicyUseCase(
                         bookmarkInfo.id, bookmarkInfo.isBookmarked,
                         onError = {
@@ -57,7 +62,10 @@ class PolicyBookmarkViewModel @Inject constructor(
                                     successState.copy(
                                         youthPolicies = successState.youthPolicies.map { policy ->
                                             policy.takeIf { it.id == bookmarkInfo.id }
-                                                ?.copy(isBookmarked = lastSuccessByWhetherOfBookmarks[policy.id]?: !policy.isBookmarked)
+                                                ?.copy(
+                                                    isBookmarked = lastByWhetherSuccessOfBookmarks[policy.id]
+                                                        ?: !policy.isBookmarked,
+                                                )
                                                 ?: policy
                                         },
                                     )
@@ -66,7 +74,7 @@ class PolicyBookmarkViewModel @Inject constructor(
                             _uiEvent.send(PolicyBookmarkUiEvent.BookmarkFailure)
                         },
                     ).collect {
-                        lastSuccessByWhetherOfBookmarks[it.id] = it.isBookmarked
+                        lastByWhetherSuccessOfBookmarks[it.id] = it.isBookmarked
                         if (it.isBookmarked) {
                             _uiEvent.send(PolicyBookmarkUiEvent.BookmarkSuccess)
                         } else {
@@ -89,7 +97,7 @@ class PolicyBookmarkViewModel @Inject constructor(
                     BookmarkedPolicyUIState.Success(bookmarkedPolicies.map { it.toUiModel() })
                 }
                 bookmarkedPolicies.forEach {
-                    lastSuccessByWhetherOfBookmarks[it.id] = it.isBookmarked
+                    lastByWhetherSuccessOfBookmarks[it.id] = it.isBookmarked
                 }
             }
         }
