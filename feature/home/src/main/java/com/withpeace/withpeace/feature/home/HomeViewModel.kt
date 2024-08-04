@@ -1,6 +1,5 @@
 package com.withpeace.withpeace.feature.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -32,7 +31,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.map
@@ -48,7 +46,8 @@ class HomeViewModel @Inject constructor(
     private val youthPoliciesUseCase: GetYouthPoliciesUseCase,
     private val bookmarkPolicyUseCase: BookmarkPolicyUseCase,
 ) : ViewModel() {
-    private val bookmarkStateFlow = MutableStateFlow(mapOf<String, Boolean>())
+    private val bookmarkStateFlow =
+        MutableStateFlow(mapOf<String, Boolean>()) // paging 처리를 위한 북마크 여부 상태 홀더
 
     private val _youthPolicyPagingFlow = MutableStateFlow(PagingData.empty<YouthPolicyUiModel>())
     val youthPolicyPagingFlow =
@@ -57,6 +56,7 @@ class HomeViewModel @Inject constructor(
             bookmarkStateFlow,
         ) { youthPolicyPagingFlow, bookmarkFlow ->
             youthPolicyPagingFlow.map {
+                lastByWhetherSuccessOfBookmarks[it.id] = it.isBookmarked
                 val bookmarkState = bookmarkFlow[it.id]
                 it.copy(isBookmarked = bookmarkState ?: it.isBookmarked)
             }
@@ -84,36 +84,27 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             debounceFlow.groupBy { it.id }.flatMapMerge {
                 it.second.debounce(300L)
-            }.collectLatest {
-                Log.d("testLog", "${it.id} + ${it.isBookmarked}")
-                val result = bookmarkPolicyUseCase(
-                    it.id, it.isBookmarked,
+            }.collectLatest { bookmarkInfo -> // policyBookmarkViewModel과 다른 이유를 찾아보기
+                bookmarkPolicyUseCase(
+                    bookmarkInfo.id, bookmarkInfo.isBookmarked,
                     onError = {
-                        Log.d("test","test12")
-                        // _bookmarkedPolicies.update { state ->
-                        //     (state as? BookmarkedPolicyUIState.Success)?.let { successState ->
-                        //         successState.copy(
-                        //             youthPolicies = successState.youthPolicies.map { policy ->
-                        //                 policy.takeIf { it.id == bookmarkInfo.id }
-                        //                     ?.copy(
-                        //                         isBookmarked = lastByWhetherSuccessOfBookmarks[policy.id]
-                        //                             ?: !policy.isBookmarked
-                        //                     )
-                        //                     ?: policy
-                        //             },
-                        //         )
-                        //     } ?: state
-                        // }
+                        bookmarkStateFlow.update {
+                            it + mapOf(
+                                bookmarkInfo.id to (lastByWhetherSuccessOfBookmarks[bookmarkInfo.id]
+                                    ?: !bookmarkInfo.isBookmarked),
+                            )
+                        }
                         _uiEvent.send(HomeUiEvent.BookmarkFailure)
                     },
-                ).first()
-
-                lastByWhetherSuccessOfBookmarks[result.id] = result.isBookmarked
-                if (result.isBookmarked) {
-                    _uiEvent.send(HomeUiEvent.BookmarkSuccess)
-                } else {
-                    _uiEvent.send(HomeUiEvent.UnBookmarkSuccess)
+                ).collect { result ->
+                    lastByWhetherSuccessOfBookmarks[result.id] = result.isBookmarked
+                    if (result.isBookmarked) {
+                        _uiEvent.send(HomeUiEvent.BookmarkSuccess)
+                    } else {
+                        _uiEvent.send(HomeUiEvent.UnBookmarkSuccess)
+                    }
                 }
+
             }
         }
         fetchData()

@@ -6,8 +6,6 @@ import com.withpeace.withpeace.core.domain.repository.YouthPolicyRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 class BookmarkPolicyUseCase @Inject constructor(

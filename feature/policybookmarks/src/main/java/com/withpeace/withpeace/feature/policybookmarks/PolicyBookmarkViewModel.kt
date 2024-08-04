@@ -53,7 +53,7 @@ class PolicyBookmarkViewModel @Inject constructor(
             debounceFlow.groupBy{ it.id }
                 .flatMapMerge { data ->
                     data.second.debounce(300L)
-                }.collectLatest { bookmarkInfo ->
+                }.collect { bookmarkInfo ->
                     bookmarkPolicyUseCase(
                         bookmarkInfo.id, bookmarkInfo.isBookmarked,
                         onError = {
