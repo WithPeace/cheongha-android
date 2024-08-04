@@ -16,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -34,10 +35,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
+import com.withpeace.withpeace.core.ui.bookmark.BookmarkButtonPadding
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.analytics.TrackPolicyDetailScreenViewEvent
 import com.withpeace.withpeace.feature.policydetail.component.DescriptionTitleAndContent
 import com.withpeace.withpeace.feature.policydetail.component.HyperLinkDescriptionTitleAndContent
+import com.withpeace.withpeace.feature.policydetail.uistate.YouthPolicyDetailUiEvent
 import com.withpeace.withpeace.feature.policydetail.uistate.YouthPolicyDetailUiModel
 import com.withpeace.withpeace.feature.policydetail.uistate.YouthPolicyDetailUiState
 import eu.wewox.textflow.TextFlow
@@ -46,13 +49,38 @@ import eu.wewox.textflow.TextFlowObstacleAlignment
 @Composable
 fun PolicyDetailRoute(
     onShowSnackBar: (message: String) -> Unit,
+    onNavigationSnackbar: (message: String) -> Unit,
     viewModel: PolicyDetailViewModel = hiltViewModel(),
     onClickBackButton: () -> Unit,
 ) {
     val policyDetailUiState = viewModel.policyDetailUiState.collectAsStateWithLifecycle()
+    LaunchedEffect(key1 = viewModel.uiEvent) {
+        viewModel.uiEvent.collect {
+            when (it) {
+                YouthPolicyDetailUiEvent.BookmarkSuccess -> {
+                    onNavigationSnackbar("관심 목록에 추가되었습니다.")
+                }
+
+                YouthPolicyDetailUiEvent.BookmarkFailure -> {
+                    onShowSnackBar("찜하기에 실패했습니다. 다시 시도해주세요.")
+                }
+
+                YouthPolicyDetailUiEvent.UnBookmarkSuccess -> {
+                    onShowSnackBar("관심목록에서 삭제되었습니다.")
+                }
+
+                YouthPolicyDetailUiEvent.ResponseError -> {
+                }
+
+                YouthPolicyDetailUiEvent.UnAuthorizedError -> {
+                }
+            }
+        }
+    }
     PolicyDetailScreen(
         onClickBackButton = onClickBackButton,
         policyUiState = policyDetailUiState.value,
+        onBookmarkClick = viewModel::bookmark,
     )
 }
 
@@ -61,12 +89,16 @@ fun PolicyDetailScreen(
     policyUiState: YouthPolicyDetailUiState,
     modifier: Modifier = Modifier,
     onClickBackButton: () -> Unit,
+    onBookmarkClick: (isChecked: Boolean) -> Unit,
 ) {
     when (policyUiState) {
         is YouthPolicyDetailUiState.Success -> {
-            PolicyDetailContent(modifier, onClickBackButton, policyUiState.youthPolicyDetail)
+            PolicyDetailContent(
+                onClickBackButton = onClickBackButton,
+                policy = policyUiState.youthPolicyDetail,
+                onBookmarkClick = onBookmarkClick,
+            )
         }
-
         YouthPolicyDetailUiState.Failure -> {}
         YouthPolicyDetailUiState.Loading -> {}
     }
@@ -76,6 +108,7 @@ fun PolicyDetailScreen(
 private fun PolicyDetailContent(
     modifier: Modifier = Modifier,
     onClickBackButton: () -> Unit,
+    onBookmarkClick: (isChecked: Boolean) -> Unit,
     policy: YouthPolicyDetailUiModel,
 ) {
     val scrollState = rememberScrollState()
@@ -107,6 +140,14 @@ private fun PolicyDetailContent(
                     )
 
                 }
+            },
+            actions = {
+                BookmarkButtonPadding(
+                    isClicked = policy.isBookmarked,
+                    onClick = {
+                        onBookmarkClick(it)
+                    },
+                )
             },
         )
         HorizontalDivider(
@@ -379,6 +420,7 @@ fun PolicyDetailPreview() {
                 isBookmarked = false
             ),
             onClickBackButton = {},
+            onBookmarkClick = {},
         )
     }
 }

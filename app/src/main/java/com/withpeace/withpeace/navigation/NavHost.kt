@@ -4,7 +4,6 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
@@ -200,6 +199,19 @@ fun WithpeaceNavHost(
         policyDetailNavGraph(
             onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
             onClickBackButton = { navController.popBackStack() },
+            onNavigationSnackbar = {
+                onShowSnackBar(
+                    SnackbarState(
+                        it,
+                        SnackbarType.Navigator(
+                            actionName = "목록 보러가기",
+                            action = {
+                                navController.navigatePolicyBookmarks()
+                            },
+                        ),
+                    ),
+                )
+            },
         )
         navigation(startDestination = MY_PAGE_ROUTE, MY_PAGE_NESTED_ROUTE) {
             myPageNavGraph(

@@ -92,7 +92,6 @@ fun HomeRoute(
                 }
             }
         }
-
     }
     HomeScreen(
         youthPolicies = youthPolicyPagingData,
