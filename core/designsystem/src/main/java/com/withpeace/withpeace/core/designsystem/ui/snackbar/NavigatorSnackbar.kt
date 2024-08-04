@@ -1,6 +1,7 @@
 package com.withpeace.withpeace.core.designsystem.ui.snackbar
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 
 @Composable
-fun NavigatorSnackbar(data: SnackbarState) {
+fun NavigatorSnackbar(content: String, action: () -> Unit, actionName: String) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
@@ -31,13 +32,13 @@ fun NavigatorSnackbar(data: SnackbarState) {
         Text(
             modifier = Modifier.padding(vertical = 16.dp, horizontal = 24.dp),
             style = WithpeaceTheme.typography.caption,
-            text = data.message,
+            text =content ,
             color = WithpeaceTheme.colors.SystemWhite,
         )
         Text(
-            modifier = Modifier.padding(vertical = 16.dp, horizontal = 24.dp),
+            modifier = Modifier.padding(vertical = 16.dp, horizontal = 24.dp).clickable { action() },
             style = WithpeaceTheme.typography.caption,
-            text = (data.snackbarType as SnackbarType.Navigator).actionName,
+            text = actionName,
             color = WithpeaceTheme.colors.SubSkyBlue,
             textDecoration = TextDecoration.Underline,
         )
@@ -48,6 +49,6 @@ fun NavigatorSnackbar(data: SnackbarState) {
 @Preview
 fun NavigationSnackbarPreview() {
     WithpeaceTheme {
-        NavigatorSnackbar(data = SnackbarState("장충동 왕족발 보쌈", SnackbarType.Navigator("먹기",{})))
+        NavigatorSnackbar(content = "장충동 왕족발 보쌈", action = {}, actionName = "먹으러 가기")
     }
 }

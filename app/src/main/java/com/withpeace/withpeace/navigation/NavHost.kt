@@ -11,6 +11,7 @@ import androidx.navigation.navigation
 import com.app.profileeditor.navigation.navigateProfileEditor
 import com.app.profileeditor.navigation.profileEditorNavGraph
 import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarState
+import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarType
 import com.withpeace.withpeace.feature.gallery.navigation.galleryNavGraph
 import com.withpeace.withpeace.feature.gallery.navigation.navigateToGallery
 import com.withpeace.withpeace.feature.home.navigation.homeNavGraph
@@ -171,6 +172,19 @@ fun WithpeaceNavHost(
         )
         homeNavGraph(
             onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
+            onNavigationSnackBar = {
+                onShowSnackBar(
+                    SnackbarState(
+                        it,
+                        SnackbarType.Navigator(
+                            actionName = "목록 보러가기",
+                            action = {
+                                navController.navigatePolicyBookmarks()
+                            },
+                        ),
+                    ),
+                )
+            },
             onPolicyClick = {
                 navController.navigateToPolicyDetail(policyId = it)
             },

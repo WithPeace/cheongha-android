@@ -52,12 +52,15 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
+import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarState
+import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarType
 import com.withpeace.withpeace.core.designsystem.util.dropShadow
 import com.withpeace.withpeace.core.ui.analytics.TrackScreenViewEvent
 import com.withpeace.withpeace.core.ui.bookmark.BookmarkButton
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
 import com.withpeace.withpeace.feature.home.filtersetting.FilterBottomSheet
+import com.withpeace.withpeace.feature.home.uistate.HomeUiEvent
 import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
 import com.withpeace.withpeace.feature.home.uistate.YouthPolicyUiModel
 import kotlinx.coroutines.flow.flowOf
@@ -66,11 +69,31 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeRoute(
     onShowSnackBar: (message: String) -> Unit = {},
+    onNavigationSnackBar: (message: String) -> Unit  = {},
     viewModel: HomeViewModel = hiltViewModel(),
     onPolicyClick: (String) -> Unit,
 ) {
     val youthPolicyPagingData = viewModel.youthPolicyPagingFlow.collectAsLazyPagingItems()
     val selectedFilterUiState = viewModel.selectingFilters.collectAsStateWithLifecycle()
+
+    LaunchedEffect(key1 = viewModel.uiEvent) {
+        viewModel.uiEvent.collect {
+            when (it) {
+                HomeUiEvent.BookmarkSuccess -> {
+                    onNavigationSnackBar("관심 목록에 추가되었습니다.")
+                }
+
+                HomeUiEvent.BookmarkFailure -> {
+                    onShowSnackBar("찜하기에 실패했습니다. 다시 시도해주세요.")
+                }
+
+                HomeUiEvent.UnBookmarkSuccess -> {
+                    onShowSnackBar("관심목록에서 삭제되었습니다.")
+                }
+            }
+        }
+
+    }
     HomeScreen(
         youthPolicies = youthPolicyPagingData,
         selectedFilterUiState = selectedFilterUiState.value,
