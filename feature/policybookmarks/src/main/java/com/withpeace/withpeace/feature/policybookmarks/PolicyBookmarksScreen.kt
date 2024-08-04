@@ -377,7 +377,6 @@ fun PolicyBookmarksPreview() {
         onBookmarkClick = { id, ischecked ->
 
         },
-
         onPolicyClick = {},
         onDisablePolicyClick = { },
     )
