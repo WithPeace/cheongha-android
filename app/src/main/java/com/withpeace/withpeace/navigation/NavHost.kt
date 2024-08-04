@@ -4,6 +4,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
@@ -14,6 +15,7 @@ import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarState
 import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarType
 import com.withpeace.withpeace.feature.gallery.navigation.galleryNavGraph
 import com.withpeace.withpeace.feature.gallery.navigation.navigateToGallery
+import com.withpeace.withpeace.feature.home.navigation.HOME_ROUTE
 import com.withpeace.withpeace.feature.home.navigation.homeNavGraph
 import com.withpeace.withpeace.feature.home.navigation.navigateHome
 import com.withpeace.withpeace.feature.login.navigation.LOGIN_ROUTE
@@ -179,7 +181,13 @@ fun WithpeaceNavHost(
                         SnackbarType.Navigator(
                             actionName = "목록 보러가기",
                             action = {
-                                navController.navigatePolicyBookmarks()
+                                navController.navigatePolicyBookmarks( navOptions = navOptions {
+                                    popUpTo(HOME_ROUTE) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                })
                             },
                         ),
                     ),

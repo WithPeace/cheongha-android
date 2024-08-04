@@ -1,6 +1,5 @@
 package com.withpeace.withpeace
 
-import android.util.Log
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -40,7 +39,6 @@ fun WithpeaceApp(
 
     val coroutineScope = rememberCoroutineScope()
     fun showSnackBar(snackbarState: SnackbarState) = coroutineScope.launch {
-        Log.d("test", snackbarState.snackbarType.toString())
         snackBarState.value = snackbarState
         snackBarHostState.currentSnackbarData?.dismiss()
         val snackbarResult = snackBarHostState.showSnackbar(snackbarState.message)
@@ -78,8 +76,7 @@ fun WithpeaceApp(
         snackbarHost = {
             SnackbarHost(snackBarHostState)
             {
-                val snackbarType = snackBarState.value.snackbarType
-                when (snackbarType) {
+                when (val snackbarType = snackBarState.value.snackbarType) {
                     is SnackbarType.Navigator -> {
                         NavigatorSnackbar(
                             content = it.visuals.message,

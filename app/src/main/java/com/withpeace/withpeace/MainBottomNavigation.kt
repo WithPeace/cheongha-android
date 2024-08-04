@@ -1,5 +1,6 @@
 package com.withpeace.withpeace
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.material3.NavigationBar
@@ -12,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.navOptions
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
@@ -67,12 +69,13 @@ fun MainBottomBar(
 private fun NavController.navigateToTabScreen(bottomTab: BottomTab) {
     val tabNavOptions =
         navOptions {
-            popUpTo(HOME_ROUTE) {
+            popUpTo(graph.findStartDestination().id) {
                 saveState = true
             }
             launchSingleTop = true
             restoreState = true
         }
+    // 여기 아니면 NavHost
 
     when (bottomTab) {
         BottomTab.HOME -> navigateHome(tabNavOptions)
@@ -121,3 +124,4 @@ enum class BottomTab(
         }
     }
 }
+// https://stackoverflow.com/questions/76721423/compose-navigation-go-to-top-level-destination-when-clicking-on-navigation-bar
