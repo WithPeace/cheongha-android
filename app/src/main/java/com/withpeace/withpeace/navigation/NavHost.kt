@@ -271,7 +271,13 @@ fun WithpeaceNavHost(
                 onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
                 onClickBackButton = {
                     navController.popBackStack()
-                }
+                },
+                onPolicyClick = {
+                    navController.navigateToPolicyDetail(policyId = it)
+                },
+                onDisablePolicyClick = {
+
+                },
             )
         }
         postDetailGraph(

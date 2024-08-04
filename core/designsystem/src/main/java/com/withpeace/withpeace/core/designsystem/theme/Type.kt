@@ -146,7 +146,7 @@ data class WithPeaceTypography(
             fontWeight = FontWeight.Normal,
             fontSize = 12.sp,
         ),
-    val homePolicyTag: TextStyle =
+    val Tag: TextStyle =
         TextStyle(
             fontFamily = PretendardFont,
             fontWeight = FontWeight.Normal,

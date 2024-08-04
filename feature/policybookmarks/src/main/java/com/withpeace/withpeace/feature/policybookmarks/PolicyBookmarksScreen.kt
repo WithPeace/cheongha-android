@@ -3,21 +3,24 @@ package com.withpeace.withpeace.feature.policybookmarks
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshots.SnapshotApplyResult
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -43,13 +46,23 @@ fun PolicyBookmarksRoute(
     viewModel: PolicyBookmarkViewModel = hiltViewModel(),
     onShowSnackBar: (message: String) -> Unit,
     onClickBackButton: () -> Unit,
+    onPolicyClick: (String) -> Unit,
+    onDisablePolicyClick: (String) -> Unit,
 ) {
     LaunchedEffect(viewModel.uiEvent) {
         viewModel.uiEvent.collect {
             when (it) {
-                PolicyBookmarkUiEvent.BookmarkSuccess -> {}
-                PolicyBookmarkUiEvent.UnBookmarkSuccess -> {}
-                PolicyBookmarkUiEvent.BookmarkFailure -> {}
+                PolicyBookmarkUiEvent.BookmarkSuccess -> {
+                    onShowSnackBar("관심 목록에 추가되었습니다.")
+                }
+
+                PolicyBookmarkUiEvent.UnBookmarkSuccess -> {
+                    onShowSnackBar("관심목록에서 삭제되었습니다.")
+                }
+
+                PolicyBookmarkUiEvent.BookmarkFailure -> {
+                    onShowSnackBar("찜하기에 실패했습니다. 다시 시도해주세요.")
+                }
             }
         }
 
@@ -59,6 +72,8 @@ fun PolicyBookmarksRoute(
         onClickBackButton = onClickBackButton,
         bookmarkedPolicyUIState = bookmarkedPolicyUiState.value,
         onBookmarkClick = viewModel::bookmark,
+        onPolicyClick = onPolicyClick,
+        onDisablePolicyClick = onDisablePolicyClick,
     )
 }
 
@@ -68,6 +83,8 @@ fun PolicyBookmarksScreen(
     onClickBackButton: () -> Unit,
     bookmarkedPolicyUIState: BookmarkedPolicyUIState,
     onBookmarkClick: (id: String, isChecked: Boolean) -> Unit,
+    onPolicyClick: (String) -> Unit,
+    onDisablePolicyClick: (String) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -91,6 +108,8 @@ fun PolicyBookmarksScreen(
                 BookmarkedPolicyList(
                     bookmarkedYouthPolicies = bookmarkedPolicyUIState.youthPolicies,
                     onBookmarkClick = onBookmarkClick,
+                    onPolicyClick = onPolicyClick,
+                    onDisablePolicyClick = onDisablePolicyClick,
                 )
             }
 
@@ -109,6 +128,8 @@ private fun BookmarkedPolicyList(
     modifier: Modifier = Modifier,
     bookmarkedYouthPolicies: List<BookmarkedYouthPolicyUiModel>,
     onBookmarkClick: (id: String, isChecked: Boolean) -> Unit,
+    onPolicyClick: (String) -> Unit,
+    onDisablePolicyClick: (String) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -120,11 +141,22 @@ private fun BookmarkedPolicyList(
         LazyColumn(contentPadding = PaddingValues(bottom = 8.dp)) {
             items(bookmarkedYouthPolicies.size) {
                 Spacer(modifier = modifier.height(8.dp))
-                YouthPolicyCard(
-                    youthPolicy = bookmarkedYouthPolicies[it],
-                    onPolicyClick = {},
-                    onBookmarkClick = onBookmarkClick,
-                )
+                if (bookmarkedYouthPolicies[it].isActive) {
+                    YouthPolicyCard(
+                        youthPolicy = bookmarkedYouthPolicies[it],
+                        onPolicyClick = { policyId ->
+                            onPolicyClick(policyId)
+                        },
+                        onBookmarkClick = onBookmarkClick,
+                    )
+                } else {
+                    DisableYouthPolicyCard(
+                        bookmarkedPolicy = bookmarkedYouthPolicies[it],
+                        onPolicyClick = { policyId ->
+                            onDisablePolicyClick(policyId)
+                        },
+                    )
+                }
             }
         }
     }
@@ -230,7 +262,7 @@ private fun YouthPolicyCard(
                         shape = RoundedCornerShape(size = 5.dp),
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp),
-                style = WithpeaceTheme.typography.homePolicyTag,
+                style = WithpeaceTheme.typography.Tag,
             )
 
             Text(
@@ -250,7 +282,7 @@ private fun YouthPolicyCard(
                         shape = RoundedCornerShape(size = 5.dp),
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp),
-                style = WithpeaceTheme.typography.homePolicyTag,
+                style = WithpeaceTheme.typography.Tag,
             )
 
 
@@ -274,7 +306,60 @@ private fun YouthPolicyCard(
 }
 
 @Composable
-fun DisableYouthPolicyCard() {
+fun DisableYouthPolicyCard(
+    bookmarkedPolicy: BookmarkedYouthPolicyUiModel,
+    modifier: Modifier = Modifier,
+    onPolicyClick: (String) -> Unit,
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                color = WithpeaceTheme.colors.SystemWhite,
+                shape = RoundedCornerShape(size = 10.dp),
+            )
+            .dropShadow(
+                color = Color(0x1A000000),
+                blurRadius = 4.dp,
+                spreadRadius = 2.dp,
+                borderRadius = 10.dp,
+            )
+            .clickable {
+                onPolicyClick(bookmarkedPolicy.id)
+            },
+    ) {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .background(WithpeaceTheme.colors.SystemWhite)
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = bookmarkedPolicy.title,
+                color = WithpeaceTheme.colors.SystemBlack,
+                style = WithpeaceTheme.typography.homePolicyTitle,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+            )
+            Text(
+                text = "기간만료",
+                color = WithpeaceTheme.colors.SystemGray3,
+                modifier = modifier
+                    .padding(start = 8.dp)
+                    .clip(
+                        RoundedCornerShape(10.dp),
+                    )
+                    .background(WithpeaceTheme.colors.SystemGray2)
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                    .wrapContentSize(),
+                style = WithpeaceTheme.typography.Tag,
+            )
+        }
+
+    }
 
 }
 
@@ -292,5 +377,8 @@ fun PolicyBookmarksPreview() {
         onBookmarkClick = { id, ischecked ->
 
         },
+
+        onPolicyClick = {},
+        onDisablePolicyClick = { },
     )
 }

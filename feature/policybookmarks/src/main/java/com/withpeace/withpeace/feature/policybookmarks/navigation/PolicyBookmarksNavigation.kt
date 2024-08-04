@@ -15,6 +15,8 @@ fun NavController.navigatePolicyBookmarks(navOptions: NavOptions? = null) {
 fun NavGraphBuilder.policyBookmarksNavGraph(
     onShowSnackBar: (message: String) -> Unit,
     onClickBackButton: () -> Unit,
+    onPolicyClick: (String) -> Unit,
+    onDisablePolicyClick: (String) -> Unit,
 ) {
     composable(
         route = POLICY_BOOKMARKS_ROUTE,
@@ -34,7 +36,8 @@ fun NavGraphBuilder.policyBookmarksNavGraph(
         PolicyBookmarksRoute(
             onShowSnackBar = onShowSnackBar,
             onClickBackButton = onClickBackButton,
-
-            )
+            onPolicyClick = onPolicyClick,
+            onDisablePolicyClick = onDisablePolicyClick,
+        )
     }
 }

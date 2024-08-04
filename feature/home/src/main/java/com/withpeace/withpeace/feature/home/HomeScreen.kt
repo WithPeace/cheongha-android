@@ -52,8 +52,6 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
-import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarState
-import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarType
 import com.withpeace.withpeace.core.designsystem.util.dropShadow
 import com.withpeace.withpeace.core.ui.analytics.TrackScreenViewEvent
 import com.withpeace.withpeace.core.ui.bookmark.BookmarkButton
@@ -436,7 +434,7 @@ private fun YouthPolicyCard(
                         shape = RoundedCornerShape(size = 5.dp),
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp),
-                style = WithpeaceTheme.typography.homePolicyTag,
+                style = WithpeaceTheme.typography.Tag,
             )
 
             Text(
@@ -456,7 +454,7 @@ private fun YouthPolicyCard(
                         shape = RoundedCornerShape(size = 5.dp),
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp),
-                style = WithpeaceTheme.typography.homePolicyTag,
+                style = WithpeaceTheme.typography.Tag,
             )
 
 
