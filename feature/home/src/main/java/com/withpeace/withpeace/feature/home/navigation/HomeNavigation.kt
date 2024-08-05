@@ -16,6 +16,7 @@ fun NavController.navigateHome(navOptions: NavOptions? = null) {
 
 fun NavGraphBuilder.homeNavGraph(
     onShowSnackBar: (message: String) -> Unit,
+    onNavigationSnackBar: (message: String) -> Unit = {},
     onPolicyClick: (String) -> Unit,
 ) {
     composable(
@@ -24,8 +25,9 @@ fun NavGraphBuilder.homeNavGraph(
         exitTransition = { ExitTransition.None },
     ) {
         HomeRoute(
+            onNavigationSnackBar = onNavigationSnackBar,
             onShowSnackBar = onShowSnackBar,
-            onPolicyClick = onPolicyClick
+            onPolicyClick = onPolicyClick,
         )
     }
 }

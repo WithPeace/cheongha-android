@@ -23,6 +23,7 @@ fun NavController.navigateToPolicyDetail(
 }
 fun NavGraphBuilder.policyDetailNavGraph(
     onShowSnackBar: (message: String) -> Unit,
+    onNavigationSnackbar: (message: String) -> Unit,
     onClickBackButton: () -> Unit,
 ) {
     composable(
@@ -49,6 +50,7 @@ fun NavGraphBuilder.policyDetailNavGraph(
         PolicyDetailRoute(
             onShowSnackBar = onShowSnackBar,
             onClickBackButton = onClickBackButton,
+            onNavigationSnackbar = onNavigationSnackbar,
         )
     }
 }

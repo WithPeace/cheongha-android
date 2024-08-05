@@ -1,5 +1,7 @@
 package com.withpeace.withpeace.feature.login.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -17,7 +19,15 @@ fun NavGraphBuilder.loginNavGraph(
     onSignUpNeeded: () -> Unit,
     onLoginSuccess: () -> Unit,
 ) {
-    composable(route = LOGIN_ROUTE) {
+    composable(
+        route = LOGIN_ROUTE,
+        enterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(500),
+            )
+        }
+    ) {
         LoginRoute(
             onShowSnackBar = onShowSnackBar,
             onSignUpNeeded = onSignUpNeeded,

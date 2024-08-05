@@ -15,39 +15,41 @@ import com.withpeace.withpeace.core.domain.repository.YouthPolicyRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
-@InstallIn(SingletonComponent::class)
+@InstallIn(ViewModelComponent::class)
 interface RepositoryModule {
 
     @Binds
-    @Singleton
+    @ViewModelScoped
     fun bindsTokenRepository(defaultTokenRepository: DefaultTokenRepository): TokenRepository
 
     @Binds
-    @Singleton
+    @ViewModelScoped
     fun bindsImageRepository(defaultImageRepository: DefaultImageRepository): ImageRepository
 
     @Binds
-    @Singleton
+    @ViewModelScoped
     fun bindsPostRepository(defaultPostRepository: DefaultPostRepository): PostRepository
 
     @Binds
-    @Singleton
+    @ViewModelScoped
     fun bindsUserRepository(
         defaultUserRepository: DefaultUserRepository,
     ): UserRepository
 
     @Binds
-    @Singleton
+    @ViewModelScoped
     fun bindsYouthPolicyRepository(
         defaultYouthPolicyRepository: DefaultYouthPolicyRepository
     ): YouthPolicyRepository
 
     @Binds
-    @Singleton
+    @ViewModelScoped
     fun bindsAppUpdateRepository(
         appUpdateRepository: DefaultAppUpdateRepository,
     ): AppUpdateRepository

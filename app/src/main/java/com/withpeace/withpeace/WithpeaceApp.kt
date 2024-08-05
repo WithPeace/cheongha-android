@@ -9,6 +9,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -20,6 +21,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.snackbar.CheonghaSnackbar
+import com.withpeace.withpeace.core.designsystem.ui.snackbar.NavigatorSnackbar
 import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarState
 import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarType
 import com.withpeace.withpeace.navigation.WithpeaceNavHost
@@ -32,18 +34,20 @@ fun WithpeaceApp(
     navController: NavHostController = rememberNavController(),
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
-    var snackBarState: SnackbarState =
-        remember { SnackbarState("", SnackbarType.Normal) }
+    val snackBarState =
+        remember { mutableStateOf(SnackbarState("", SnackbarType.Normal)) }
 
     val coroutineScope = rememberCoroutineScope()
     fun showSnackBar(snackbarState: SnackbarState) = coroutineScope.launch {
-        snackBarState = snackbarState
+        snackBarState.value = snackbarState
         snackBarHostState.currentSnackbarData?.dismiss()
         val snackbarResult = snackBarHostState.showSnackbar(snackbarState.message)
         when (snackbarResult) {
             SnackbarResult.Dismissed -> Unit
-            SnackbarResult.ActionPerformed ->
+            SnackbarResult.ActionPerformed -> {
                 (snackbarState.snackbarType as SnackbarType.Navigator).action()
+                snackBarHostState.currentSnackbarData?.dismiss()
+            }
         }
     }
 
@@ -72,8 +76,15 @@ fun WithpeaceApp(
         snackbarHost = {
             SnackbarHost(snackBarHostState)
             {
-                when (snackBarState.snackbarType) {
-                    is SnackbarType.Navigator -> {}
+                when (val snackbarType = snackBarState.value.snackbarType) {
+                    is SnackbarType.Navigator -> {
+                        NavigatorSnackbar(
+                            content = it.visuals.message,
+                            action = { snackbarType.action()
+                                     snackBarHostState.currentSnackbarData?.dismiss()},
+                            actionName = snackbarType.actionName,
+                        )
+                    }
                     is SnackbarType.Normal -> {
                         CheonghaSnackbar(data = it)
                     }

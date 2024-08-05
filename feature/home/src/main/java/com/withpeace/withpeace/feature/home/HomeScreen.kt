@@ -58,6 +58,7 @@ import com.withpeace.withpeace.core.ui.bookmark.BookmarkButton
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
 import com.withpeace.withpeace.feature.home.filtersetting.FilterBottomSheet
+import com.withpeace.withpeace.feature.home.uistate.HomeUiEvent
 import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
 import com.withpeace.withpeace.feature.home.uistate.YouthPolicyUiModel
 import kotlinx.coroutines.flow.flowOf
@@ -66,11 +67,30 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeRoute(
     onShowSnackBar: (message: String) -> Unit = {},
+    onNavigationSnackBar: (message: String) -> Unit  = {},
     viewModel: HomeViewModel = hiltViewModel(),
     onPolicyClick: (String) -> Unit,
 ) {
     val youthPolicyPagingData = viewModel.youthPolicyPagingFlow.collectAsLazyPagingItems()
     val selectedFilterUiState = viewModel.selectingFilters.collectAsStateWithLifecycle()
+
+    LaunchedEffect(key1 = viewModel.uiEvent) {
+        viewModel.uiEvent.collect {
+            when (it) {
+                HomeUiEvent.BookmarkSuccess -> {
+                    onNavigationSnackBar("관심 목록에 추가되었습니다.")
+                }
+
+                HomeUiEvent.BookmarkFailure -> {
+                    onShowSnackBar("찜하기에 실패했습니다. 다시 시도해주세요.")
+                }
+
+                HomeUiEvent.UnBookmarkSuccess -> {
+                    onShowSnackBar("관심목록에서 삭제되었습니다.")
+                }
+            }
+        }
+    }
     HomeScreen(
         youthPolicies = youthPolicyPagingData,
         selectedFilterUiState = selectedFilterUiState.value,
@@ -80,7 +100,8 @@ fun HomeRoute(
         onFilterAllOff = viewModel::onFilterAllOff,
         onSearchWithFilter = viewModel::onCompleteFilter,
         onCloseFilter = viewModel::onCancelFilter,
-        onPolicyClick = onPolicyClick
+        onPolicyClick = onPolicyClick,
+        onBookmarkClick = viewModel::bookmark
     )
 }
 
@@ -96,6 +117,8 @@ fun HomeScreen(
     onSearchWithFilter: () -> Unit,
     onCloseFilter: () -> Unit,
     onPolicyClick: (String) -> Unit,
+    onBookmarkClick: (id: String, isChecked: Boolean) -> Unit,
+
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         HomeHeader(
@@ -160,7 +183,12 @@ fun HomeScreen(
                         )
                     }
                 } else {
-                    PolicyItems(modifier, youthPolicies, onPolicyClick)
+                    PolicyItems(
+                        modifier,
+                        youthPolicies,
+                        onPolicyClick,
+                        onBookmarkClick = onBookmarkClick,
+                    )
                 }
             }
         }
@@ -173,6 +201,7 @@ private fun PolicyItems(
     modifier: Modifier,
     youthPolicies: LazyPagingItems<YouthPolicyUiModel>,
     onPolicyClick: (String) -> Unit,
+    onBookmarkClick: (id: String, isChecked: Boolean) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -197,6 +226,7 @@ private fun PolicyItems(
                     modifier = modifier,
                     youthPolicy = youthPolicy,
                     onPolicyClick = onPolicyClick,
+                    onBookmarkClick = onBookmarkClick,
                 )
             }
             item {
@@ -310,6 +340,7 @@ private fun YouthPolicyCard(
     modifier: Modifier,
     youthPolicy: YouthPolicyUiModel,
     onPolicyClick: (String) -> Unit,
+    onBookmarkClick: (id: String, isChecked: Boolean) -> Unit,
 ) {
     Card(
         modifier = modifier
@@ -373,12 +404,16 @@ private fun YouthPolicyCard(
                 maxLines = 2,
             )
             BookmarkButton(
+                isClicked = youthPolicy.isBookmarked,
                 modifier = modifier.constrainAs(
                     heart,
                 ) {
                     top.linkTo(content.bottom, margin = 8.dp)
                     start.linkTo(parent.start)
                     bottom.linkTo(parent.bottom)
+                },
+                onClick = { isClicked ->
+                    onBookmarkClick(youthPolicy.id, isClicked)
                 },
             )
 
@@ -399,7 +434,7 @@ private fun YouthPolicyCard(
                         shape = RoundedCornerShape(size = 5.dp),
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp),
-                style = WithpeaceTheme.typography.homePolicyTag,
+                style = WithpeaceTheme.typography.Tag,
             )
 
             Text(
@@ -419,7 +454,7 @@ private fun YouthPolicyCard(
                         shape = RoundedCornerShape(size = 5.dp),
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp),
-                style = WithpeaceTheme.typography.homePolicyTag,
+                style = WithpeaceTheme.typography.Tag,
             )
 
 
@@ -458,6 +493,7 @@ fun HomePreview() {
                             region = RegionUiModel.대구,
                             ageInfo = "quo",
                             classification = ClassificationUiModel.JOB,
+                            isBookmarked = false,
                         ),
                     ),
                 ),
@@ -470,6 +506,7 @@ fun HomePreview() {
             onSearchWithFilter = {},
             onCloseFilter = {},
             onPolicyClick = {},
+            onBookmarkClick = { id, isChecked->}
         )
     }
 }

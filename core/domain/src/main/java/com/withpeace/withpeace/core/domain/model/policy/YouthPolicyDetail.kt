@@ -23,4 +23,5 @@ data class YouthPolicyDetail(
     val operatingOrganization: String,
     val businessRelatedReferenceSite1: String,
     val businessRelatedReferenceSite2: String,
+    val isBookmarked: Boolean,
 )

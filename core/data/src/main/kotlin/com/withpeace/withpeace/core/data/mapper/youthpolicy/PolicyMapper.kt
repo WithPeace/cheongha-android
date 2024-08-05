@@ -13,6 +13,7 @@ internal fun PolicyResponse.toDomain(): YouthPolicy {
         region = region.codeToRegion(),
         policyClassification = classification.codeToPolicyClassification(),
         ageInfo = ageInfo,
+        isBookmarked = isBookmarked,
     )
 }
 

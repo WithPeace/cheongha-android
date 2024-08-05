@@ -1,6 +1,5 @@
 package com.withpeace.withpeace.core.data.repository
 
-import android.util.Log
 import com.skydoves.sandwich.suspendMapSuccess
 import com.withpeace.withpeace.core.analytics.AnalyticsEvent
 import com.withpeace.withpeace.core.analytics.AnalyticsHelper

@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.navigation
 
+import POLICY_REMOVED_ID_ARGUMENT
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
@@ -11,8 +12,13 @@ import androidx.navigation.navigation
 import com.app.profileeditor.navigation.navigateProfileEditor
 import com.app.profileeditor.navigation.profileEditorNavGraph
 import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarState
+import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarType
+import com.withpeace.withpeace.feature.disablepolicy.navigation.DISABLE_POLICY_ID_ARGUMENT
+import com.withpeace.withpeace.feature.disablepolicy.navigation.disabledPolicyNavGraph
+import com.withpeace.withpeace.feature.disablepolicy.navigation.navigateDisabledPolicy
 import com.withpeace.withpeace.feature.gallery.navigation.galleryNavGraph
 import com.withpeace.withpeace.feature.gallery.navigation.navigateToGallery
+import com.withpeace.withpeace.feature.home.navigation.HOME_ROUTE
 import com.withpeace.withpeace.feature.home.navigation.homeNavGraph
 import com.withpeace.withpeace.feature.home.navigation.navigateHome
 import com.withpeace.withpeace.feature.login.navigation.LOGIN_ROUTE
@@ -171,6 +177,25 @@ fun WithpeaceNavHost(
         )
         homeNavGraph(
             onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
+            onNavigationSnackBar = {
+                onShowSnackBar(
+                    SnackbarState(
+                        it,
+                        SnackbarType.Navigator(
+                            actionName = "목록 보러가기",
+                            action = {
+                                navController.navigatePolicyBookmarks( navOptions = navOptions {
+                                    popUpTo(HOME_ROUTE) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                })
+                            },
+                        ),
+                    ),
+                )
+            },
             onPolicyClick = {
                 navController.navigateToPolicyDetail(policyId = it)
             },
@@ -178,6 +203,19 @@ fun WithpeaceNavHost(
         policyDetailNavGraph(
             onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
             onClickBackButton = { navController.popBackStack() },
+            onNavigationSnackbar = {
+                onShowSnackBar(
+                    SnackbarState(
+                        it,
+                        SnackbarType.Navigator(
+                            actionName = "목록 보러가기",
+                            action = {
+                                navController.navigatePolicyBookmarks()
+                            },
+                        ),
+                    ),
+                )
+            },
         )
         navigation(startDestination = MY_PAGE_ROUTE, MY_PAGE_NESTED_ROUTE) {
             myPageNavGraph(
@@ -213,6 +251,20 @@ fun WithpeaceNavHost(
                     navController.navigatePolicyBookmarks()
                 },
             )
+            disabledPolicyNavGraph(
+                onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
+                onClickBackButton = {
+                    navController.popBackStack()
+                },
+                onAuthExpired = {},
+                onBookmarkDeleteSuccess = {
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        POLICY_REMOVED_ID_ARGUMENT,
+                        it,
+                    )
+                    navController.popBackStack()
+                },
+            )
             profileEditorNavGraph(
                 onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
                 onClickBackButton = {
@@ -237,8 +289,15 @@ fun WithpeaceNavHost(
                 onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
                 onClickBackButton = {
                     navController.popBackStack()
-                }
+                },
+                onPolicyClick = {
+                    navController.navigateToPolicyDetail(policyId = it)
+                },
+                onDisablePolicyClick = {
+                    navController.navigateDisabledPolicy(policyId = it)
+                },
             )
+
         }
         postDetailGraph(
             onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
@@ -254,9 +313,10 @@ fun WithpeaceNavHost(
                 onAuthExpired(onShowSnackBar, navController)
             },
             onDeleteSuccess = {
-                navController.previousBackStackEntry?.savedStateHandle?.apply {
-                    set(POST_LIST_DELETED_POST_ID_ARGUMENT, it)
-                }
+                navController.previousBackStackEntry?.savedStateHandle?.set(
+                    POST_LIST_DELETED_POST_ID_ARGUMENT,
+                    it,
+                )
                 navController.popBackStack()
             },
         )

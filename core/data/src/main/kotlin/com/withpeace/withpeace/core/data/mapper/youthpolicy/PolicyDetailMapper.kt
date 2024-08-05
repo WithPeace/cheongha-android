@@ -1,6 +1,5 @@
 package com.withpeace.withpeace.core.data.mapper.youthpolicy
 
-import com.withpeace.withpeace.core.domain.model.policy.PolicyClassification
 import com.withpeace.withpeace.core.domain.model.policy.YouthPolicyDetail
 import com.withpeace.withpeace.core.network.di.response.policy.PolicyDetailResponse
 
@@ -27,5 +26,6 @@ internal fun PolicyDetailResponse.toDomain(): YouthPolicyDetail {
         operatingOrganization = operatingOrganization,
         businessRelatedReferenceSite1 = businessRelatedReferenceSite1,
         businessRelatedReferenceSite2 = businessRelatedReferenceSite2,
+        isBookmarked = isBookmarked,
     )
 }
