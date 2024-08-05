@@ -1,6 +1,5 @@
 package com.withpeace.withpeace.feature.policybookmarks
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.withpeace.withpeace.core.domain.extension.groupBy
@@ -17,12 +16,9 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.retry
-import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -115,6 +111,15 @@ class PolicyBookmarkViewModel @Inject constructor(
         }
         viewModelScope.launch {
             debounceFlow.emit(BookmarkInfo(id, isChecked))
+        }
+    }
+    fun deleteBookmarkedPolicy(policyId: String) {
+        _bookmarkedPolicies.update { state ->
+            (state as? BookmarkedPolicyUIState.Success)?.let { successState ->
+                successState.copy(
+                    youthPolicies = successState.youthPolicies.filter { it.id != policyId },
+                )
+            } ?: state
         }
     }
 }

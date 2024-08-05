@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.navigation
 
+import POLICY_REMOVED_ID_ARGUMENT
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
@@ -12,6 +13,9 @@ import com.app.profileeditor.navigation.navigateProfileEditor
 import com.app.profileeditor.navigation.profileEditorNavGraph
 import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarState
 import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarType
+import com.withpeace.withpeace.feature.disablepolicy.navigation.DISABLE_POLICY_ID_ARGUMENT
+import com.withpeace.withpeace.feature.disablepolicy.navigation.disabledPolicyNavGraph
+import com.withpeace.withpeace.feature.disablepolicy.navigation.navigateDisabledPolicy
 import com.withpeace.withpeace.feature.gallery.navigation.galleryNavGraph
 import com.withpeace.withpeace.feature.gallery.navigation.navigateToGallery
 import com.withpeace.withpeace.feature.home.navigation.HOME_ROUTE
@@ -247,6 +251,20 @@ fun WithpeaceNavHost(
                     navController.navigatePolicyBookmarks()
                 },
             )
+            disabledPolicyNavGraph(
+                onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
+                onClickBackButton = {
+                    navController.popBackStack()
+                },
+                onAuthExpired = {},
+                onBookmarkDeleteSuccess = {
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        POLICY_REMOVED_ID_ARGUMENT,
+                        it,
+                    )
+                    navController.popBackStack()
+                },
+            )
             profileEditorNavGraph(
                 onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
                 onClickBackButton = {
@@ -276,9 +294,10 @@ fun WithpeaceNavHost(
                     navController.navigateToPolicyDetail(policyId = it)
                 },
                 onDisablePolicyClick = {
-
+                    navController.navigateDisabledPolicy(policyId = it)
                 },
             )
+
         }
         postDetailGraph(
             onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },

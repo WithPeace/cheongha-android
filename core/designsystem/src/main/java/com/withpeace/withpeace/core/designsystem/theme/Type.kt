@@ -174,4 +174,11 @@ data class WithPeaceTypography(
         fontWeight = FontWeight.SemiBold,
         fontSize = 16.sp,
     ),
+    val disablePolicyTitle: TextStyle = TextStyle(
+        fontFamily = PretendardFont,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 16.sp,
+        lineHeight = 21.sp,
+        letterSpacing = 0.16.sp,
+    ),
 )
