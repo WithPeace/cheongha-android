@@ -10,8 +10,8 @@ android {
     defaultConfig {
         applicationId = "com.withpeace.withpeace"
         targetSdk = 34
-        versionCode = 9
-        versionName = "1.1.1"
+        versionCode = 10
+        versionName = "2.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
