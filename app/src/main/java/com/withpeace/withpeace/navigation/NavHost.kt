@@ -184,13 +184,7 @@ fun WithpeaceNavHost(
                         SnackbarType.Navigator(
                             actionName = "목록 보러가기",
                             action = {
-                                navController.navigatePolicyBookmarks( navOptions = navOptions {
-                                    popUpTo(HOME_ROUTE) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                })
+                                navController.navigatePolicyBookmarks()
                             },
                         ),
                     ),
@@ -285,20 +279,19 @@ fun WithpeaceNavHost(
 
                 },
             )
-            policyBookmarksNavGraph(
-                onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
-                onClickBackButton = {
-                    navController.popBackStack()
-                },
-                onPolicyClick = {
-                    navController.navigateToPolicyDetail(policyId = it)
-                },
-                onDisablePolicyClick = {
-                    navController.navigateDisabledPolicy(policyId = it)
-                },
-            )
-
         }
+        policyBookmarksNavGraph(
+            onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
+            onClickBackButton = {
+                navController.popBackStack()
+            },
+            onPolicyClick = {
+                navController.navigateToPolicyDetail(policyId = it)
+            },
+            onDisablePolicyClick = {
+                navController.navigateDisabledPolicy(policyId = it)
+            },
+        )
         postDetailGraph(
             onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
             onClickBackButton = navController::popBackStack,
