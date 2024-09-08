@@ -69,6 +69,7 @@ fun PostListRoute(
     navigateToDetail: (postId: Long) -> Unit,
     onShowSnackBar: (String) -> Unit,
     onAuthExpired: () -> Unit,
+    onClickRegisterPost: () -> Unit = {},
 ) {
     val postListPagingData = viewModel.postListPagingFlow.collectAsLazyPagingItems()
     val currentTopic by viewModel.currentTopic.collectAsStateWithLifecycle()
@@ -77,6 +78,7 @@ fun PostListRoute(
         postListPagingData = postListPagingData,
         onTopicChanged = viewModel::onTopicChanged,
         navigateToDetail = navigateToDetail,
+        onClickRegisterPost = onClickRegisterPost,
     )
 
     LaunchedEffect(null) {
@@ -95,6 +97,7 @@ fun PostListScreen(
     postListPagingData: LazyPagingItems<PostUiModel>,
     onTopicChanged: (PostTopicUiModel) -> Unit = {},
     navigateToDetail: (postId: Long) -> Unit = {},
+    onClickRegisterPost: () -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -140,7 +143,9 @@ fun PostListScreen(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 16.dp, end = 16.dp),
-            onClick = { },
+            onClick = {
+                onClickRegisterPost()
+            },
             containerColor = WithpeaceTheme.colors.MainPurple,
         ) {
             Image(

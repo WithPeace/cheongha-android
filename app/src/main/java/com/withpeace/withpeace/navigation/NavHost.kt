@@ -319,6 +319,9 @@ fun WithpeaceNavHost(
             onAuthExpired = {
                 onAuthExpired(onShowSnackBar, navController)
             },
+            onClickRegisterPost = {
+                navController.navigateToRegisterPost()
+            }
         )
     }
 }

@@ -20,6 +20,7 @@ fun NavGraphBuilder.postListGraph(
     onShowSnackBar: (String) -> Unit,
     navigateToPostDetail: (postId: Long) -> Unit,
     onAuthExpired: () -> Unit,
+    onClickRegisterPost: () -> Unit = {},
 ) {
     composable(
         route = POST_LIST_ROUTE,
@@ -36,6 +37,7 @@ fun NavGraphBuilder.postListGraph(
             onShowSnackBar = onShowSnackBar,
             navigateToDetail = navigateToPostDetail,
             onAuthExpired = onAuthExpired,
+            onClickRegisterPost = onClickRegisterPost,
         )
     }
 }
