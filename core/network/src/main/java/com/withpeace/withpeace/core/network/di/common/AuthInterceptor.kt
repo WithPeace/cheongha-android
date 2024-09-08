@@ -1,4 +1,4 @@
-package com.withpeace.withpeace.core.interceptor
+package com.withpeace.withpeace.core.network.di.common
 
 import com.skydoves.sandwich.suspendMapSuccess
 import com.skydoves.sandwich.suspendOnError

@@ -1,6 +1,7 @@
-package com.withpeace.withpeace.core.interceptor
+package com.withpeace.withpeace.core.network.di.di
 
 import com.withpeace.withpeace.core.datastore.dataStore.token.TokenPreferenceDataSource
+import com.withpeace.withpeace.core.network.di.common.AuthInterceptor
 import com.withpeace.withpeace.core.network.di.service.AuthService
 import dagger.Module
 import dagger.Provides

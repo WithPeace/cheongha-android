@@ -18,8 +18,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -94,7 +96,11 @@ fun PostListScreen(
     onTopicChanged: (PostTopicUiModel) -> Unit = {},
     navigateToDetail: (postId: Long) -> Unit = {},
 ) {
-    Column(modifier = Modifier.fillMaxSize().background(WithpeaceTheme.colors.SystemWhite)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(WithpeaceTheme.colors.SystemWhite),
+    ) {
         Spacer(modifier = Modifier.height(8.dp))
         TopicTabs(
             currentTopic = currentTopic,
@@ -128,6 +134,22 @@ fun PostListScreen(
             }
         }
     }
+    Box(modifier = Modifier.fillMaxSize()) {
+        FloatingActionButton(
+            shape = CircleShape,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(bottom = 16.dp, end = 16.dp),
+            onClick = { },
+            containerColor = WithpeaceTheme.colors.MainPurple,
+        ) {
+            Image(
+                painter = painterResource(id = com.withpeace.withpeace.feature.postlist.R.drawable.ic_post_plus),
+                contentDescription = "글 작성"
+            )
+        }
+    }
+
     TrackScreenViewEvent(screenName = "post_list")
 }
 
