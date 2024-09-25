@@ -1,4 +1,4 @@
-package com.withpeace.withpeace.feature.home
+package com.withpeace.withpeace.feature.policylist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,11 +14,11 @@ import com.withpeace.withpeace.core.domain.usecase.GetYouthPoliciesUseCase
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
 import com.withpeace.withpeace.core.ui.policy.toDomain
-import com.withpeace.withpeace.feature.home.uistate.HomeUiEvent
-import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
-import com.withpeace.withpeace.feature.home.uistate.YouthPolicyUiModel
-import com.withpeace.withpeace.feature.home.uistate.toDomain
-import com.withpeace.withpeace.feature.home.uistate.toUiModel
+import com.withpeace.withpeace.feature.policylist.uistate.PolicyListUiEvent
+import com.withpeace.withpeace.feature.policylist.uistate.PolicyFiltersUiModel
+import com.withpeace.withpeace.feature.policylist.uistate.YouthPolicyUiModel
+import com.withpeace.withpeace.feature.policylist.uistate.toDomain
+import com.withpeace.withpeace.feature.policylist.uistate.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -42,7 +42,7 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class PolicyListViewModel @Inject constructor(
     private val bookmarkPolicyUseCase: BookmarkPolicyUseCase,
     private val youthPoliciesUseCase: GetYouthPoliciesUseCase,
 ) : ViewModel() {
@@ -70,7 +70,7 @@ class HomeViewModel @Inject constructor(
             PolicyFiltersUiModel(),
         )
 
-    private val _uiEvent = Channel<HomeUiEvent>()
+    private val _uiEvent = Channel<PolicyListUiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
     private val debounceFlow = MutableSharedFlow<BookmarkInfo>(replay = 1)
@@ -94,14 +94,14 @@ class HomeViewModel @Inject constructor(
                                     ?: !bookmarkInfo.isBookmarked),
                             )
                         }
-                        _uiEvent.send(HomeUiEvent.BookmarkFailure)
+                        _uiEvent.send(PolicyListUiEvent.BookmarkFailure)
                     },
                 ).collect { result ->
                     lastByWhetherSuccessOfBookmarks[result.id] = result.isBookmarked
                     if (result.isBookmarked) {
-                        _uiEvent.send(HomeUiEvent.BookmarkSuccess)
+                        _uiEvent.send(PolicyListUiEvent.BookmarkSuccess)
                     } else {
-                        _uiEvent.send(HomeUiEvent.UnBookmarkSuccess)
+                        _uiEvent.send(PolicyListUiEvent.UnBookmarkSuccess)
                     }
                 }
 

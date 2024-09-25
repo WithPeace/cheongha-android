@@ -32,6 +32,7 @@ import com.withpeace.withpeace.feature.policyconsent.navigation.navigateToPolicy
 import com.withpeace.withpeace.feature.policyconsent.navigation.policyConsentGraph
 import com.withpeace.withpeace.feature.policydetail.navigation.navigateToPolicyDetail
 import com.withpeace.withpeace.feature.policydetail.navigation.policyDetailNavGraph
+import com.withpeace.withpeace.feature.policylist.navigation.policyListGraph
 import com.withpeace.withpeace.feature.postdetail.navigation.POST_DETAIL_ROUTE_WITH_ARGUMENT
 import com.withpeace.withpeace.feature.postdetail.navigation.navigateToPostDetail
 import com.withpeace.withpeace.feature.postdetail.navigation.postDetailGraph
@@ -322,6 +323,25 @@ fun WithpeaceNavHost(
             onClickRegisterPost = {
                 navController.navigateToRegisterPost()
             }
+        )
+        policyListGraph(
+            onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
+            onNavigationSnackBar = {
+                onShowSnackBar(
+                    SnackbarState(
+                        it,
+                        SnackbarType.Navigator(
+                            actionName = "목록 보러가기",
+                            action = {
+                                navController.navigatePolicyBookmarks()
+                            },
+                        ),
+                    ),
+                )
+            },
+            onPolicyClick = {
+                navController.navigateToPolicyDetail(policyId = it)
+            },
         )
     }
 }

@@ -1,4 +1,4 @@
-package com.withpeace.withpeace.feature.home
+package com.withpeace.withpeace.feature.policylist
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.MutatePriority
@@ -41,6 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -56,18 +57,18 @@ import com.withpeace.withpeace.core.ui.analytics.TrackScreenViewEvent
 import com.withpeace.withpeace.core.ui.bookmark.BookmarkButton
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
-import com.withpeace.withpeace.feature.home.filtersetting.FilterBottomSheet
-import com.withpeace.withpeace.feature.home.uistate.HomeUiEvent
-import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
-import com.withpeace.withpeace.feature.home.uistate.YouthPolicyUiModel
+import com.withpeace.withpeace.feature.policylist.filtersetting.FilterBottomSheet
+import com.withpeace.withpeace.feature.policylist.uistate.PolicyListUiEvent
+import com.withpeace.withpeace.feature.policylist.uistate.PolicyFiltersUiModel
+import com.withpeace.withpeace.feature.policylist.uistate.YouthPolicyUiModel
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeRoute(
+fun PolicyListRoute(
     onShowSnackBar: (message: String) -> Unit = {},
-    onNavigationSnackBar: (message: String) -> Unit  = {},
-    viewModel: HomeViewModel = hiltViewModel(),
+    onNavigationSnackBar: (message: String) -> Unit = {},
+    viewModel: PolicyListViewModel = hiltViewModel(),
     onPolicyClick: (String) -> Unit,
 ) {
     val youthPolicyPagingData = viewModel.youthPolicyPagingFlow.collectAsLazyPagingItems()
@@ -76,21 +77,21 @@ fun HomeRoute(
     LaunchedEffect(key1 = viewModel.uiEvent) {
         viewModel.uiEvent.collect {
             when (it) {
-                HomeUiEvent.BookmarkSuccess -> {
+                PolicyListUiEvent.BookmarkSuccess -> {
                     onNavigationSnackBar("관심 목록에 추가되었습니다.")
                 }
 
-                HomeUiEvent.BookmarkFailure -> {
+                PolicyListUiEvent.BookmarkFailure -> {
                     onShowSnackBar("찜하기에 실패했습니다. 다시 시도해주세요.")
                 }
 
-                HomeUiEvent.UnBookmarkSuccess -> {
+                PolicyListUiEvent.UnBookmarkSuccess -> {
                     onShowSnackBar("관심목록에서 삭제되었습니다.")
                 }
             }
         }
     }
-    HomeScreen(
+    PolicyListScreen(
         youthPolicies = youthPolicyPagingData,
         selectedFilterUiState = selectedFilterUiState.value,
         onDismissRequest = viewModel::onCancelFilter,
@@ -100,12 +101,12 @@ fun HomeRoute(
         onSearchWithFilter = viewModel::onCompleteFilter,
         onCloseFilter = viewModel::onCancelFilter,
         onPolicyClick = onPolicyClick,
-        onBookmarkClick = viewModel::bookmark
+        onBookmarkClick = viewModel::bookmark,
     )
 }
 
 @Composable
-fun HomeScreen(
+fun PolicyListScreen(
     modifier: Modifier = Modifier,
     youthPolicies: LazyPagingItems<YouthPolicyUiModel>,
     selectedFilterUiState: PolicyFiltersUiModel,
@@ -118,7 +119,7 @@ fun HomeScreen(
     onPolicyClick: (String) -> Unit,
     onBookmarkClick: (id: String, isChecked: Boolean) -> Unit,
 
-) {
+    ) {
     Column(modifier = modifier.fillMaxSize()) {
         HomeHeader(
             modifier = modifier,
@@ -134,8 +135,65 @@ fun HomeScreen(
             modifier = modifier.height(1.dp),
             color = WithpeaceTheme.colors.SystemGray3,
         )
+        when (youthPolicies.loadState.refresh) {
+            is LoadState.Loading -> {
+                Box(Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        color = WithpeaceTheme.colors.MainPurple,
+                    )
+                }
+            }
+
+            is LoadState.Error -> {
+                Box(Modifier.fillMaxSize()) {
+                    Text(
+                        text = "네트워크 상태를 확인해주세요.",
+                        modifier = Modifier.align(Alignment.Center),
+                    )
+                }
+            }
+
+            is LoadState.NotLoading -> {
+                if (youthPolicies.itemCount == 0) {
+                    Column(
+                        modifier = modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Spacer(modifier = modifier.height(213.dp))
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_no_result),
+                            contentDescription = stringResource(
+                                R.string.no_result,
+                            ),
+                        )
+                        Spacer(modifier = modifier.height(24.dp))
+                        Text(
+                            text = "조건에 맞는 정책이 없어요.",
+                            style = WithpeaceTheme.typography.semiBold16Sp,
+                            color = WithpeaceTheme.colors.SystemBlack,
+                            letterSpacing = 0.16.sp,
+                            lineHeight = 21.sp,
+                        )
+                        Spacer(modifier = modifier.height(8.dp))
+                        Text(
+                            text = "필터 조건을 변경한 후 다시 시도해 보세요.",
+                            style = WithpeaceTheme.typography.caption,
+                            color = WithpeaceTheme.colors.SystemBlack,
+                        )
+                    }
+                } else {
+                    PolicyItems(
+                        modifier,
+                        youthPolicies,
+                        onPolicyClick,
+                        onBookmarkClick = onBookmarkClick,
+                    )
+                }
+            }
+        }
     }
-    TrackScreenViewEvent(screenName = "home")
+    TrackScreenViewEvent(screenName = "policyList")
 }
 
 @Composable
@@ -421,9 +479,9 @@ private fun YouthPolicyCard(
 
 @Composable
 @Preview(showBackground = true)
-fun HomePreview() {
+fun PolicyListPreview() {
     WithpeaceTheme {
-        HomeScreen(
+        PolicyListScreen(
             youthPolicies =
             flowOf(
                 PagingData.from(
@@ -448,7 +506,7 @@ fun HomePreview() {
             onSearchWithFilter = {},
             onCloseFilter = {},
             onPolicyClick = {},
-            onBookmarkClick = { id, isChecked->}
+            onBookmarkClick = { id, isChecked -> },
         )
     }
 }

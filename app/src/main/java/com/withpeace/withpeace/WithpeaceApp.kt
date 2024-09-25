@@ -57,16 +57,12 @@ fun WithpeaceApp(
 
     Scaffold(
         bottomBar = {
-            if (
-                BottomTab.contains(parentDestination?.route ?: currentDestination?.route ?: "")
-            ) {
-                MainBottomBar(
+            MainBottomBar(
                     currentDestination = if (parentDestination?.route == null) {
                         currentDestination ?: return@Scaffold
                     } else parentDestination,
-                    navController = navController,
-                )
-            }
+                navController = navController,
+            )
         },
         modifier = Modifier
             .fillMaxSize()

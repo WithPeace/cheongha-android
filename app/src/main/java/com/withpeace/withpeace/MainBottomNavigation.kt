@@ -1,6 +1,5 @@
 package com.withpeace.withpeace
 
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.material3.NavigationBar
@@ -19,10 +18,10 @@ import androidx.navigation.navOptions
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.feature.home.navigation.HOME_ROUTE
 import com.withpeace.withpeace.feature.home.navigation.navigateHome
+import com.withpeace.withpeace.feature.policylist.navigation.POLICY_LIST_ROUTE
+import com.withpeace.withpeace.feature.policylist.navigation.navigateToPolicyList
 import com.withpeace.withpeace.feature.postlist.navigation.POST_LIST_ROUTE
 import com.withpeace.withpeace.feature.postlist.navigation.navigateToPostList
-import com.withpeace.withpeace.feature.registerpost.navigation.REGISTER_POST_ROUTE
-import com.withpeace.withpeace.feature.registerpost.navigation.navigateToRegisterPost
 import com.withpeace.withpeace.navigation.MY_PAGE_NESTED_ROUTE
 
 @Composable
@@ -79,8 +78,8 @@ private fun NavController.navigateToTabScreen(bottomTab: BottomTab) {
 
     when (bottomTab) {
         BottomTab.HOME -> navigateHome(tabNavOptions)
+        BottomTab.POLICY -> navigateToPolicyList(tabNavOptions)
         BottomTab.POST -> navigateToPostList(tabNavOptions)
-        BottomTab.REGISTER_POST -> navigateToRegisterPost()
         BottomTab.MY_PAGE -> navigate(MY_PAGE_NESTED_ROUTE, tabNavOptions)
     }
 }
@@ -97,17 +96,17 @@ enum class BottomTab(
         contentDescription = R.string.home,
         HOME_ROUTE,
     ),
+    POLICY(
+        iconUnSelectedResId = R.drawable.ic_bottom_policy,
+        iconSelectedResId = R.drawable.ic_bottom_policy_select,
+        contentDescription = R.string.youth_policy,
+        POLICY_LIST_ROUTE,
+    ),
     POST(
-        iconUnSelectedResId = R.drawable.ic_bottom_post,
-        iconSelectedResId = R.drawable.ic_bottom_post_select,
+        iconUnSelectedResId = R.drawable.ic_bottom_community,
+        iconSelectedResId = R.drawable.ic_bottom_community_select,
         contentDescription = R.string.post,
         POST_LIST_ROUTE,
-    ),
-    REGISTER_POST(
-        iconUnSelectedResId = R.drawable.ic_upload,
-        iconSelectedResId = R.drawable.ic_upload,
-        contentDescription = R.string.register,
-        REGISTER_POST_ROUTE,
     ),
     MY_PAGE(
         iconUnSelectedResId = R.drawable.ic_bottom_my_page,
@@ -116,12 +115,5 @@ enum class BottomTab(
         MY_PAGE_NESTED_ROUTE,
     ),
     ;
-
-    companion object {
-        operator fun contains(route: String): Boolean {
-            if (route == REGISTER_POST_ROUTE) return false
-            return entries.map { it.route }.contains(route)
-        }
-    }
 }
 // https://stackoverflow.com/questions/76721423/compose-navigation-go-to-top-level-destination-when-clicking-on-navigation-bar
