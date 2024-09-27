@@ -165,7 +165,7 @@ private fun ScrollableFilterSection(
         Text(
             text = stringResource(R.string.policy_classfication),
             style = WithpeaceTheme.typography.title2,
-            color = WithpeaceTheme.colors.SystemBlack,
+            color = WithpeaceTheme.colors.SnackbarBlack,
         )
         Spacer(modifier = modifier.height(16.dp))
         Column(
@@ -230,7 +230,7 @@ private fun ScrollableFilterSection(
         Text(
             text = stringResource(id = R.string.region),
             style = WithpeaceTheme.typography.title2,
-            color = WithpeaceTheme.colors.SystemBlack,
+            color = WithpeaceTheme.colors.SnackbarBlack,
         )
 
         Spacer(modifier = modifier.height(16.dp))

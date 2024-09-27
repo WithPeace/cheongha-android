@@ -1,67 +1,47 @@
 package com.withpeace.withpeace.feature.home
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.stopScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.LoadState
-import androidx.paging.PagingData
-import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemKey
+import com.skydoves.balloon.BalloonAnimation
+import com.skydoves.balloon.BalloonSizeSpec
+import com.skydoves.balloon.compose.Balloon
+import com.skydoves.balloon.compose.rememberBalloonBuilder
+import com.skydoves.balloon.compose.setBackgroundColor
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
-import com.withpeace.withpeace.core.designsystem.util.dropShadow
 import com.withpeace.withpeace.core.ui.analytics.TrackScreenViewEvent
-import com.withpeace.withpeace.core.ui.bookmark.BookmarkButton
-import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
-import com.withpeace.withpeace.core.ui.policy.RegionUiModel
-import com.withpeace.withpeace.feature.home.filtersetting.FilterBottomSheet
-import com.withpeace.withpeace.feature.home.uistate.HomeUiEvent
-import com.withpeace.withpeace.feature.home.uistate.PolicyFiltersUiModel
-import com.withpeace.withpeace.feature.home.uistate.YouthPolicyUiModel
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.launch
 
 @Composable
 fun HomeRoute(
@@ -70,155 +50,211 @@ fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel(),
     onPolicyClick: (String) -> Unit,
 ) {
-    val youthPolicyPagingData = viewModel.youthPolicyPagingFlow.collectAsLazyPagingItems()
-    val selectedFilterUiState = viewModel.selectingFilters.collectAsStateWithLifecycle()
-
-    LaunchedEffect(key1 = viewModel.uiEvent) {
-        viewModel.uiEvent.collect {
-            when (it) {
-                HomeUiEvent.BookmarkSuccess -> {
-                    onNavigationSnackBar("관심 목록에 추가되었습니다.")
-                }
-
-                HomeUiEvent.BookmarkFailure -> {
-                    onShowSnackBar("찜하기에 실패했습니다. 다시 시도해주세요.")
-                }
-
-                HomeUiEvent.UnBookmarkSuccess -> {
-                    onShowSnackBar("관심목록에서 삭제되었습니다.")
-                }
-            }
-        }
-    }
-    HomeScreen(
-        youthPolicies = youthPolicyPagingData,
-        selectedFilterUiState = selectedFilterUiState.value,
-        onDismissRequest = viewModel::onCancelFilter,
-        onClassificationCheckChanged = viewModel::onCheckClassification,
-        onRegionCheckChanged = viewModel::onCheckRegion,
-        onFilterAllOff = viewModel::onFilterAllOff,
-        onSearchWithFilter = viewModel::onCompleteFilter,
-        onCloseFilter = viewModel::onCancelFilter,
-        onPolicyClick = onPolicyClick,
-        onBookmarkClick = viewModel::bookmark
-    )
+    HomeScreen()
 }
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    youthPolicies: LazyPagingItems<YouthPolicyUiModel>,
-    selectedFilterUiState: PolicyFiltersUiModel,
-    onDismissRequest: () -> Unit,
-    onClassificationCheckChanged: (ClassificationUiModel) -> Unit,
-    onRegionCheckChanged: (RegionUiModel) -> Unit,
-    onFilterAllOff: () -> Unit,
-    onSearchWithFilter: () -> Unit,
-    onCloseFilter: () -> Unit,
-    onPolicyClick: (String) -> Unit,
-    onBookmarkClick: (id: String, isChecked: Boolean) -> Unit,
-
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         HomeHeader(
             modifier = modifier,
-            onDismissRequest = onDismissRequest,
-            selectedFilterUiState = selectedFilterUiState,
-            onClassificationCheckChanged = onClassificationCheckChanged,
-            onRegionCheckChanged = onRegionCheckChanged,
-            onFilterAllOff = onFilterAllOff,
-            onSearchWithFilter = onSearchWithFilter,
-            onCloseFilter = onCloseFilter,
         )
         HorizontalDivider(
             modifier = modifier.height(1.dp),
             color = WithpeaceTheme.colors.SystemGray3,
         )
+
+        ScrollSection(modifier)
+
     }
     TrackScreenViewEvent(screenName = "home")
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun PolicyItems(
-    modifier: Modifier,
-    youthPolicies: LazyPagingItems<YouthPolicyUiModel>,
-    onPolicyClick: (String) -> Unit,
-    onBookmarkClick: (id: String, isChecked: Boolean) -> Unit,
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Color(0xFFF8F9FB))
-            .padding(horizontal = 24.dp),
+private fun ScrollSection(modifier: Modifier) {
+    val builder = rememberBalloonBuilder {
+        setIsVisibleArrow(false)
+        setWidth(BalloonSizeSpec.WRAP)
+        setHeight(BalloonSizeSpec.WRAP)
+        setPadding(12)
+        setCornerRadius(12f)
+        setBackgroundColor(Color(0xFFF9FBFB))
+        setBalloonAnimation(BalloonAnimation.FADE)
+        setArrowSize(0)
+    }
+
+
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(bottom = 24.dp),
     ) {
-        Spacer(modifier = modifier.height(8.dp))
-        LazyColumn(
-            modifier = modifier
-                .fillMaxSize()
-                .testTag("home:policies"),
-            contentPadding = PaddingValues(bottom = 16.dp),
-        ) {
-            items(
-                count = youthPolicies.itemCount,
-                key = youthPolicies.itemKey { it.id },
+        item {
+            Column(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .background(color = WithpeaceTheme.colors.Gray3_70)
+                    .padding(horizontal = 24.dp, vertical = 12.dp),
             ) {
-                val youthPolicy = youthPolicies[it] ?: throw IllegalStateException()
+                Row{
+                    Text(
+                        text = "관심 키워드",
+                        style = WithpeaceTheme.typography.caption,
+                        color = WithpeaceTheme.colors.SystemGray1,
+                    )
+                    Spacer(modifier = modifier.width(4.dp))
+                    Balloon(
+                        builder = builder,
+                        balloonContent = {
+                            Text(
+                                text = "선택하신 관심 정책 분야 및 지역으로,\n" +
+                                    "핫한 정책 및 맞춤정책 추천 시 해당 키워드 기반으\n로 추천이 진행됩니다.",
+                                color = Color(0x9C101014),
+                                style = WithpeaceTheme.typography.homePolicyContent,
+                            )
+                        },
+                    ) { balloonWindow ->
+                        Image(
+                            modifier = modifier.clickable {
+                                balloonWindow.showAsDropDown()
+                            },
+                            painter = painterResource(id = R.drawable.ic_circle_info),
+                            contentDescription = "",
+                        )
+                    }
+                }
+
                 Spacer(modifier = modifier.height(8.dp))
-                YouthPolicyCard(
-                    modifier = modifier,
-                    youthPolicy = youthPolicy,
-                    onPolicyClick = onPolicyClick,
-                    onBookmarkClick = onBookmarkClick,
-                )
-            }
-            item {
-                if (youthPolicies.loadState.append is LoadState.Loading) {
-                    Column(
+                FlowRow {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_filter),
                         modifier = modifier
-                            .padding(top = 8.dp)
-                            .fillMaxWidth()
                             .background(
-                                Color.Transparent,
-                            ),
-                    ) {
-                        CircularProgressIndicator(
-                            modifier.align(Alignment.CenterHorizontally),
+                                color = WithpeaceTheme.colors.SubPurple,
+                                shape = CircleShape,
+                            )
+                            .padding(4.dp)
+                            .size(16.dp),
+                        contentDescription = "",
+                    )
+                    List(5) { //TODO("데이터 변경")
+                        Spacer(modifier = modifier.width(8.dp))
+                        Text(
+                            text = "#부산",
+                            style = WithpeaceTheme.typography.Tag,
                             color = WithpeaceTheme.colors.MainPurple,
+                            modifier = modifier
+                                .background(
+                                    color = WithpeaceTheme.colors.SubPurple,
+                                    shape = RoundedCornerShape(7.dp),
+                                )
+                                .padding(6.dp),
                         )
                     }
                 }
             }
+            Spacer(modifier = modifier.height(16.dp))
+            Text(
+                modifier = modifier.padding(horizontal = 24.dp),
+                text = "지금 핫한 정책",
+                color = WithpeaceTheme.colors.SnackbarBlack,
+                style = WithpeaceTheme.typography.title2,
+            )
+            Spacer(modifier = modifier.height(16.dp))
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 24.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                items(6) {
+                    Column {
+                        Image(
+                            modifier = modifier
+                                .size(140.dp)
+                                .clip(RoundedCornerShape(10.dp)),
+                            painter = painterResource(id = com.withpeace.withpeace.core.ui.R.drawable.ic_policy_participation_right),
+                            contentDescription = "",
+                        )
+                        Spacer(modifier = modifier.height(8.dp))
+                        Text(
+                            modifier = modifier.width(140.dp),
+                            text = "울산대학교 대학일자리플러스센터(거점형)",
+                            style = WithpeaceTheme.typography.caption,
+                            color = WithpeaceTheme.colors.SnackbarBlack,
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = modifier.height(24.dp))
+            Text(
+                modifier = modifier.padding(horizontal = 24.dp),
+                text = "맞춤 정책을 추천해드릴게요!",
+                color = WithpeaceTheme.colors.SnackbarBlack,
+                style = WithpeaceTheme.typography.title2,
+            )
+            Spacer(modifier = modifier.height(8.dp))
+            Text(
+                modifier = modifier.padding(horizontal = 24.dp),
+                text = "관심 키워드와 추천 알고리즘을 기반으로 정책을 추천해드려요.",
+                style = WithpeaceTheme.typography.homePolicyContent,
+                color = WithpeaceTheme.colors.SystemGray1,
+            )
+            Spacer(modifier = modifier.height(16.dp))
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 24.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                items(6) {
+                    Column {
+                        Image(
+                            modifier = modifier
+                                .size(140.dp)
+                                .clip(RoundedCornerShape(10.dp)),
+                            painter = painterResource(id = com.withpeace.withpeace.core.ui.R.drawable.ic_policy_participation_right),
+                            contentDescription = "",
+                        )
+                        Spacer(modifier = modifier.height(8.dp))
+                        Text(
+                            modifier = modifier.width(140.dp),
+                            text = "울산대학교 대학일자리플러스센터(거점형)",
+                            style = WithpeaceTheme.typography.caption,
+                            color = WithpeaceTheme.colors.SnackbarBlack,
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = modifier.height(24.dp))
+            Text(
+                modifier = modifier.padding(horizontal = 24.dp),
+                text = "커뮤니티",
+                color = WithpeaceTheme.colors.SnackbarBlack,
+                style = WithpeaceTheme.typography.title2,
+            )
+            Spacer(modifier = modifier.height(16.dp))
         }
-
+        items(6) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = modifier.padding(start = 24.dp, end = 17.dp),
+            ) {
+                Text(text = "자유 게시판")
+                Spacer(modifier = modifier.width(16.dp))
+                Text(
+                    style = WithpeaceTheme.typography.caption,
+                    text = "토트넘 vs K리그 누가 이길 것 같나요? 토트넘 vs K리그 누가 이길 것 같나요?",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeHeader(
     modifier: Modifier,
-    selectedFilterUiState: PolicyFiltersUiModel,
-    onDismissRequest: () -> Unit,
-    onClassificationCheckChanged: (ClassificationUiModel) -> Unit,
-    onRegionCheckChanged: (RegionUiModel) -> Unit,
-    onFilterAllOff: () -> Unit,
-    onSearchWithFilter: () -> Unit,
-    onCloseFilter: () -> Unit,
 ) {
-    var showBottomSheet by remember { mutableStateOf(false) }
-    val bottomSheetChildScrollState = rememberScrollState()
-
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-    )
-    val scope = rememberCoroutineScope()
-
-    LaunchedEffect(bottomSheetChildScrollState.canScrollBackward) {
-        if (bottomSheetChildScrollState.value == 0) {
-            bottomSheetChildScrollState.stopScroll(MutatePriority.PreventUserInput)
-        }
-    }
-
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -232,223 +268,15 @@ private fun HomeHeader(
             painter = painterResource(id = R.drawable.ic_home_logo),
             contentDescription = stringResource(R.string.cheongha_logo),
         )
-        Image(
-            modifier = modifier
-                .size(24.dp)
-                .align(Alignment.CenterEnd)
-                .clickable {
-                    showBottomSheet = true
-                },
-            painter = painterResource(id = R.drawable.ic_filter),
-            contentDescription = stringResource(R.string.filter),
-        )
-    }
-    if (showBottomSheet) {
-        ModalBottomSheet(
-            modifier = modifier,
-            dragHandle = null,
-            onDismissRequest = {
-                onDismissRequest()
-                showBottomSheet = false
-            },
-            sheetState = sheetState,
-        ) {
-            FilterBottomSheet(
-                modifier = modifier,
-                scrollState = bottomSheetChildScrollState,
-                selectedFilterUiState = selectedFilterUiState,
-                onClassificationCheckChanged = onClassificationCheckChanged,
-                onRegionCheckChanged = onRegionCheckChanged,
-                onFilterAllOff = onFilterAllOff,
-                onSearchWithFilter = {
-                    scope.launch { sheetState.hide() }.invokeOnCompletion {
-                        showBottomSheet = false
-                        onSearchWithFilter()
-                    }
-                },
-                onCloseFilter = {
-                    scope.launch { sheetState.hide() }.invokeOnCompletion {
-                        showBottomSheet = false
-                        onCloseFilter()
-                    }
-                },
-            )
-        }
-    }
-}
-
-@Composable
-private fun YouthPolicyCard(
-    modifier: Modifier,
-    youthPolicy: YouthPolicyUiModel,
-    onPolicyClick: (String) -> Unit,
-    onBookmarkClick: (id: String, isChecked: Boolean) -> Unit,
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(
-                color = WithpeaceTheme.colors.SystemWhite,
-                shape = RoundedCornerShape(size = 10.dp),
-            )
-            .dropShadow(
-                color = Color(0x1A000000),
-                blurRadius = 4.dp,
-                spreadRadius = 2.dp,
-                borderRadius = 10.dp,
-            )
-            .clickable {
-                onPolicyClick(youthPolicy.id)
-            },
-    ) {
-        ConstraintLayout(
-            modifier = modifier
-                .fillMaxWidth()
-                .background(WithpeaceTheme.colors.SystemWhite)
-                .padding(16.dp),
-        ) {
-            val (
-                title, content,
-                region, ageRange, thumbnail, heart,
-            ) = createRefs()
-
-            Text(
-                text = youthPolicy.title,
-                modifier.constrainAs(
-                    title,
-                    constrainBlock = {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(thumbnail.start, margin = 8.dp)
-                        width = Dimension.fillToConstraints
-                    },
-                ),
-                color = WithpeaceTheme.colors.SystemBlack,
-                style = WithpeaceTheme.typography.homePolicyTitle,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1,
-            )
-            Text(
-                text = youthPolicy.content,
-                modifier = modifier
-                    .constrainAs(
-                        content,
-                        constrainBlock = {
-                            top.linkTo(title.bottom, margin = 8.dp)
-                            start.linkTo(parent.start)
-                            end.linkTo(thumbnail.start, margin = 8.dp)
-                            width = Dimension.fillToConstraints
-                        },
-                    ),
-                color = WithpeaceTheme.colors.SystemBlack,
-                style = WithpeaceTheme.typography.homePolicyContent,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 2,
-            )
-            BookmarkButton(
-                isClicked = youthPolicy.isBookmarked,
-                modifier = modifier.constrainAs(
-                    heart,
-                ) {
-                    top.linkTo(content.bottom, margin = 8.dp)
-                    start.linkTo(parent.start)
-                    bottom.linkTo(parent.bottom)
-                },
-                onClick = { isClicked ->
-                    onBookmarkClick(youthPolicy.id, isClicked)
-                },
-            )
-
-            Text(
-                text = youthPolicy.region.name,
-                color = WithpeaceTheme.colors.MainPurple,
-                modifier = modifier
-                    .constrainAs(
-                        region,
-                        constrainBlock = {
-                            top.linkTo(heart.top)
-                            start.linkTo(heart.end, margin = 8.dp)
-                            bottom.linkTo(heart.bottom)
-                        },
-                    )
-                    .background(
-                        color = WithpeaceTheme.colors.SubPurple,
-                        shape = RoundedCornerShape(size = 5.dp),
-                    )
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                style = WithpeaceTheme.typography.Tag,
-            )
-
-            Text(
-                text = youthPolicy.ageInfo,
-                color = WithpeaceTheme.colors.SystemGray1,
-                modifier = modifier
-                    .constrainAs(
-                        ageRange,
-                        constrainBlock = {
-                            top.linkTo(region.top)
-                            start.linkTo(region.end, margin = 8.dp)
-                            bottom.linkTo(region.bottom)
-                        },
-                    )
-                    .background(
-                        color = WithpeaceTheme.colors.SystemGray3,
-                        shape = RoundedCornerShape(size = 5.dp),
-                    )
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                style = WithpeaceTheme.typography.Tag,
-            )
-
-
-            Image(
-                modifier = modifier
-                    .size(57.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .constrainAs(
-                        ref = thumbnail,
-                        constrainBlock = {
-                            start.linkTo(title.end)
-                            end.linkTo(parent.end)
-                            top.linkTo(parent.top)
-                        },
-                    ),
-                painter = painterResource(id = youthPolicy.classification.drawableResId),
-                contentDescription = stringResource(R.string.policy_classification_image),
-            )
-        }
-    }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun HomePreview() {
-    WithpeaceTheme {
-        HomeScreen(
-            youthPolicies =
-            flowOf(
-                PagingData.from(
-                    listOf(
-                        YouthPolicyUiModel(
-                            id = "deterruisset",
-                            title = "epicurei",
-                            content = "interdum",
-                            region = RegionUiModel.대구,
-                            ageInfo = "quo",
-                            classification = ClassificationUiModel.JOB,
-                            isBookmarked = false,
-                        ),
-                    ),
-                ),
-            ).collectAsLazyPagingItems(),
-            selectedFilterUiState = PolicyFiltersUiModel(),
-            onDismissRequest = { },
-            onClassificationCheckChanged = {},
-            onRegionCheckChanged = {},
-            onFilterAllOff = {},
-            onSearchWithFilter = {},
-            onCloseFilter = {},
-            onPolicyClick = {},
-            onBookmarkClick = { id, isChecked->}
-        )
+        // Image(
+        //     modifier = modifier
+        //         .size(24.dp)
+        //         .align(Alignment.CenterEnd)
+        //         .clickable {
+        //             showBottomSheet = true
+        //         },
+        //     painter = painterResource(id = R.drawable.ic_filter),
+        //     contentDescription = stringResource(R.string.filter),
+        // )
     }
 }
