@@ -57,9 +57,9 @@ import com.withpeace.withpeace.core.ui.analytics.TrackScreenViewEvent
 import com.withpeace.withpeace.core.ui.bookmark.BookmarkButton
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
-import com.withpeace.withpeace.feature.policylist.filtersetting.FilterBottomSheet
+import com.withpeace.withpeace.core.ui.policy.filtersetting.FilterBottomSheet
 import com.withpeace.withpeace.feature.policylist.uistate.PolicyListUiEvent
-import com.withpeace.withpeace.feature.policylist.uistate.PolicyFiltersUiModel
+import com.withpeace.withpeace.core.ui.policy.filtersetting.PolicyFiltersUiModel
 import com.withpeace.withpeace.feature.policylist.uistate.YouthPolicyUiModel
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -456,7 +456,6 @@ private fun YouthPolicyCard(
                     .padding(horizontal = 8.dp, vertical = 4.dp),
                 style = WithpeaceTheme.typography.Tag,
             )
-
 
             Image(
                 modifier = modifier

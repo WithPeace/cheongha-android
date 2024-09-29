@@ -1,4 +1,4 @@
-package com.withpeace.withpeace.feature.policylist.uistate
+package com.withpeace.withpeace.core.ui.policy.filtersetting
 
 import com.withpeace.withpeace.core.domain.model.policy.PolicyFilters
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel

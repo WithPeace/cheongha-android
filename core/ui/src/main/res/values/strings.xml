@@ -30,4 +30,13 @@
     <string name="classification_wefare_and_culture">복지,문화</string>
     <string name="classification_partification_and_right">참여,권리</string>
     <string name="classification_etc">기타</string>
+
+    <!-- Policy Filter    -->
+    <string name="filter">필터</string>
+    <string name="filter_close">필터 닫기</string>
+    <string name="filter_expanded">더보기</string>
+    <string name="policy_classification_image">정책 분류 이미지</string>
+    <string name="region">지역</string>
+    <string name="filter_all_off">전체 해제</string>
+    <string name="search">검색하기</string>
 </resources>

@@ -1,8 +1,10 @@
 package com.withpeace.withpeace.feature.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.stopScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,13 +21,21 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
 import com.skydoves.balloon.compose.Balloon
@@ -42,20 +53,41 @@ import com.skydoves.balloon.compose.rememberBalloonBuilder
 import com.skydoves.balloon.compose.setBackgroundColor
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.ui.analytics.TrackScreenViewEvent
+import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
+import com.withpeace.withpeace.core.ui.policy.RegionUiModel
+import com.withpeace.withpeace.core.ui.policy.filtersetting.FilterBottomSheet
+import com.withpeace.withpeace.core.ui.policy.filtersetting.PolicyFiltersUiModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeRoute(
     onShowSnackBar: (message: String) -> Unit = {},
-    onNavigationSnackBar: (message: String) -> Unit  = {},
     viewModel: HomeViewModel = hiltViewModel(),
+    onNavigationSnackBar: (message: String) -> Unit  = {},
     onPolicyClick: (String) -> Unit,
 ) {
-    HomeScreen()
+    val selectedFilterUiState = viewModel.selectingFilters.collectAsStateWithLifecycle()
+    HomeScreen(
+        selectedFilterUiState = selectedFilterUiState.value,
+        onClassificationCheckChanged = viewModel::onCheckClassification,
+        onRegionCheckChanged = viewModel::onCheckRegion,
+        onFilterAllOff = viewModel::onFilterAllOff,
+        onSearchWithFilter = viewModel::onCompleteFilter,
+        onCloseFilter = viewModel::onCancelFilter,
+        onDismissRequest = viewModel::onCancelFilter,
+    )
 }
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
+    selectedFilterUiState: PolicyFiltersUiModel,
+    onDismissRequest: () -> Unit,
+    onClassificationCheckChanged: (ClassificationUiModel) -> Unit,
+    onRegionCheckChanged: (RegionUiModel) -> Unit,
+    onFilterAllOff: () -> Unit,
+    onSearchWithFilter: () -> Unit,
+    onCloseFilter: () -> Unit,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         HomeHeader(
@@ -65,16 +97,32 @@ fun HomeScreen(
             modifier = modifier.height(1.dp),
             color = WithpeaceTheme.colors.SystemGray3,
         )
-
-        ScrollSection(modifier)
+        ScrollSection(
+            selectedFilterUiState = selectedFilterUiState,
+            onDismissRequest = onDismissRequest,
+            onClassificationCheckChanged = onClassificationCheckChanged,
+            onRegionCheckChanged = onRegionCheckChanged,
+            onFilterAllOff = onFilterAllOff,
+            onSearchWithFilter = onSearchWithFilter,
+            onCloseFilter = onCloseFilter,
+        )
 
     }
     TrackScreenViewEvent(screenName = "home")
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-private fun ScrollSection(modifier: Modifier) {
+private fun ScrollSection(
+    modifier: Modifier = Modifier,
+    selectedFilterUiState: PolicyFiltersUiModel,
+    onDismissRequest: () -> Unit,
+    onClassificationCheckChanged: (ClassificationUiModel) -> Unit,
+    onRegionCheckChanged: (RegionUiModel) -> Unit,
+    onFilterAllOff: () -> Unit,
+    onSearchWithFilter: () -> Unit,
+    onCloseFilter: () -> Unit,
+) {
     val builder = rememberBalloonBuilder {
         setIsVisibleArrow(false)
         setWidth(BalloonSizeSpec.WRAP)
@@ -85,7 +133,52 @@ private fun ScrollSection(modifier: Modifier) {
         setBalloonAnimation(BalloonAnimation.FADE)
         setArrowSize(0)
     }
+    var showBottomSheet by remember { mutableStateOf(false) }
+    val bottomSheetChildScrollState = rememberScrollState()
 
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+    )
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(bottomSheetChildScrollState.canScrollBackward) {
+        if (bottomSheetChildScrollState.value == 0) {
+            bottomSheetChildScrollState.stopScroll(MutatePriority.PreventUserInput)
+        }
+    }
+
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            modifier = modifier,
+            dragHandle = null,
+            onDismissRequest = {
+                onDismissRequest()
+                showBottomSheet = false
+            },
+            sheetState = sheetState,
+        ) {
+            FilterBottomSheet(
+                modifier = modifier,
+                scrollState = bottomSheetChildScrollState,
+                selectedFilterUiState = selectedFilterUiState,
+                onClassificationCheckChanged = onClassificationCheckChanged,
+                onRegionCheckChanged = onRegionCheckChanged,
+                onFilterAllOff = onFilterAllOff,
+                onSearchWithFilter = {
+                    scope.launch { sheetState.hide() }.invokeOnCompletion {
+                        showBottomSheet = false
+                        onSearchWithFilter()
+                    }
+                },
+                onCloseFilter = {
+                    scope.launch { sheetState.hide() }.invokeOnCompletion {
+                        showBottomSheet = false
+                        onCloseFilter()
+                    }
+                },
+            )
+        }
+    }
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -136,7 +229,10 @@ private fun ScrollSection(modifier: Modifier) {
                                 shape = CircleShape,
                             )
                             .padding(4.dp)
-                            .size(16.dp),
+                            .size(16.dp)
+                            .clickable {
+                                showBottomSheet = true
+                            },
                         contentDescription = "",
                     )
                     List(5) { //TODO("데이터 변경")

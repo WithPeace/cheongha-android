@@ -1,8 +1,9 @@
-package com.withpeace.withpeace.feature.home.uistate
+package com.withpeace.withpeace.feature.policylist.filtersetting
 
 import com.withpeace.withpeace.core.domain.model.policy.PolicyFilters
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
+import com.withpeace.withpeace.core.ui.policy.filtersetting.PolicyFiltersUiModel
 import com.withpeace.withpeace.core.ui.policy.toDomain
 import com.withpeace.withpeace.core.ui.policy.toUiModel
 

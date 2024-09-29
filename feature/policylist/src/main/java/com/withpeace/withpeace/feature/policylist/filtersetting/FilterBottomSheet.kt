@@ -1,8 +1,6 @@
 package com.withpeace.withpeace.feature.policylist.filtersetting
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -10,6 +8,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,11 +18,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -40,8 +40,7 @@ import androidx.compose.ui.unit.dp
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
-import com.withpeace.withpeace.feature.policylist.filtersetting.uistate.FilterListUiState
-import com.withpeace.withpeace.feature.policylist.uistate.PolicyFiltersUiModel
+import com.withpeace.withpeace.core.ui.policy.filtersetting.PolicyFiltersUiModel
 import com.withpeace.withpeace.feature.policylist.R
 
 @Composable
@@ -56,7 +55,14 @@ fun FilterBottomSheet(
     onCloseFilter: () -> Unit,
 ) {
     val filterListUiState =
-        remember { mutableStateOf(FilterListUiState().getStateByFilterState(selectedFilterUiState)) }
+        remember {
+            mutableStateOf(
+                PolicyFiltersUiModel(
+                    classifications = ClassificationUiModel.entries,
+                    regions = RegionUiModel.entries,
+                ),
+            )
+        }
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
     val footerHeight = remember { mutableStateOf(0.dp) }
@@ -90,14 +96,6 @@ fun FilterBottomSheet(
                 selectedFilterUiState = selectedFilterUiState,
                 onClassificationCheckChanged = onClassificationCheckChanged,
                 onRegionCheckChanged = onRegionCheckChanged,
-                onClassificationMoreViewClick = {
-                    filterListUiState.value =
-                        filterListUiState.value.copy(isClassificationExpanded = !filterListUiState.value.isClassificationExpanded)
-                },
-                onRegionMoreViewClick = {
-                    filterListUiState.value =
-                        filterListUiState.value.copy(isRegionExpanded = !filterListUiState.value.isRegionExpanded)
-                },
                 scrollState = scrollState,
             )
         }
@@ -133,33 +131,20 @@ private fun FilterHeader(modifier: Modifier, onCloseFilter: () -> Unit) {
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ScrollableFilterSection(
     modifier: Modifier,
-    filterListUiState: FilterListUiState,
+    filterListUiState: PolicyFiltersUiModel,
     selectedFilterUiState: PolicyFiltersUiModel,
     onClassificationCheckChanged: (ClassificationUiModel) -> Unit,
     onRegionCheckChanged: (RegionUiModel) -> Unit,
-    onClassificationMoreViewClick: () -> Unit,
-    onRegionMoreViewClick: () -> Unit,
     scrollState: ScrollState,
 ) {
-    val scrollSectionHeight = remember { mutableStateOf(0.dp) }
-    val localDensity = LocalDensity.current
-    val columnModifier = modifier.padding(horizontal = 24.dp)
-
     Column(
-        modifier =
-        if (scrollSectionHeight.value == 0.dp) columnModifier
-            .onSizeChanged {
-                if (!filterListUiState.isRegionExpanded && !filterListUiState.isClassificationExpanded) {
-                    scrollSectionHeight.value = with(localDensity) { it.height.toDp() }
-                }
-            }
+        modifier = modifier
             .verticalScroll(scrollState)
-        else columnModifier
-            .height(scrollSectionHeight.value)
-            .verticalScroll(scrollState)
+            .padding(horizontal = 24.dp),
     ) {
         Spacer(modifier = modifier.height(16.dp))
         Text(
@@ -168,58 +153,94 @@ private fun ScrollableFilterSection(
             color = WithpeaceTheme.colors.SnackbarBlack,
         )
         Spacer(modifier = modifier.height(16.dp))
-        Column(
-            modifier = modifier.animateContentSize(
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioNoBouncy,
-                    stiffness = Spring.StiffnessMedium,
-                ),
-            ),
-        ) {
-            filterListUiState.getClassifications().forEach {
-                Row(
-                    modifier = modifier.fillMaxWidth(),
-                    horizontalArrangement =
-                    Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = stringResource(id = it.stringResId),
-                        style = WithpeaceTheme.typography.body,
-                        color = WithpeaceTheme.colors.SystemBlack,
-                    )
-                    Checkbox(
-                        colors = CheckboxDefaults.colors(
-                            checkedColor = WithpeaceTheme.colors.MainPurple,
-                            uncheckedColor = WithpeaceTheme.colors.SystemGray2,
-                            checkmarkColor = WithpeaceTheme.colors.SystemWhite,
+        LazyRow {
+            items(3) {
+                val filterItem = filterListUiState.classifications[it]
+                if (selectedFilterUiState.classifications.contains(filterItem)) {
+                    TextButton(
+                        colors = ButtonColors(
+                            containerColor = WithpeaceTheme.colors.MainPurple,
+                            contentColor = WithpeaceTheme.colors.SystemWhite,
+                            disabledContainerColor = Color.Transparent,
+                            disabledContentColor = WithpeaceTheme.colors.SystemWhite,
                         ),
-                        checked = selectedFilterUiState.classifications.contains(it),
-                        onCheckedChange = { _ -> onClassificationCheckChanged(it) },
-                    )
+                        onClick = { onClassificationCheckChanged(filterItem) },
+                        modifier = modifier
+                            .padding(end = 8.dp),
+                    ) {
+                        Text(
+                            style = WithpeaceTheme.typography.body,
+                            text = stringResource(id = filterItem.stringResId),
+                        )
+                    }
+                } else {
+                    TextButton(
+                        colors = ButtonColors(
+                            containerColor = WithpeaceTheme.colors.SystemWhite,
+                            contentColor = WithpeaceTheme.colors.SystemBlack,
+                            disabledContainerColor = Color.Transparent,
+                            disabledContentColor = WithpeaceTheme.colors.SystemBlack,
+                        ),
+                        onClick = { onClassificationCheckChanged(filterItem) },
+                        border = BorderStroke(
+                            width = 1.dp,
+                            color = WithpeaceTheme.colors.SystemGray2,
+                        ),
+                        modifier = modifier.padding(end = 8.dp),
+                    ) {
+                        Text(
+                            style = WithpeaceTheme.typography.body,
+                            text = stringResource(id = filterItem.stringResId),
+                            color = WithpeaceTheme.colors.SystemBlack,
+                        )
+                    }
                 }
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .clickable {
-                    onClassificationMoreViewClick()
-                },
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = stringResource(id = if (filterListUiState.isClassificationExpanded) R.string.filter_fold else R.string.filter_expanded),
-                color = WithpeaceTheme.colors.SystemGray1,
-                style = WithpeaceTheme.typography.caption,
-                modifier = modifier.padding(end = 4.dp),
-            )
-            Image(
-                painterResource(id = if (filterListUiState.isClassificationExpanded) R.drawable.ic_filter_fold else R.drawable.ic_filter_expanded),
-                contentDescription = stringResource(id = R.string.filter_expanded),
-            )
+        Spacer(modifier = modifier.height(8.dp))
+        LazyRow {
+            items(2) {
+                val filterItem = filterListUiState.classifications[it + 3]
+                if (selectedFilterUiState.classifications.contains(filterItem)) {
+                    TextButton(
+                        colors = ButtonColors(
+                            containerColor = WithpeaceTheme.colors.MainPurple,
+                            contentColor = WithpeaceTheme.colors.SystemWhite,
+                            disabledContainerColor = Color.Transparent,
+                            disabledContentColor = WithpeaceTheme.colors.SystemWhite,
+                        ),
+                        onClick = { onClassificationCheckChanged(filterItem) },
+                        modifier = modifier
+                            .padding(end = 8.dp),
+                    ) {
+                        Text(
+                            style = WithpeaceTheme.typography.body,
+                            text = stringResource(id = filterItem.stringResId),
+                        )
+                    }
+                } else {
+                    TextButton(
+                        colors = ButtonColors(
+                            containerColor = WithpeaceTheme.colors.SystemWhite,
+                            contentColor = WithpeaceTheme.colors.SystemBlack,
+                            disabledContainerColor = Color.Transparent,
+                            disabledContentColor = WithpeaceTheme.colors.SystemBlack,
+                        ),
+                        onClick = { onClassificationCheckChanged(filterItem) },
+                        border = BorderStroke(
+                            width = 1.dp,
+                            color = WithpeaceTheme.colors.SystemGray2,
+                        ),
+                        modifier = modifier.padding(end = 8.dp),
+                    ) {
+                        Text(
+                            style = WithpeaceTheme.typography.body,
+                            text = stringResource(id = filterItem.stringResId),
+                            color = WithpeaceTheme.colors.SystemBlack,
+                        )
+                    }
+                }
+            }
         }
         Spacer(modifier = modifier.height(16.dp))
         HorizontalDivider(
@@ -234,62 +255,50 @@ private fun ScrollableFilterSection(
         )
 
         Spacer(modifier = modifier.height(16.dp))
-        Column(
-            modifier = modifier.animateContentSize(
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioNoBouncy,
-                    stiffness = Spring.StiffnessMedium,
-                ),
-            ),
-        ) {
-            filterListUiState.getRegions().forEach { filterItem ->
-                Row(
-                    modifier = modifier.fillMaxWidth(),
-                    horizontalArrangement =
-                    Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = filterItem.name,
-                        style = WithpeaceTheme.typography.body,
-                        color = WithpeaceTheme.colors.SystemBlack,
-                    )
-                    Checkbox(
-                        colors = CheckboxDefaults.colors(
-                            checkedColor = WithpeaceTheme.colors.MainPurple,
-                            uncheckedColor = WithpeaceTheme.colors.SystemGray2,
-                            checkmarkColor = WithpeaceTheme.colors.SystemWhite,
+        FlowRow {
+            filterListUiState.regions.dropLast(1).forEach { filterItem ->
+                if (selectedFilterUiState.regions.contains(filterItem)) {
+                    TextButton(
+                        colors = ButtonColors(
+                            containerColor = WithpeaceTheme.colors.MainPurple,
+                            contentColor = WithpeaceTheme.colors.SystemWhite,
+                            disabledContainerColor = Color.Transparent,
+                            disabledContentColor = WithpeaceTheme.colors.SystemWhite,
                         ),
-                        checked = selectedFilterUiState.regions.contains(filterItem),
-                        onCheckedChange = { onRegionCheckChanged(filterItem) },
-                    )
+                        onClick = { onRegionCheckChanged(filterItem) },
+                        modifier = modifier
+                            .padding(end = 8.dp),
+                    ) {
+                        Text(
+                            style = WithpeaceTheme.typography.body,
+                            text = filterItem.name,
+                        )
+                    }
+                } else {
+                    TextButton(
+                        colors = ButtonColors(
+                            containerColor = WithpeaceTheme.colors.SystemWhite,
+                            contentColor = WithpeaceTheme.colors.SystemBlack,
+                            disabledContainerColor = Color.Transparent,
+                            disabledContentColor = WithpeaceTheme.colors.SystemBlack,
+                        ),
+                        onClick = { onRegionCheckChanged(filterItem) },
+                        border = BorderStroke(
+                            width = 1.dp,
+                            color = WithpeaceTheme.colors.SystemGray2,
+                        ),
+                        modifier = modifier.padding(end = 8.dp),
+                    ) {
+                        Text(
+                            style = WithpeaceTheme.typography.body,
+                            text = filterItem.name,
+                            color = WithpeaceTheme.colors.SystemBlack,
+                        )
+                    }
                 }
             }
         }
-
         Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .clickable {
-                    onRegionMoreViewClick()
-                },
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = stringResource(
-                    if (filterListUiState.isRegionExpanded) R.string.filter_fold else R.string.filter_expanded,
-                ),
-                color = WithpeaceTheme.colors.SystemGray1,
-                style = WithpeaceTheme.typography.caption,
-                modifier = modifier.padding(end = 4.dp),
-            )
-            Image(
-                painterResource(id = if (filterListUiState.isRegionExpanded) R.drawable.ic_filter_fold else R.drawable.ic_filter_expanded),
-                contentDescription = stringResource(id = R.string.filter_expanded),
-            )
-        }
-        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
