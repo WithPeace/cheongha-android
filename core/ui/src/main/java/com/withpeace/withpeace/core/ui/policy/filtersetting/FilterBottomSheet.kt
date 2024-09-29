@@ -147,7 +147,7 @@ private fun ScrollableFilterSection(
     ) {
         Spacer(modifier = modifier.height(16.dp))
         Text(
-            text = stringResource(R.string.policy_classification_image),
+            text = stringResource(R.string.classification),
             style = WithpeaceTheme.typography.title2,
             color = WithpeaceTheme.colors.SnackbarBlack,
         )

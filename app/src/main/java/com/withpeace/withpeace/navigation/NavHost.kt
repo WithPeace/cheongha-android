@@ -38,6 +38,7 @@ import com.withpeace.withpeace.feature.postdetail.navigation.navigateToPostDetai
 import com.withpeace.withpeace.feature.postdetail.navigation.postDetailGraph
 import com.withpeace.withpeace.feature.postlist.navigation.POST_LIST_DELETED_POST_ID_ARGUMENT
 import com.withpeace.withpeace.feature.postlist.navigation.POST_LIST_ROUTE
+import com.withpeace.withpeace.feature.postlist.navigation.navigateToPostList
 import com.withpeace.withpeace.feature.postlist.navigation.postListGraph
 import com.withpeace.withpeace.feature.privacypolicy.navigation.navigateToPrivacyPolicy
 import com.withpeace.withpeace.feature.privacypolicy.navigation.privacyPolicyGraph
@@ -194,6 +195,9 @@ fun WithpeaceNavHost(
             onPolicyClick = {
                 navController.navigateToPolicyDetail(policyId = it)
             },
+            onPostClick = {
+                navController.navigateToPostList(it.name)
+            }
         )
         policyDetailNavGraph(
             onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },

@@ -84,6 +84,24 @@ class DefaultYouthPolicyRepository @Inject constructor(
         }
     }
 
+    override fun getRecommendPolicy(onError: suspend (CheonghaError) -> Unit): Flow<List<YouthPolicy>> =
+        flow {
+            youthPolicyService.getRecommendations().suspendMapSuccess {
+                emit(data.map { it.toDomain() })
+            }.handleApiFailure {
+                onErrorWithAuthExpired(it, onError)
+            }
+        }
+
+    override fun getHotPolicy(onError: suspend (CheonghaError) -> Unit): Flow<List<YouthPolicy>> =
+        flow {
+            youthPolicyService.getHots().suspendMapSuccess {
+                emit(data.map { it.toDomain() })
+            }.handleApiFailure {
+                onErrorWithAuthExpired(it, onError)
+            }
+        }
+
     private suspend fun onErrorWithAuthExpired(
         it: ResponseError,
         onError: suspend (CheonghaError) -> Unit,

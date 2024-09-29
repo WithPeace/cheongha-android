@@ -79,7 +79,7 @@ private fun NavController.navigateToTabScreen(bottomTab: BottomTab) {
     when (bottomTab) {
         BottomTab.HOME -> navigateHome(tabNavOptions)
         BottomTab.POLICY -> navigateToPolicyList(tabNavOptions)
-        BottomTab.POST -> navigateToPostList(tabNavOptions)
+        BottomTab.POST -> navigateToPostList(navOptions = tabNavOptions)
         BottomTab.MY_PAGE -> navigate(MY_PAGE_NESTED_ROUTE, tabNavOptions)
     }
 }
@@ -115,5 +115,11 @@ enum class BottomTab(
         MY_PAGE_NESTED_ROUTE,
     ),
     ;
+
+    companion object {
+        operator fun contains(route: String): Boolean {
+            return entries.map { it.route }.contains(route)
+        }
+    }
 }
 // https://stackoverflow.com/questions/76721423/compose-navigation-go-to-top-level-destination-when-clicking-on-navigation-bar

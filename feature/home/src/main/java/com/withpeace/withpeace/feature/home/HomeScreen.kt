@@ -57,6 +57,10 @@ import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
 import com.withpeace.withpeace.core.ui.policy.filtersetting.FilterBottomSheet
 import com.withpeace.withpeace.core.ui.policy.filtersetting.PolicyFiltersUiModel
+import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
+import com.withpeace.withpeace.feature.home.uistate.HotPolicyUiState
+import com.withpeace.withpeace.feature.home.uistate.RecentPostsUiState
+import com.withpeace.withpeace.feature.home.uistate.RecommendPolicyUiState
 import kotlinx.coroutines.launch
 
 @Composable
@@ -65,8 +69,12 @@ fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigationSnackBar: (message: String) -> Unit  = {},
     onPolicyClick: (String) -> Unit,
+    onPostClick: (PostTopicUiModel) -> Unit,
 ) {
     val selectedFilterUiState = viewModel.selectingFilters.collectAsStateWithLifecycle()
+    val recentPosts = viewModel.recentPostsUiState.collectAsStateWithLifecycle()
+    val hotPolicies = viewModel.hotPolicyUiState.collectAsStateWithLifecycle()
+    val recommendPolicies = viewModel.recommendPolicyUiState.collectAsStateWithLifecycle()
     HomeScreen(
         selectedFilterUiState = selectedFilterUiState.value,
         onClassificationCheckChanged = viewModel::onCheckClassification,
@@ -75,11 +83,19 @@ fun HomeRoute(
         onSearchWithFilter = viewModel::onCompleteFilter,
         onCloseFilter = viewModel::onCancelFilter,
         onDismissRequest = viewModel::onCancelFilter,
+        recentPosts = recentPosts.value,
+        onPostClick = onPostClick,
+        onPolicyClick = onPolicyClick,
+        hotPolicyUiState = hotPolicies.value,
+        recommendPolicyUiState = recommendPolicies.value,
     )
 }
 
 @Composable
 fun HomeScreen(
+    recentPosts: RecentPostsUiState,
+    hotPolicyUiState: HotPolicyUiState,
+    recommendPolicyUiState: RecommendPolicyUiState,
     modifier: Modifier = Modifier,
     selectedFilterUiState: PolicyFiltersUiModel,
     onDismissRequest: () -> Unit,
@@ -88,6 +104,8 @@ fun HomeScreen(
     onFilterAllOff: () -> Unit,
     onSearchWithFilter: () -> Unit,
     onCloseFilter: () -> Unit,
+    onPostClick: (PostTopicUiModel) -> Unit,
+    onPolicyClick: (String) -> Unit,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         HomeHeader(
@@ -98,6 +116,7 @@ fun HomeScreen(
             color = WithpeaceTheme.colors.SystemGray3,
         )
         ScrollSection(
+            recentPosts = recentPosts,
             selectedFilterUiState = selectedFilterUiState,
             onDismissRequest = onDismissRequest,
             onClassificationCheckChanged = onClassificationCheckChanged,
@@ -105,6 +124,11 @@ fun HomeScreen(
             onFilterAllOff = onFilterAllOff,
             onSearchWithFilter = onSearchWithFilter,
             onCloseFilter = onCloseFilter,
+            onPostClick = onPostClick,
+            onPolicyClick = onPolicyClick,
+            hotPolicyUiState = hotPolicyUiState,
+            recommendPolicyUiState = recommendPolicyUiState,
+
         )
 
     }
@@ -114,6 +138,8 @@ fun HomeScreen(
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun ScrollSection(
+    onPolicyClick: (String) -> Unit,
+    recentPosts: RecentPostsUiState,
     modifier: Modifier = Modifier,
     selectedFilterUiState: PolicyFiltersUiModel,
     onDismissRequest: () -> Unit,
@@ -122,6 +148,9 @@ private fun ScrollSection(
     onFilterAllOff: () -> Unit,
     onSearchWithFilter: () -> Unit,
     onCloseFilter: () -> Unit,
+    onPostClick: (PostTopicUiModel) -> Unit,
+    hotPolicyUiState: HotPolicyUiState,
+    recommendPolicyUiState: RecommendPolicyUiState,
 ) {
     val builder = rememberBalloonBuilder {
         setIsVisibleArrow(false)
@@ -235,20 +264,20 @@ private fun ScrollSection(
                             },
                         contentDescription = "",
                     )
-                    List(5) { //TODO("데이터 변경")
-                        Spacer(modifier = modifier.width(8.dp))
-                        Text(
-                            text = "#부산",
-                            style = WithpeaceTheme.typography.Tag,
-                            color = WithpeaceTheme.colors.MainPurple,
-                            modifier = modifier
-                                .background(
-                                    color = WithpeaceTheme.colors.SubPurple,
-                                    shape = RoundedCornerShape(7.dp),
-                                )
-                                .padding(6.dp),
-                        )
-                    }
+                    // List(5) { //TODO("데이터 변경")
+                    //     Spacer(modifier = modifier.width(8.dp))
+                    //     Text(
+                    //         text = "#부산",
+                    //         style = WithpeaceTheme.typography.Tag,
+                    //         color = WithpeaceTheme.colors.MainPurple,
+                    //         modifier = modifier
+                    //             .background(
+                    //                 color = WithpeaceTheme.colors.SubPurple,
+                    //                 shape = RoundedCornerShape(7.dp),
+                    //             )
+                    //             .padding(6.dp),
+                    //     )
+                    // }
                 }
             }
             Spacer(modifier = modifier.height(16.dp))
@@ -263,22 +292,54 @@ private fun ScrollSection(
                 contentPadding = PaddingValues(horizontal = 24.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                items(6) {
-                    Column {
-                        Image(
-                            modifier = modifier
-                                .size(140.dp)
-                                .clip(RoundedCornerShape(10.dp)),
-                            painter = painterResource(id = com.withpeace.withpeace.core.ui.R.drawable.ic_policy_participation_right),
-                            contentDescription = "",
-                        )
-                        Spacer(modifier = modifier.height(8.dp))
-                        Text(
-                            modifier = modifier.width(140.dp),
-                            text = "울산대학교 대학일자리플러스센터(거점형)",
-                            style = WithpeaceTheme.typography.caption,
-                            color = WithpeaceTheme.colors.SnackbarBlack,
-                        )
+                if (hotPolicyUiState is HotPolicyUiState.Success) {
+                    items(hotPolicyUiState.policies.size) {
+                        val hotPolicy = hotPolicyUiState.policies[it]
+                        Column(
+                            modifier.clickable {
+                                onPolicyClick(hotPolicy.id)
+                            },
+                        ) {
+                            Image(
+                                modifier = modifier
+                                    .size(140.dp)
+                                    .clip(RoundedCornerShape(10.dp)),
+                                painter = painterResource(id = hotPolicy.classification.drawableResId),
+                                contentDescription = "",
+                            )
+                            Spacer(modifier = modifier.height(8.dp))
+                            Text(
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 2,
+                                modifier = modifier.width(140.dp),
+                                text = hotPolicy.title,
+                                style = WithpeaceTheme.typography.caption,
+                                color = WithpeaceTheme.colors.SnackbarBlack,
+                            )
+                        }
+                    }
+                } else {
+                    items(6) {
+                        Column(
+                            modifier.clickable {
+                                onPolicyClick("R2024092726752")
+                            },
+                        ) {
+                            Image(
+                                modifier = modifier
+                                    .size(140.dp)
+                                    .clip(RoundedCornerShape(10.dp)),
+                                painter = painterResource(id = com.withpeace.withpeace.core.ui.R.drawable.ic_policy_participation_right),
+                                contentDescription = "",
+                            )
+                            Spacer(modifier = modifier.height(8.dp))
+                            Text(
+                                modifier = modifier.width(140.dp),
+                                text = "울산대학교 대학일자리플러스센터(거점형)",
+                                style = WithpeaceTheme.typography.caption,
+                                color = WithpeaceTheme.colors.SnackbarBlack,
+                            )
+                        }
                     }
                 }
             }
@@ -301,22 +362,54 @@ private fun ScrollSection(
                 contentPadding = PaddingValues(horizontal = 24.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                items(6) {
-                    Column {
-                        Image(
-                            modifier = modifier
-                                .size(140.dp)
-                                .clip(RoundedCornerShape(10.dp)),
-                            painter = painterResource(id = com.withpeace.withpeace.core.ui.R.drawable.ic_policy_participation_right),
-                            contentDescription = "",
-                        )
-                        Spacer(modifier = modifier.height(8.dp))
-                        Text(
-                            modifier = modifier.width(140.dp),
-                            text = "울산대학교 대학일자리플러스센터(거점형)",
-                            style = WithpeaceTheme.typography.caption,
-                            color = WithpeaceTheme.colors.SnackbarBlack,
-                        )
+                if (recommendPolicyUiState is RecommendPolicyUiState.Success) {
+                    items(recommendPolicyUiState.policies.size) {
+                        val recommentPolicy = recommendPolicyUiState.policies[it]
+                        Column(
+                            modifier.clickable {
+                                onPolicyClick(recommentPolicy.id)
+                            },
+                        ) {
+                            Image(
+                                modifier = modifier
+                                    .size(140.dp)
+                                    .clip(RoundedCornerShape(10.dp)),
+                                painter = painterResource(id = recommentPolicy.classification.drawableResId),
+                                contentDescription = "",
+                            )
+                            Spacer(modifier = modifier.height(8.dp))
+                            Text(
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 2,
+                                modifier = modifier.width(140.dp),
+                                text = recommentPolicy.title,
+                                style = WithpeaceTheme.typography.caption,
+                                color = WithpeaceTheme.colors.SnackbarBlack,
+                            )
+                        }
+                    }
+                } else {
+                    items(6) {
+                        Column(
+                            modifier.clickable {
+                                onPolicyClick("R2024092726752")
+                            },
+                        ) {
+                            Image(
+                                modifier = modifier
+                                    .size(140.dp)
+                                    .clip(RoundedCornerShape(10.dp)),
+                                painter = painterResource(id = com.withpeace.withpeace.core.ui.R.drawable.ic_policy_participation_right),
+                                contentDescription = "",
+                            )
+                            Spacer(modifier = modifier.height(8.dp))
+                            Text(
+                                modifier = modifier.width(140.dp),
+                                text = "울산대학교 대학일자리플러스센터(거점형)",
+                                style = WithpeaceTheme.typography.caption,
+                                color = WithpeaceTheme.colors.SnackbarBlack,
+                            )
+                        }
                     }
                 }
             }
@@ -329,21 +422,34 @@ private fun ScrollSection(
             )
             Spacer(modifier = modifier.height(16.dp))
         }
-        items(6) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = modifier.padding(start = 24.dp, end = 17.dp),
-            ) {
-                Text(text = "자유 게시판")
-                Spacer(modifier = modifier.width(16.dp))
-                Text(
-                    style = WithpeaceTheme.typography.caption,
-                    text = "토트넘 vs K리그 누가 이길 것 같나요? 토트넘 vs K리그 누가 이길 것 같나요?",
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+        if (recentPosts is RecentPostsUiState.Success) {
+            items(PostTopicUiModel.entries.size) {
+                val postTopic = PostTopicUiModel.entries[it]
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = modifier
+                        .padding(start = 24.dp, end = 17.dp)
+                        .clickable {
+                            onPostClick(postTopic)
+                        },
+                ) {
+                    Text(
+                        text = stringResource(id = PostTopicUiModel.entries[it].textResId) + "게시판",
+                        style = WithpeaceTheme.typography.body,
+                        color = WithpeaceTheme.colors.SnackbarBlack,
+                    )
+                    Spacer(modifier = modifier.width(16.dp))
+                    Text(
+                        color = WithpeaceTheme.colors.SystemGray1,
+                        style = WithpeaceTheme.typography.caption,
+                        text = recentPosts.recentPosts.find { postTopic == it.type }?.title ?: "-",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
         }
+
     }
 }
 

@@ -1,8 +1,8 @@
 package com.withpeace.withpeace.core.domain.repository
 
-import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.model.SignUpInfo
 import com.withpeace.withpeace.core.domain.model.error.CheonghaError
+import com.withpeace.withpeace.core.domain.model.policy.PolicyFilters
 import com.withpeace.withpeace.core.domain.model.profile.ChangedProfile
 import com.withpeace.withpeace.core.domain.model.profile.Nickname
 import com.withpeace.withpeace.core.domain.model.profile.ProfileInfo
@@ -42,4 +42,11 @@ interface UserRepository {
     fun withdraw(
         onError: suspend (CheonghaError) -> Unit,
     ): Flow<Unit>
+
+    fun updatePolicyFilter(
+        policyFilters: PolicyFilters,
+        onError: suspend (CheonghaError) -> Unit,
+    ): Flow<Unit>
+
+    fun getPolicyFilter(onError: suspend (CheonghaError) -> Unit): Flow<PolicyFilters>
 }

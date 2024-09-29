@@ -32,4 +32,12 @@ interface YouthPolicyRepository {
         policyId: String,
         onError: suspend (CheonghaError) -> Unit,
     ): Flow<Unit>
+
+    fun getRecommendPolicy(
+        onError: suspend (CheonghaError) -> Unit,
+    ): Flow<List<YouthPolicy>>
+
+    fun getHotPolicy(
+        onError: suspend (CheonghaError) -> Unit,
+    ): Flow<List<YouthPolicy>>
 }
