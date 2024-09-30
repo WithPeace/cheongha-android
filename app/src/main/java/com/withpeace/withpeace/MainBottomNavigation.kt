@@ -21,6 +21,7 @@ import com.withpeace.withpeace.feature.home.navigation.navigateHome
 import com.withpeace.withpeace.feature.policylist.navigation.POLICY_LIST_ROUTE
 import com.withpeace.withpeace.feature.policylist.navigation.navigateToPolicyList
 import com.withpeace.withpeace.feature.postlist.navigation.POST_LIST_ROUTE
+import com.withpeace.withpeace.feature.postlist.navigation.POST_LIST_ROUTE_WITH_ARGUMENT
 import com.withpeace.withpeace.feature.postlist.navigation.navigateToPostList
 import com.withpeace.withpeace.navigation.MY_PAGE_NESTED_ROUTE
 
@@ -106,7 +107,7 @@ enum class BottomTab(
         iconUnSelectedResId = R.drawable.ic_bottom_community,
         iconSelectedResId = R.drawable.ic_bottom_community_select,
         contentDescription = R.string.post,
-        POST_LIST_ROUTE,
+        POST_LIST_ROUTE_WITH_ARGUMENT,
     ),
     MY_PAGE(
         iconUnSelectedResId = R.drawable.ic_bottom_my_page,
