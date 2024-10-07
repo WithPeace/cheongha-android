@@ -34,9 +34,7 @@ class PostListViewModel @Inject constructor(
     private val _uiEvent = Channel<PostListUiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    private val _currentTopic = MutableStateFlow(PostTopicUiModel.entries.find {
-        it.name == savedStateHandle.get<String>(POST_TYPE_ARGUMENT)
-    } ?: PostTopicUiModel.FREEDOM)
+    private val _currentTopic = MutableStateFlow(PostTopicUiModel.FREEDOM)
     val currentTopic = _currentTopic.asStateFlow()
 
     private val _postListPagingFlow = MutableStateFlow(PagingData.empty<PostUiModel>())

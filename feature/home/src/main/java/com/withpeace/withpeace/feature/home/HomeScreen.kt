@@ -71,12 +71,13 @@ fun HomeRoute(
     onPolicyClick: (String) -> Unit,
     onPostClick: (PostTopicUiModel) -> Unit,
 ) {
-    val selectedFilterUiState = viewModel.selectingFilters.collectAsStateWithLifecycle()
+    val selectingFilterUiState = viewModel.selectingFilters.collectAsStateWithLifecycle()
     val recentPosts = viewModel.recentPostsUiState.collectAsStateWithLifecycle()
     val hotPolicies = viewModel.hotPolicyUiState.collectAsStateWithLifecycle()
     val recommendPolicies = viewModel.recommendPolicyUiState.collectAsStateWithLifecycle()
+    val completedFilterUiState = viewModel.completedFilters.collectAsStateWithLifecycle()
     HomeScreen(
-        selectedFilterUiState = selectedFilterUiState.value,
+        selectedFilterUiState = selectingFilterUiState.value,
         onClassificationCheckChanged = viewModel::onCheckClassification,
         onRegionCheckChanged = viewModel::onCheckRegion,
         onFilterAllOff = viewModel::onFilterAllOff,
@@ -88,6 +89,7 @@ fun HomeRoute(
         onPolicyClick = onPolicyClick,
         hotPolicyUiState = hotPolicies.value,
         recommendPolicyUiState = recommendPolicies.value,
+        completedFilterState = completedFilterUiState.value,
     )
 }
 
@@ -106,6 +108,7 @@ fun HomeScreen(
     onCloseFilter: () -> Unit,
     onPostClick: (PostTopicUiModel) -> Unit,
     onPolicyClick: (String) -> Unit,
+    completedFilterState: PolicyFiltersUiModel,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         HomeHeader(
@@ -128,7 +131,7 @@ fun HomeScreen(
             onPolicyClick = onPolicyClick,
             hotPolicyUiState = hotPolicyUiState,
             recommendPolicyUiState = recommendPolicyUiState,
-
+            completedFilterState = completedFilterState,
         )
 
     }
@@ -151,6 +154,7 @@ private fun ScrollSection(
     onPostClick: (PostTopicUiModel) -> Unit,
     hotPolicyUiState: HotPolicyUiState,
     recommendPolicyUiState: RecommendPolicyUiState,
+    completedFilterState: PolicyFiltersUiModel,
 ) {
     val builder = rememberBalloonBuilder {
         setIsVisibleArrow(false)
@@ -249,7 +253,7 @@ private fun ScrollSection(
                 }
 
                 Spacer(modifier = modifier.height(8.dp))
-                FlowRow {
+                FlowRow(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_filter),
                         modifier = modifier
@@ -264,20 +268,34 @@ private fun ScrollSection(
                             },
                         contentDescription = "",
                     )
-                    // List(5) { //TODO("데이터 변경")
-                    //     Spacer(modifier = modifier.width(8.dp))
-                    //     Text(
-                    //         text = "#부산",
-                    //         style = WithpeaceTheme.typography.Tag,
-                    //         color = WithpeaceTheme.colors.MainPurple,
-                    //         modifier = modifier
-                    //             .background(
-                    //                 color = WithpeaceTheme.colors.SubPurple,
-                    //                 shape = RoundedCornerShape(7.dp),
-                    //             )
-                    //             .padding(6.dp),
-                    //     )
-                    // }
+                    List(completedFilterState.classifications.size) { //TODO("데이터 변경")
+                        Spacer(modifier = modifier.width(8.dp))
+                        Text(
+                            text = "#${stringResource(id = completedFilterState.classifications[it].stringResId)}",
+                            style = WithpeaceTheme.typography.Tag,
+                            color = WithpeaceTheme.colors.MainPurple,
+                            modifier = modifier
+                                .background(
+                                    color = WithpeaceTheme.colors.SubPurple,
+                                    shape = RoundedCornerShape(7.dp),
+                                )
+                                .padding(6.dp),
+                        )
+                    }
+                    List(completedFilterState.regions.size) { //TODO("데이터 변경")
+                        Spacer(modifier = modifier.width(8.dp))
+                        Text(
+                            text = "#${completedFilterState.regions[it].name}",
+                            style = WithpeaceTheme.typography.Tag,
+                            color = WithpeaceTheme.colors.MainPurple,
+                            modifier = modifier
+                                .background(
+                                    color = WithpeaceTheme.colors.SubPurple,
+                                    shape = RoundedCornerShape(7.dp),
+                                )
+                                .padding(6.dp),
+                        )
+                    }
                 }
             }
             Spacer(modifier = modifier.height(16.dp))
@@ -319,6 +337,7 @@ private fun ScrollSection(
                         }
                     }
                 } else {
+                    //TODO 실패 UI
                     items(6) {
                         Column(
                             modifier.clickable {
@@ -389,6 +408,7 @@ private fun ScrollSection(
                         }
                     }
                 } else {
+                    //TODO 실패 UI
                     items(6) {
                         Column(
                             modifier.clickable {

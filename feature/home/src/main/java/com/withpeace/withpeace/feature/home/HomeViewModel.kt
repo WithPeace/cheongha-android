@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.withpeace.withpeace.core.domain.model.policy.PolicyFilters
 import com.withpeace.withpeace.core.domain.usecase.GetHotPoliciesUseCase
+import com.withpeace.withpeace.core.domain.usecase.GetPolicyFilterUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetRecentPostUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetRecommendPoliciesUseCase
+import com.withpeace.withpeace.core.domain.usecase.UpdatePolicyFilterUseCase
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
 import com.withpeace.withpeace.core.ui.policy.filtersetting.PolicyFiltersUiModel
@@ -17,6 +19,7 @@ import com.withpeace.withpeace.feature.home.uistate.RecentPostsUiState
 import com.withpeace.withpeace.feature.home.uistate.RecommendPolicyUiState
 import com.withpeace.withpeace.feature.home.uistate.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -32,6 +35,8 @@ class HomeViewModel @Inject constructor(
     private val getRecentPostUseCase: GetRecentPostUseCase,
     private val getRecommendPoliciesUseCase: GetRecommendPoliciesUseCase,
     private val getHotPoliciesUseCase: GetHotPoliciesUseCase,
+    private val getPolicyFilterUseCase: GetPolicyFilterUseCase,
+    private val updatePolicyFilterUseCase: UpdatePolicyFilterUseCase,
 ) : ViewModel() {
     private val _recentPostsUiState: MutableStateFlow<RecentPostsUiState> =
         MutableStateFlow(RecentPostsUiState.Loading)
@@ -53,7 +58,14 @@ class HomeViewModel @Inject constructor(
             PolicyFiltersUiModel(),
         )
 
-    private var completedFilters = PolicyFilters()
+    private val _completedFilters = MutableStateFlow(PolicyFilters())
+    val completedFilters: StateFlow<PolicyFiltersUiModel> =
+        _completedFilters.map { it.toUiModel() }.stateIn(
+            scope = viewModelScope,
+            SharingStarted.WhileSubscribed(),
+            PolicyFiltersUiModel(),
+        )
+
 
     init {
         viewModelScope.launch {
@@ -70,30 +82,47 @@ class HomeViewModel @Inject constructor(
                     }
                 }
             }
+            getRecommendPolicy()
+            getHotPolicy()
             launch {
-                getRecommendPoliciesUseCase(
+                getPolicyFilterUseCase(
                     onError = {
-                        _recommendPolicyUiState.update {
-                            RecommendPolicyUiState.Failure
-                        }
                     },
                 ).collect { data ->
-                    _recommendPolicyUiState.update {
-                        RecommendPolicyUiState.Success(data.map { it.toUiModel() })
-                    }
+                    _selectingFilters.update { data }
+                    _completedFilters.update { data }
                 }
             }
-            launch {
-                getHotPoliciesUseCase(
-                    onError = {
-                        _hotPolicyUiState.update {
-                            HotPolicyUiState.Failure
-                        }
-                    },
-                ).collect { data ->
+        }
+    }
+
+    private fun CoroutineScope.getHotPolicy() {
+        launch {
+            getHotPoliciesUseCase(
+                onError = {
                     _hotPolicyUiState.update {
-                        HotPolicyUiState.Success(data.map { it.toUiModel() })
+                        HotPolicyUiState.Failure
                     }
+                },
+            ).collect { data ->
+                _hotPolicyUiState.update {
+                    HotPolicyUiState.Success(data.map { it.toUiModel() })
+                }
+            }
+        }
+    }
+
+    private fun CoroutineScope.getRecommendPolicy() {
+        launch {
+            getRecommendPoliciesUseCase(
+                onError = {
+                    _recommendPolicyUiState.update {
+                        RecommendPolicyUiState.Failure
+                    }
+                },
+            ).collect { data ->
+                _recommendPolicyUiState.update {
+                    RecommendPolicyUiState.Success(data.map { it.toUiModel() })
                 }
             }
         }
@@ -112,12 +141,20 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onCompleteFilter() {
-        completedFilters = selectingFilters.value.toDomain()
-        // api
+        viewModelScope.launch {
+            updatePolicyFilterUseCase(
+                policyFilters = selectingFilters.value.toDomain(),
+                onError = {},
+            ).collect {
+                _completedFilters.update { selectingFilters.value.toDomain() }
+                this.launch { getHotPolicy() }
+                this.launch { getRecommendPolicy() }
+            }
+        }
     }
 
     fun onCancelFilter() {
-        _selectingFilters.update { completedFilters }
+        _selectingFilters.update { completedFilters.value.toDomain() }
     }
 
     fun onFilterAllOff() {

@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.feature.postlist.navigation
 
+import android.util.Log
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,8 +40,17 @@ fun NavGraphBuilder.postListGraph(
         enterTransition = { EnterTransition.None },
         exitTransition = { ExitTransition.None },
     ) {
-        val deletedId = it.savedStateHandle.get<Long>(POST_LIST_DELETED_POST_ID_ARGUMENT)
         val viewModel: PostListViewModel = hiltViewModel()
+        val deletedId = it.savedStateHandle.get<Long>(POST_LIST_DELETED_POST_ID_ARGUMENT)
+
+        val postType = it.savedStateHandle.get<String>(POST_TYPE_ARGUMENT)
+        // postType?.let { // recomposition이 안되는건가
+        //     viewModel.onTopicChanged(
+        //         PostTopicUiModel.entries.find {
+        //             it.name == postType
+        //         } ?: PostTopicUiModel.FREEDOM,
+        //     )
+        // }
         deletedId?.let { id ->
             viewModel.updateDeletedId(id)
         }

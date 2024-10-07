@@ -5,6 +5,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
@@ -13,12 +14,10 @@ import com.app.profileeditor.navigation.navigateProfileEditor
 import com.app.profileeditor.navigation.profileEditorNavGraph
 import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarState
 import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarType
-import com.withpeace.withpeace.feature.disablepolicy.navigation.DISABLE_POLICY_ID_ARGUMENT
 import com.withpeace.withpeace.feature.disablepolicy.navigation.disabledPolicyNavGraph
 import com.withpeace.withpeace.feature.disablepolicy.navigation.navigateDisabledPolicy
 import com.withpeace.withpeace.feature.gallery.navigation.galleryNavGraph
 import com.withpeace.withpeace.feature.gallery.navigation.navigateToGallery
-import com.withpeace.withpeace.feature.home.navigation.HOME_ROUTE
 import com.withpeace.withpeace.feature.home.navigation.homeNavGraph
 import com.withpeace.withpeace.feature.home.navigation.navigateHome
 import com.withpeace.withpeace.feature.login.navigation.LOGIN_ROUTE
@@ -193,11 +192,22 @@ fun WithpeaceNavHost(
                 )
             },
             onPolicyClick = {
-                navController.navigateToPolicyDetail(policyId = it)
+                navController.navigateToPolicyDetail(
+                    policyId = it,
+                )
             },
-            onPostClick = {
-                navController.navigateToPostList(it.name)
-            }
+            onPostClick = { // TODO 인스턴스가 존재할 때, argument 로딩안됨
+                navController.navigateToPostList(
+                    it.name,
+                    navOptions = navOptions {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    },
+                )
+            },
         )
         policyDetailNavGraph(
             onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
