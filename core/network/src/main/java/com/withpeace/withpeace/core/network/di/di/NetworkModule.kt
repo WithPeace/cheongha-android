@@ -2,8 +2,6 @@ package com.withpeace.withpeace.core.network.di.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.skydoves.sandwich.adapters.ApiResponseCallAdapterFactory
-import com.tickaroo.tikxml.TikXml
-import com.tickaroo.tikxml.retrofit.TikXmlConverterFactory
 import com.withpeace.withpeace.core.network.BuildConfig
 import dagger.Module
 import dagger.Provides

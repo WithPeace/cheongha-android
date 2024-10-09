@@ -7,6 +7,7 @@ import com.withpeace.withpeace.core.network.di.response.BaseResponse
 import com.withpeace.withpeace.core.network.di.response.post.PostDetailResponse
 import com.withpeace.withpeace.core.network.di.response.post.PostIdResponse
 import com.withpeace.withpeace.core.network.di.response.post.PostResponse
+import com.withpeace.withpeace.core.network.di.response.post.RecentPostResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -71,4 +72,7 @@ interface PostService {
         @Path("commentId") commentId: Long,
         @Body reportTypeRequest: ReportTypeRequest,
     ): ApiResponse<BaseResponse<Boolean>>
+
+    @GET("/api/v1/posts/recents")
+    suspend fun getRecentPost(): ApiResponse<BaseResponse<List<RecentPostResponse>>>
 }

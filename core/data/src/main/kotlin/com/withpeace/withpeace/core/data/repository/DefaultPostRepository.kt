@@ -18,6 +18,7 @@ import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.model.post.Post
 import com.withpeace.withpeace.core.domain.model.post.PostDetail
 import com.withpeace.withpeace.core.domain.model.post.PostTopic
+import com.withpeace.withpeace.core.domain.model.post.RecentPost
 import com.withpeace.withpeace.core.domain.model.post.RegisterPost
 import com.withpeace.withpeace.core.domain.model.post.ReportType
 import com.withpeace.withpeace.core.domain.repository.PostRepository
@@ -146,6 +147,13 @@ class DefaultPostRepository @Inject constructor(
                 onErrorWithAuthExpired(it, onError)
             }
     }
+
+    override fun getRecentPost(onError: suspend (CheonghaError) -> Unit): Flow<List<RecentPost>> =
+        flow {
+            postService.getRecentPost().suspendMapSuccess {
+                emit(this.data.map { it.toDomain() })
+            }.handleApiFailure(onError)
+        }
 
     private fun getImageRequestBodies(
         imageUris: List<String>,

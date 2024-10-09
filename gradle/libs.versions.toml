@@ -25,6 +25,7 @@ tikxml = "0.8.13"
 landscapist = "2.2.13"
 sandwich = "1.3.7"
 composeShimmer = "1.0.5"
+balloon = "1.6.7"
 
 junit4 = "4.13.2"
 junitVintageEngine = "5.10.0"
@@ -131,6 +132,7 @@ skydoves-landscapist-bom = { group = "com.github.skydoves", name = "landscapist-
 skydoves-landscapist-coil = { group = "com.github.skydoves", name = "landscapist-coil", version.ref = "landscapist" }
 skydoves-landscapist-glide = { group = "com.github.skydoves", name = "landscapist-glide", version.ref = "landscapist" }
 skydoves-landscapist-placeholder = { group = "com.github.skydoves", name = "landscapist-placeholder", version.ref = "landscapist" }
+skydoves-balloon = { group = "com.github.skydoves", name = "balloon-compose", version.ref = "balloon" }
 landscapist-animation = { group = "com.github.skydoves", name = "landscapist-animation" }
 compose-shimmer = { group = "com.valentinilk.shimmer", name = "compose-shimmer", version.ref = "composeShimmer" }
 skydoves-sandwich = { group = "com.github.skydoves", name = "sandwich", version.ref = "sandwich" }

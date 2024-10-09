@@ -1,6 +1,5 @@
 package com.withpeace.withpeace.feature.postlist
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,17 +13,15 @@ import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 import com.withpeace.withpeace.core.ui.post.PostUiModel
 import com.withpeace.withpeace.core.ui.post.toDomain
 import com.withpeace.withpeace.core.ui.post.toPostUiModel
-import com.withpeace.withpeace.feature.postlist.navigation.POST_LIST_DELETED_POST_ID_ARGUMENT
+import com.withpeace.withpeace.feature.postlist.navigation.POST_TYPE_ARGUMENT
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,6 +29,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PostListViewModel @Inject constructor(
     private val getPostsUseCase: GetPostsUseCase,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val _uiEvent = Channel<PostListUiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()

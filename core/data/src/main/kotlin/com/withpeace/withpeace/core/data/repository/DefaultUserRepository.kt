@@ -7,6 +7,8 @@ import com.withpeace.withpeace.core.analytics.AnalyticsEvent
 import com.withpeace.withpeace.core.analytics.AnalyticsHelper
 import com.withpeace.withpeace.core.data.analytics.event
 import com.withpeace.withpeace.core.data.mapper.toDomain
+import com.withpeace.withpeace.core.data.mapper.youthpolicy.toCode
+import com.withpeace.withpeace.core.data.mapper.youthpolicy.toDomain
 import com.withpeace.withpeace.core.data.util.convertToFile
 import com.withpeace.withpeace.core.data.util.handleApiFailure
 import com.withpeace.withpeace.core.datastore.dataStore.token.TokenPreferenceDataSource
@@ -15,6 +17,7 @@ import com.withpeace.withpeace.core.domain.model.SignUpInfo
 import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import com.withpeace.withpeace.core.domain.model.error.ClientError
 import com.withpeace.withpeace.core.domain.model.error.ResponseError
+import com.withpeace.withpeace.core.domain.model.policy.PolicyFilters
 import com.withpeace.withpeace.core.domain.model.profile.ChangedProfile
 import com.withpeace.withpeace.core.domain.model.profile.Nickname
 import com.withpeace.withpeace.core.domain.model.profile.ProfileInfo
@@ -132,6 +135,25 @@ class DefaultUserRepository @Inject constructor(
             onErrorWithAuthExpired(it, onError)
         }
     }
+
+    override fun updatePolicyFilter(
+        policyFilters: PolicyFilters,
+        onError: suspend (CheonghaError) -> Unit,
+    ): Flow<Unit> = flow {
+        userService.patchPolicyFilter(
+            region = policyFilters.regions.joinToString(",") { it.toCode() },
+            classification = policyFilters.classifications.joinToString(",") { it.toCode() },
+        ).suspendMapSuccess {
+            emit(Unit)
+        }.handleApiFailure(onError)
+    }
+
+    override fun getPolicyFilter(onError: suspend (CheonghaError) -> Unit): Flow<PolicyFilters> =
+        flow {
+            userService.getPolicyFilter().suspendMapSuccess {
+                emit(this.data.toDomain())
+            }.handleApiFailure(onError)
+        }
 
     override fun withdraw(onError: suspend (CheonghaError) -> Unit): Flow<Unit> =
         flow {

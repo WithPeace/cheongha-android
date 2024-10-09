@@ -6,6 +6,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 import com.withpeace.withpeace.feature.home.HomeRoute
 
 const val HOME_ROUTE = "homeRoute"
@@ -18,6 +19,7 @@ fun NavGraphBuilder.homeNavGraph(
     onShowSnackBar: (message: String) -> Unit,
     onNavigationSnackBar: (message: String) -> Unit = {},
     onPolicyClick: (String) -> Unit,
+    onPostClick: (PostTopicUiModel) -> Unit,
 ) {
     composable(
         route = HOME_ROUTE,
@@ -28,6 +30,7 @@ fun NavGraphBuilder.homeNavGraph(
             onNavigationSnackBar = onNavigationSnackBar,
             onShowSnackBar = onShowSnackBar,
             onPolicyClick = onPolicyClick,
+            onPostClick = onPostClick,
         )
     }
 }

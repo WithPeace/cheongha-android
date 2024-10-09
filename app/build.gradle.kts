@@ -10,8 +10,8 @@ android {
     defaultConfig {
         applicationId = "com.withpeace.withpeace"
         targetSdk = 34
-        versionCode = 11
-        versionName = "2.1.1"
+        versionCode = 14
+        versionName = "2.2.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -58,6 +58,7 @@ dependencies {
     implementation(project(":feature:policydetail"))
     implementation(project(":feature:policybookmarks"))
     implementation(project(":feature:disablepolicy"))
+    implementation(project(":feature:policylist"))
     implementation(project(":core:ui"))
     implementation(project(":core:interceptor"))
     implementation(project(":core:data"))

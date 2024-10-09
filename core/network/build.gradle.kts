@@ -31,8 +31,5 @@ dependencies {
     implementation(libs.retrofit.core)
     implementation(libs.okhttp.logging)
     implementation(libs.skydoves.sandwich)
-    kapt(libs.tikxml.processor)
-    implementation(libs.tikxml.core)
-    implementation(libs.retrofit.tikxml.converter)
-    implementation(libs.tikxml.annotation)
+    implementation(project(":core:datastore"))
 }

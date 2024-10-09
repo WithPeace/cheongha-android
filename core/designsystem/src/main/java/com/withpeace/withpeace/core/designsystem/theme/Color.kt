@@ -26,6 +26,8 @@ val systemGray4 = Color(0xFF696969)
 val systemError = Color(0xFFF0474B)
 val systemSuccess = Color(0xFF3BD569)
 val systemHyperLink = Color(0xFF20BCBB)
+val gray3_70 = Color(0xB2ECECEF)
+val toolTipBackground = Color(0xFFF9FBFB)
 
 val snackbarBlack = Color(0xFF000000)
 
@@ -46,6 +48,8 @@ data class WithPeaceColor(
     val SystemSuccess: Color = systemSuccess,
     val SystemHyperLink: Color = systemHyperLink,
     val SnackbarBlack: Color = snackbarBlack,
+    val Gray3_70: Color = gray3_70,
+    val ToolTipBackground: Color = toolTipBackground,
 )
 
 val lightColor = WithPeaceColor()

@@ -31,4 +31,10 @@ interface YouthPolicyService {
 
     @GET("/api/v1/policies/favorites")
     suspend fun getBookmarkedPolicies(): ApiResponse<BaseResponse<List<BookmarkedPolicyResponse>>>
+
+    @GET("/api/v1/policies/recommendations")
+    suspend fun getRecommendations(): ApiResponse<BaseResponse<List<PolicyResponse>>>
+
+    @GET("/api/v1/policies/hot")
+    suspend fun getHots(): ApiResponse<BaseResponse<List<PolicyResponse>>>
 }

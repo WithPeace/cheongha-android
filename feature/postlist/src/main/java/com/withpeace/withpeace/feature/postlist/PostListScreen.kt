@@ -18,8 +18,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -67,6 +69,7 @@ fun PostListRoute(
     navigateToDetail: (postId: Long) -> Unit,
     onShowSnackBar: (String) -> Unit,
     onAuthExpired: () -> Unit,
+    onClickRegisterPost: () -> Unit = {},
 ) {
     val postListPagingData = viewModel.postListPagingFlow.collectAsLazyPagingItems()
     val currentTopic by viewModel.currentTopic.collectAsStateWithLifecycle()
@@ -75,6 +78,7 @@ fun PostListRoute(
         postListPagingData = postListPagingData,
         onTopicChanged = viewModel::onTopicChanged,
         navigateToDetail = navigateToDetail,
+        onClickRegisterPost = onClickRegisterPost,
     )
 
     LaunchedEffect(null) {
@@ -93,8 +97,13 @@ fun PostListScreen(
     postListPagingData: LazyPagingItems<PostUiModel>,
     onTopicChanged: (PostTopicUiModel) -> Unit = {},
     navigateToDetail: (postId: Long) -> Unit = {},
+    onClickRegisterPost: () -> Unit = {},
 ) {
-    Column(modifier = Modifier.fillMaxSize().background(WithpeaceTheme.colors.SystemWhite)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(WithpeaceTheme.colors.SystemWhite),
+    ) {
         Spacer(modifier = Modifier.height(8.dp))
         TopicTabs(
             currentTopic = currentTopic,
@@ -128,6 +137,24 @@ fun PostListScreen(
             }
         }
     }
+    Box(modifier = Modifier.fillMaxSize()) {
+        FloatingActionButton(
+            shape = CircleShape,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(bottom = 16.dp, end = 16.dp),
+            onClick = {
+                onClickRegisterPost()
+            },
+            containerColor = WithpeaceTheme.colors.MainPurple,
+        ) {
+            Image(
+                painter = painterResource(id = com.withpeace.withpeace.feature.postlist.R.drawable.ic_post_plus),
+                contentDescription = "글 작성"
+            )
+        }
+    }
+
     TrackScreenViewEvent(screenName = "post_list")
 }
 
