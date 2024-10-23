@@ -59,6 +59,7 @@ dependencies {
     implementation(project(":feature:policybookmarks"))
     implementation(project(":feature:disablepolicy"))
     implementation(project(":feature:policylist"))
+    implementation(project(":feature:policyfilter"))
     implementation(project(":core:ui"))
     implementation(project(":core:interceptor"))
     implementation(project(":core:data"))
