@@ -24,6 +24,7 @@ android {
             merges += "META-INF/LICENSE-notice.md"
         }
     }
+
     buildTypes {
         getByName("release") {
             signingConfig = signingConfigs.getByName("debug")

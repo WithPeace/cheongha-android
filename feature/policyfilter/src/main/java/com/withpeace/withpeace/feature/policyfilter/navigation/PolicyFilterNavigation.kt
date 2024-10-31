@@ -10,10 +10,10 @@ import com.withpeace.withpeace.feature.policyfilter.PolicyFilterRoute
 
 const val POLICY_FILTER_ROUTE = "policy_filter_route"
 
-fun NavController.navigateToPrivacyPolicy(navOptions: NavOptions? = null) =
+fun NavController.navigateToPolicyFilter(navOptions: NavOptions? = null) =
     navigate(POLICY_FILTER_ROUTE, navOptions)
 
-fun NavGraphBuilder.privacyPolicyGraph(
+fun NavGraphBuilder.policyFilterGraph(
     onShowSnackBar: (String) -> Unit,
     onClickBackButton: () -> Unit,
 ) {
