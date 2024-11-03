@@ -261,7 +261,11 @@ fun PolicyFilterScreen(
                     color = WithpeaceTheme.colors.MainPurple,
                 ),
         ) {
-            Text("가입 완료", color = WithpeaceTheme.colors.SystemWhite)
+            Text(
+                text = "가입 완료",
+                color = WithpeaceTheme.colors.SystemWhite,
+                style = WithpeaceTheme.typography.body,
+            )
         }
     }
 }
