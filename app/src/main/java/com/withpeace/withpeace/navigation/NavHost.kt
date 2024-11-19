@@ -298,10 +298,31 @@ fun WithpeaceNavHost(
             )
         }
         policyFilterGraph(
-            onShowSnackBar = {}, onClickBackButton = {
-                //
+            onShowSnackBar = {
+                onShowSnackBar(SnackbarState(it))
+            },
+            onClickBackButton = {},
+            onSelectSuccess = {
+                navController.navigateHome(
+                    navOptions =
+                    navOptions {
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                    },
+                )
+            },
+            onSelectSkip = {
+                navController.navigateHome(
+                    navOptions =
+                    navOptions {
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                    },
+                )
             }
-                //navController.navigateToPolicyFilter(
+            //navController.navigateToPolicyFilter(
             //                     navOptions =
             //                         navOptions {
             //                             popUpTo(navController.graph.id) {

@@ -2,6 +2,7 @@ package com.withpeace.withpeace.feature.policyfilter
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -19,6 +20,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
-import com.withpeace.withpeace.core.ui.R
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
 import com.withpeace.withpeace.core.ui.policy.filtersetting.PolicyFiltersUiModel
@@ -41,7 +42,22 @@ fun PolicyFilterRoute(
     onShowSnackBar: (String) -> Unit,
     onClickBackButton: () -> Unit,
     viewModel: PolicyFilterViewModel = hiltViewModel(),
+    onSelectSuccess: () -> Unit,
+    onSelectSkip: () -> Unit,
 ) {
+    LaunchedEffect(viewModel.uiEvent) {
+        viewModel.uiEvent.collect {
+            when (it) {
+                PolicyFilterUiEvent.Success -> {
+                    onSelectSuccess()
+                }
+
+                PolicyFilterUiEvent.Failure -> {
+                    onShowSnackBar("서버와의 연결이 실패했습니다. 다시 시도해주세요.")
+                }
+            }
+        }
+    }
     val filterListUiState =
         remember {
             mutableStateOf(
@@ -54,11 +70,12 @@ fun PolicyFilterRoute(
     val selectedFilterUiState = viewModel.selectingFilters.collectAsStateWithLifecycle()
     PolicyFilterScreen(
         filterListUiState = filterListUiState.value,
-        onClassificationCheckChanged = {},
+        onClassificationCheckChanged = viewModel::onCheckClassification,
         selectedFilterUiState = selectedFilterUiState.value,
-        onRegionCheckChanged = {},
+        onRegionCheckChanged = viewModel::onCheckRegion,
+        onSelectCompleted = viewModel::setUpPolicy,
+        onSelectSkip = onSelectSkip,
     )
-
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -69,6 +86,8 @@ fun PolicyFilterScreen(
     selectedFilterUiState: PolicyFiltersUiModel,
     onClassificationCheckChanged: (ClassificationUiModel) -> Unit,
     onRegionCheckChanged: (RegionUiModel) -> Unit,
+    onSelectCompleted: () -> Unit,
+    onSelectSkip: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
@@ -87,7 +106,10 @@ fun PolicyFilterScreen(
                     shape = RoundedCornerShape(50.dp), color = WithpeaceTheme.colors.SubPurple,
                 )
                 .padding(horizontal = 20.dp, vertical = 8.dp)
-                .align(Alignment.End),
+                .align(Alignment.End)
+                .clickable {
+                    onSelectSkip()
+                },
             style =
             WithpeaceTheme.typography.caption,
             color = WithpeaceTheme.colors.MainPurple,
@@ -202,7 +224,7 @@ fun PolicyFilterScreen(
         )
         Spacer(modifier = modifier.height(16.dp))
         Text(
-            text = stringResource(id = R.string.region),
+            text = "해당하는 지역을 선택해주세요!",
             style = WithpeaceTheme.typography.title2,
             color = WithpeaceTheme.colors.SnackbarBlack,
         )
@@ -253,7 +275,9 @@ fun PolicyFilterScreen(
         }
         Spacer(modifier = modifier.height(57.dp))
         TextButton(
-            onClick = {},
+            onClick = {
+                onSelectCompleted()
+            },
             modifier
                 .fillMaxWidth()
                 .background(
@@ -262,7 +286,7 @@ fun PolicyFilterScreen(
                 ),
         ) {
             Text(
-                text = "가입 완료",
+                text = "선택 완료",
                 color = WithpeaceTheme.colors.SystemWhite,
                 style = WithpeaceTheme.typography.body,
             )
@@ -284,6 +308,8 @@ fun PolicyFilterPreview() {
                 regions = listOf(),
             ),
             onClassificationCheckChanged = {}, onRegionCheckChanged = {},
+            onSelectCompleted = {},
+            onSelectSkip = {}
         )
     }
 }

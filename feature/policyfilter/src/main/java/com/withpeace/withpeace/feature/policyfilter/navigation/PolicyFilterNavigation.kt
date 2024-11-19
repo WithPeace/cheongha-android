@@ -16,6 +16,8 @@ fun NavController.navigateToPolicyFilter(navOptions: NavOptions? = null) =
 fun NavGraphBuilder.policyFilterGraph(
     onShowSnackBar: (String) -> Unit,
     onClickBackButton: () -> Unit,
+    onSelectSuccess: () -> Unit,
+    onSelectSkip: () -> Unit,
 ) {
     composable(
         route = POLICY_FILTER_ROUTE,
@@ -35,6 +37,8 @@ fun NavGraphBuilder.policyFilterGraph(
         PolicyFilterRoute(
             onShowSnackBar = onShowSnackBar,
             onClickBackButton = onClickBackButton,
+            onSelectSuccess = onSelectSuccess,
+            onSelectSkip = onSelectSkip,
         )
     }
 }
