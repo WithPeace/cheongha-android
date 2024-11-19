@@ -41,7 +41,7 @@ fun NavGraphBuilder.signUpNavGraph(
             entry.savedStateHandle.get<List<String>>(IMAGE_LIST_ARGUMENT) ?: emptyList()
         val viewModel: SignUpViewModel = hiltViewModel()
         if (selectedImageUri.isNotEmpty()) {
-            viewModel.onImageChanged(imageUri = selectedImageUri.firstOrNull() ?: null)
+            viewModel.onImageChanged(imageUri = selectedImageUri.firstOrNull())
         }
         SignUpRoute(
             onShowSnackBar = onShowSnackBar,

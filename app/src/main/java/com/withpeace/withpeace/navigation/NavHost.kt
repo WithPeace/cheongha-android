@@ -31,6 +31,8 @@ import com.withpeace.withpeace.feature.policyconsent.navigation.navigateToPolicy
 import com.withpeace.withpeace.feature.policyconsent.navigation.policyConsentGraph
 import com.withpeace.withpeace.feature.policydetail.navigation.navigateToPolicyDetail
 import com.withpeace.withpeace.feature.policydetail.navigation.policyDetailNavGraph
+import com.withpeace.withpeace.feature.policyfilter.navigation.navigateToPolicyFilter
+import com.withpeace.withpeace.feature.policyfilter.navigation.policyFilterGraph
 import com.withpeace.withpeace.feature.policylist.navigation.policyListGraph
 import com.withpeace.withpeace.feature.postdetail.navigation.POST_DETAIL_ROUTE_WITH_ARGUMENT
 import com.withpeace.withpeace.feature.postdetail.navigation.navigateToPostDetail
@@ -115,7 +117,7 @@ fun WithpeaceNavHost(
                 navController.navigateToGallery(imageLimit = 1)
             },
             onSignUpSuccess = {
-                navController.navigateHome(
+                navController.navigateToPolicyFilter(
                     navOptions =
                         navOptions {
                             popUpTo(navController.graph.id) {
@@ -295,6 +297,40 @@ fun WithpeaceNavHost(
                 },
             )
         }
+        policyFilterGraph(
+            onShowSnackBar = {
+                onShowSnackBar(SnackbarState(it))
+            },
+            onClickBackButton = {},
+            onSelectSuccess = {
+                navController.navigateHome(
+                    navOptions =
+                    navOptions {
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                    },
+                )
+            },
+            onSelectSkip = {
+                navController.navigateHome(
+                    navOptions =
+                    navOptions {
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                    },
+                )
+            }
+            //navController.navigateToPolicyFilter(
+            //                     navOptions =
+            //                         navOptions {
+            //                             popUpTo(navController.graph.id) {
+            //                                 inclusive = true
+            //                             }
+            //                         },
+            //                 )
+        )
         policyBookmarksNavGraph(
             onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
             onClickBackButton = {
