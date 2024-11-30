@@ -69,8 +69,6 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:analytics"))
     implementation(project(":core:designsystem"))
+    implementation(project(":feature:search"))
     testImplementation(project(":core:testing"))
-
-    implementation("com.google.android.play:app-update:2.1.0")
-    implementation("com.google.android.play:app-update-ktx:2.1.0")
 }

@@ -48,6 +48,8 @@ import com.withpeace.withpeace.feature.registerpost.navigation.REGISTER_POST_ARG
 import com.withpeace.withpeace.feature.registerpost.navigation.REGISTER_POST_ROUTE
 import com.withpeace.withpeace.feature.registerpost.navigation.navigateToRegisterPost
 import com.withpeace.withpeace.feature.registerpost.navigation.registerPostNavGraph
+import com.withpeace.withpeace.feature.search.navigation.navigateToSearch
+import com.withpeace.withpeace.feature.search.navigation.searchGraph
 import com.withpeace.withpeace.feature.signup.navigation.navigateSignUp
 import com.withpeace.withpeace.feature.signup.navigation.signUpNavGraph
 import com.withpeace.withpeace.feature.termsofservice.navigation.navigateToTermsOfService
@@ -211,8 +213,12 @@ fun WithpeaceNavHost(
                 )
             },
             onSearchClick = {
-
-            }
+                navController.navigateToSearch()
+            },
+        )
+        searchGraph(
+            onShowSnackBar = {},
+            onAuthExpired = {},
         )
         policyDetailNavGraph(
             onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
