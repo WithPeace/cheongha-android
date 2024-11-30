@@ -33,13 +33,6 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.google.android.gms.tasks.Task
-import com.google.android.play.core.appupdate.AppUpdateInfo
-import com.google.android.play.core.appupdate.AppUpdateManager
-import com.google.android.play.core.appupdate.AppUpdateManagerFactory
-import com.google.android.play.core.appupdate.AppUpdateOptions
-import com.google.android.play.core.install.model.AppUpdateType
-import com.google.android.play.core.install.model.UpdateAvailability
 import com.withpeace.withpeace.core.analytics.AnalyticsHelper
 import com.withpeace.withpeace.core.analytics.LocalAnalyticsHelper
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
@@ -56,8 +49,6 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
-
-    private val appUpdateManager by lazy { AppUpdateManagerFactory.create(this) }
 
     private val updateActivityResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result: ActivityResult ->
@@ -172,32 +163,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-    private fun compulsionUpdate() {
-        val appUpdateInfoTask: Task<AppUpdateInfo> = appUpdateManager.appUpdateInfo
 
-        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
-            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
-            ) {
-                startUpdateFlow(appUpdateManager, appUpdateInfo)
-            } else {
-                Toast.makeText(this, "앱을 사용하려면 업데이트가 필요해요!", Toast.LENGTH_LONG).show()
-                // redirectToPlayStore()
-            }
-        }
-    }
-
-    private fun startUpdateFlow(appUpdateManager: AppUpdateManager, appUpdateInfo: AppUpdateInfo) {
-        try {
-            appUpdateManager.startUpdateFlowForResult(
-                appUpdateInfo,
-                updateActivityResultLauncher,
-                AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
 
     private fun redirectToPlayStore() {
         val packageName = packageName
@@ -216,20 +182,5 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-
-        appUpdateManager
-            .appUpdateInfo
-            .addOnSuccessListener { appUpdateInfo ->
-                if (appUpdateInfo.updateAvailability()
-                    == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
-                ) {
-                    // If an in-app update is already running, resume the update.
-                    appUpdateManager.startUpdateFlowForResult(
-                        appUpdateInfo,
-                        updateActivityResultLauncher,
-                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
-                    )
-                }
-            }
     }
 }
