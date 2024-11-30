@@ -29,7 +29,6 @@ import javax.inject.Inject
 @HiltViewModel
 class PostListViewModel @Inject constructor(
     private val getPostsUseCase: GetPostsUseCase,
-    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val _uiEvent = Channel<PostListUiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
