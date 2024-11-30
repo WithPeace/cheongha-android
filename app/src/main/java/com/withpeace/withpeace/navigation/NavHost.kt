@@ -210,6 +210,9 @@ fun WithpeaceNavHost(
                     },
                 )
             },
+            onSearchClick = {
+
+            }
         )
         policyDetailNavGraph(
             onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
