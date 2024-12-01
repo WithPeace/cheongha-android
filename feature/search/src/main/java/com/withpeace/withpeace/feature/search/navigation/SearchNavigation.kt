@@ -16,6 +16,7 @@ fun NavController.navigateToSearch(navOptions: NavOptions? = null) =
 fun NavGraphBuilder.searchGraph(
     onShowSnackBar: (String) -> Unit,
     onAuthExpired: () -> Unit,
+    onBackButtonClick: () -> Unit,
 ) {
     composable(
         route = SEARCH_ROUTE,
@@ -32,6 +33,8 @@ fun NavGraphBuilder.searchGraph(
             )
         },
     ) {
-        SearchRoute()
+        SearchRoute(
+            onBackButtonClick = onBackButtonClick,
+        )
     }
 }

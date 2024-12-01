@@ -2,8 +2,12 @@ package com.withpeace.withpeace.feature.search
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -27,27 +32,32 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.withpeace.withpeace.core.designsystem.R
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 
 @Composable
-fun SearchRoute() {
+fun SearchRoute(
+    onBackButtonClick: () -> Unit,
+) {
     SearchScreen(
-        onSearchKeywordChanged = {},
+        onKeywordTextChanged = {},
         searchKeyword = "",
+        onBackButtonClick = onBackButtonClick,
+        onClickSearchKeyword = {},
+        onRemoveKeyword = {},
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchScreen(
     modifier: Modifier = Modifier,
-    onSearchKeywordChanged: (String) -> Unit,
     searchKeyword: String,
+    onBackButtonClick: () -> Unit,
+    onKeywordTextChanged: (String) -> Unit,
+    onClickSearchKeyword: (String) -> Unit,
+    onRemoveKeyword: () -> Unit,
 ) {
     val rememberKeyword = remember { mutableStateOf("") }
     val interactionSource = remember { MutableInteractionSource() }
@@ -64,7 +74,11 @@ private fun SearchScreen(
                 .padding(horizontal = 24.dp),
         ) {
             Image(
-                modifier = modifier.size(24.dp),
+                modifier = modifier
+                    .size(24.dp)
+                    .clickable {
+                        onBackButtonClick()
+                    },
                 contentScale = ContentScale.None,
                 painter = painterResource(R.drawable.ic_backarrow_left),
                 contentDescription = "뒤로 가기",
@@ -72,6 +86,15 @@ private fun SearchScreen(
             Spacer(modifier = modifier.width(8.dp))
             SearchComponent(modifier, rememberKeyword, interactionSource)
         }
+        Spacer(modifier = modifier.height(7.dp))
+        HorizontalDivider(
+            thickness = 1.dp,
+            color = WithpeaceTheme.colors.SystemGray3,
+        )
+        SearchIntro(
+            onClickSearchKeyword = onClickSearchKeyword,
+            onRemoveKeyword = onRemoveKeyword,
+        )
     }
 }
 
@@ -111,8 +134,7 @@ private fun SearchComponent(
             textStyle = WithpeaceTheme.typography.caption,
             singleLine = true,
             maxLines = 1,
-
-            ) {
+        ) {
             TextFieldDefaults.DecorationBox(
                 value = rememberKeyword.value,
                 innerTextField = it,
@@ -138,6 +160,58 @@ private fun SearchComponent(
                     focusedContainerColor = Color.Transparent,
                 ),
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun SearchIntro(
+    modifier: Modifier = Modifier,
+    onClickSearchKeyword: (String) -> Unit,
+    onRemoveKeyword: () -> Unit,
+) {
+    Column(modifier = modifier.padding(horizontal = 24.dp)) {
+        Spacer(modifier = modifier.height(24.dp))
+        Row(
+            modifier = modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                text = "최근 검색어",
+                style = WithpeaceTheme.typography.body,
+                color = WithpeaceTheme.colors.SystemGray1,
+            )
+            Text(
+                text = "지우기",
+                modifier = modifier.clickable {
+                    onRemoveKeyword()
+                },
+                style = WithpeaceTheme.typography.caption,
+                color = WithpeaceTheme.colors.SystemGray2,
+            )
+        }
+        Spacer(modifier = modifier.height(8.dp))
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            List(5) {
+                Text(
+                    modifier = modifier
+                        .background(
+                            color = WithpeaceTheme.colors.SubPurple,
+                            shape = RoundedCornerShape(999.dp),
+                        ).padding(horizontal = 8.dp, vertical = 6.dp)
+                        .clickable {
+                            onClickSearchKeyword("")
+                        },
+                    style = WithpeaceTheme.typography.caption,
+                    color = WithpeaceTheme.colors.MainPurple,
+                    text = "여행$it",
+                )
+            }
         }
     }
 }

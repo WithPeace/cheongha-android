@@ -219,6 +219,9 @@ fun WithpeaceNavHost(
         searchGraph(
             onShowSnackBar = {},
             onAuthExpired = {},
+            onBackButtonClick = {
+                navController.popBackStack()
+            },
         )
         policyDetailNavGraph(
             onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
