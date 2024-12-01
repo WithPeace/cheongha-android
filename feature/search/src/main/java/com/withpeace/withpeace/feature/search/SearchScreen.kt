@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -91,10 +92,21 @@ private fun SearchScreen(
             thickness = 1.dp,
             color = WithpeaceTheme.colors.SystemGray3,
         )
-        SearchIntro(
-            onClickSearchKeyword = onClickSearchKeyword,
-            onRemoveKeyword = onRemoveKeyword,
-        )
+        Column(modifier = modifier
+            .fillMaxSize()
+            .background(color = Color(0xFFF8F9FB))) {
+            Spacer(modifier = modifier.height(16.dp))
+            Text("총 4개")
+            Spacer(modifier = modifier.height(16.dp))
+            LazyColumn {
+
+            }
+        }
+
+        // SearchIntro(
+        //     onClickSearchKeyword = onClickSearchKeyword,
+        //     onRemoveKeyword = onRemoveKeyword,
+        // )
     }
 }
 
@@ -203,7 +215,8 @@ private fun SearchIntro(
                         .background(
                             color = WithpeaceTheme.colors.SubPurple,
                             shape = RoundedCornerShape(999.dp),
-                        ).padding(horizontal = 8.dp, vertical = 6.dp)
+                        )
+                        .padding(horizontal = 8.dp, vertical = 6.dp)
                         .clickable {
                             onClickSearchKeyword("")
                         },

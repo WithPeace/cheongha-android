@@ -57,10 +57,10 @@ import com.withpeace.withpeace.core.ui.analytics.TrackScreenViewEvent
 import com.withpeace.withpeace.core.ui.bookmark.BookmarkButton
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
+import com.withpeace.withpeace.core.ui.policy.YouthPolicyUiModel
 import com.withpeace.withpeace.core.ui.policy.filtersetting.FilterBottomSheet
-import com.withpeace.withpeace.feature.policylist.uistate.PolicyListUiEvent
 import com.withpeace.withpeace.core.ui.policy.filtersetting.PolicyFiltersUiModel
-import com.withpeace.withpeace.feature.policylist.uistate.YouthPolicyUiModel
+import com.withpeace.withpeace.feature.policylist.uistate.PolicyListUiEvent
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
