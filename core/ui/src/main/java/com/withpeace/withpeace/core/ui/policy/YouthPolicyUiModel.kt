@@ -1,10 +1,6 @@
-package com.withpeace.withpeace.feature.policylist.uistate
+package com.withpeace.withpeace.core.ui.policy
 
 import com.withpeace.withpeace.core.domain.model.policy.YouthPolicy
-import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
-import com.withpeace.withpeace.core.ui.policy.RegionUiModel
-import com.withpeace.withpeace.core.ui.policy.toDomain
-import com.withpeace.withpeace.core.ui.policy.toUiModel
 
 data class YouthPolicyUiModel(
     val id: String,
@@ -39,5 +35,3 @@ fun YouthPolicyUiModel.toDomain(): YouthPolicy {
         isBookmarked = isBookmarked,
     )
 }
-
-// 오류처리(Response 값 확인)+ 에러 상황 처리 logout(home 포함)

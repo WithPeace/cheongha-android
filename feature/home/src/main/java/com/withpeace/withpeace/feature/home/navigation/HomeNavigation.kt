@@ -20,6 +20,7 @@ fun NavGraphBuilder.homeNavGraph(
     onNavigationSnackBar: (message: String) -> Unit = {},
     onPolicyClick: (String) -> Unit,
     onPostClick: (PostTopicUiModel) -> Unit,
+    onSearchClick: () -> Unit,
 ) {
     composable(
         route = HOME_ROUTE,
@@ -31,6 +32,7 @@ fun NavGraphBuilder.homeNavGraph(
             onShowSnackBar = onShowSnackBar,
             onPolicyClick = onPolicyClick,
             onPostClick = onPostClick,
+            onSearchClick = onSearchClick,
         )
     }
 }

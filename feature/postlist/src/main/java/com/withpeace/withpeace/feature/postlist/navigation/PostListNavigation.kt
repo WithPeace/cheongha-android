@@ -1,6 +1,5 @@
 package com.withpeace.withpeace.feature.postlist.navigation
 
-import android.util.Log
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.hilt.navigation.compose.hiltViewModel

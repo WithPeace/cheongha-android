@@ -6,6 +6,7 @@ import com.withpeace.withpeace.core.ui.policy.RegionUiModel
 import com.withpeace.withpeace.core.ui.policy.toDomain
 import com.withpeace.withpeace.core.ui.policy.toUiModel
 
+// isActive
 data class BookmarkedYouthPolicyUiModel(
     val id: String,
     val title: String,

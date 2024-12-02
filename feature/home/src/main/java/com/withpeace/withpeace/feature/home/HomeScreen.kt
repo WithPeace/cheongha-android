@@ -67,9 +67,10 @@ import kotlinx.coroutines.launch
 fun HomeRoute(
     onShowSnackBar: (message: String) -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel(),
-    onNavigationSnackBar: (message: String) -> Unit  = {},
+    onNavigationSnackBar: (message: String) -> Unit = {},
     onPolicyClick: (String) -> Unit,
     onPostClick: (PostTopicUiModel) -> Unit,
+    onSearchClick: () -> Unit,
 ) {
     val selectingFilterUiState = viewModel.selectingFilters.collectAsStateWithLifecycle()
     val recentPosts = viewModel.recentPostsUiState.collectAsStateWithLifecycle()
@@ -90,15 +91,16 @@ fun HomeRoute(
         hotPolicyUiState = hotPolicies.value,
         recommendPolicyUiState = recommendPolicies.value,
         completedFilterState = completedFilterUiState.value,
+        onSearchClick = onSearchClick,
     )
 }
 
 @Composable
 fun HomeScreen(
+    modifier: Modifier = Modifier,
     recentPosts: RecentPostsUiState,
     hotPolicyUiState: HotPolicyUiState,
     recommendPolicyUiState: RecommendPolicyUiState,
-    modifier: Modifier = Modifier,
     selectedFilterUiState: PolicyFiltersUiModel,
     onDismissRequest: () -> Unit,
     onClassificationCheckChanged: (ClassificationUiModel) -> Unit,
@@ -109,10 +111,12 @@ fun HomeScreen(
     onPostClick: (PostTopicUiModel) -> Unit,
     onPolicyClick: (String) -> Unit,
     completedFilterState: PolicyFiltersUiModel,
+    onSearchClick: () -> Unit = {},
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         HomeHeader(
             modifier = modifier,
+            onSearchClick = onSearchClick,
         )
         HorizontalDivider(
             modifier = modifier.height(1.dp),
@@ -476,6 +480,7 @@ private fun ScrollSection(
 @Composable
 private fun HomeHeader(
     modifier: Modifier,
+    onSearchClick: () -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -486,19 +491,20 @@ private fun HomeHeader(
         Image(
             modifier = modifier
                 .align(Alignment.BottomCenter)
-                .size(47.dp),
+                .width(47.dp)
+                .padding(top = 8.dp),
             painter = painterResource(id = R.drawable.ic_home_logo),
             contentDescription = stringResource(R.string.cheongha_logo),
         )
-        // Image(
-        //     modifier = modifier
-        //         .size(24.dp)
-        //         .align(Alignment.CenterEnd)
-        //         .clickable {
-        //             showBottomSheet = true
-        //         },
-        //     painter = painterResource(id = R.drawable.ic_filter),
-        //     contentDescription = stringResource(R.string.filter),
-        // )
+        Image(
+            painter = painterResource(R.drawable.ic_search),
+            contentDescription = "검색",
+            modifier = modifier
+                .align(Alignment.CenterEnd)
+                .padding(top = 16.dp)
+                .clickable {
+                    onSearchClick()
+                },
+        )
     }
 }
