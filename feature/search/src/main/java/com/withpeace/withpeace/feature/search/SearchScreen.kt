@@ -48,13 +48,15 @@ fun SearchRoute(
         onBackButtonClick = onBackButtonClick,
         onClickSearchKeyword = {},
         onRemoveKeyword = {},
-    )
+
+        )
 }
 
 @Composable
 private fun SearchScreen(
     modifier: Modifier = Modifier,
     searchKeyword: String,
+    // youthPolicies: LazyPagingItems<YouthPolicyUiModel>,
     onBackButtonClick: () -> Unit,
     onKeywordTextChanged: (String) -> Unit,
     onClickSearchKeyword: (String) -> Unit,
@@ -92,21 +94,35 @@ private fun SearchScreen(
             thickness = 1.dp,
             color = WithpeaceTheme.colors.SystemGray3,
         )
-        Column(modifier = modifier
-            .fillMaxSize()
-            .background(color = Color(0xFFF8F9FB))) {
-            Spacer(modifier = modifier.height(16.dp))
-            Text("총 4개")
-            Spacer(modifier = modifier.height(16.dp))
-            LazyColumn {
+        // SearchCompleted(modifier)
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .background(color = Color(0xFFF8F9FB)),
+        ) {
 
-            }
         }
-
         // SearchIntro(
         //     onClickSearchKeyword = onClickSearchKeyword,
         //     onRemoveKeyword = onRemoveKeyword,
         // )
+    }
+}
+
+@Composable
+private fun SearchCompleted(modifier: Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = Color(0xFFF8F9FB)),
+    ) {
+        Spacer(modifier = modifier.height(16.dp))
+        Text("총 4개")
+        Spacer(modifier = modifier.height(16.dp))
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+        }
     }
 }
 
