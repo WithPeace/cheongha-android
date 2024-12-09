@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -33,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.withpeace.withpeace.core.designsystem.R
@@ -162,6 +165,12 @@ private fun SearchComponent(
             textStyle = WithpeaceTheme.typography.caption,
             singleLine = true,
             maxLines = 1,
+            keyboardActions = KeyboardActions(
+                onSearch = {
+
+                },
+            ),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         ) {
             TextFieldDefaults.DecorationBox(
                 value = rememberKeyword.value,
