@@ -20,8 +20,8 @@ android {
     }
     packaging {
         resources {
-            merges += "META-INF/LICENSE.md"
-            merges += "META-INF/LICENSE-notice.md"
+            excludes += "META-INF/LICENSE.md"
+            excludes += "META-INF/LICENSE-notice.md"
         }
     }
 
