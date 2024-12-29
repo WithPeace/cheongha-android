@@ -91,6 +91,7 @@ fun PolicyListRoute(
             }
         }
     }
+
     PolicyListScreen(
         youthPolicies = youthPolicyPagingData,
         selectedFilterUiState = selectedFilterUiState.value,

@@ -5,6 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.skydoves.sandwich.suspendMapSuccess
 import com.withpeace.withpeace.core.data.mapper.youthpolicy.toDomain
+import com.withpeace.withpeace.core.data.paging.PolicySearchPagingSource
 import com.withpeace.withpeace.core.data.paging.YouthPolicyPagingSource
 import com.withpeace.withpeace.core.data.util.handleApiFailure
 import com.withpeace.withpeace.core.domain.model.error.CheonghaError
@@ -14,6 +15,7 @@ import com.withpeace.withpeace.core.domain.model.policy.BookmarkedPolicy
 import com.withpeace.withpeace.core.domain.model.policy.PolicyFilters
 import com.withpeace.withpeace.core.domain.model.policy.YouthPolicy
 import com.withpeace.withpeace.core.domain.model.policy.YouthPolicyDetail
+import com.withpeace.withpeace.core.domain.model.search.SearchKeyword
 import com.withpeace.withpeace.core.domain.repository.UserRepository
 import com.withpeace.withpeace.core.domain.repository.YouthPolicyRepository
 import com.withpeace.withpeace.core.network.di.service.YouthPolicyService
@@ -101,6 +103,24 @@ class DefaultYouthPolicyRepository @Inject constructor(
                 onErrorWithAuthExpired(it, onError)
             }
         }
+
+    override fun search(
+        searchKeyword: SearchKeyword,
+        onError: suspend (CheonghaError) -> Unit,
+    ): Flow<PagingData<YouthPolicy>> {
+        return Pager(
+            config = PagingConfig(PAGE_SIZE),
+            pagingSourceFactory = {
+                PolicySearchPagingSource(
+                    keyword = searchKeyword.value,
+                    youthPolicyService = youthPolicyService,
+                    onError = onError,
+                    userRepository = userRepository,
+                    pageSize = PAGE_SIZE,
+                )
+            },
+        ).flow
+    }
 
     private suspend fun onErrorWithAuthExpired(
         it: ResponseError,

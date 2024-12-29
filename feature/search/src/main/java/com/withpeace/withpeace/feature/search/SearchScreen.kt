@@ -22,11 +22,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,36 +36,75 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.withpeace.withpeace.core.designsystem.R
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
+import com.withpeace.withpeace.core.ui.policy.YouthPolicyCard
+import com.withpeace.withpeace.core.ui.policy.YouthPolicyUiModel
 
 @Composable
 fun SearchRoute(
+    onShowSnackBar: (message: String) -> Unit,
+    onNavigationSnackBar: (message: String) -> Unit = {},
+    viewModel: SearchViewModel = hiltViewModel(),
     onBackButtonClick: () -> Unit,
+    onPolicyClick: (String) -> Unit,
 ) {
+    val searchKeyword = viewModel.searchKeyword.collectAsStateWithLifecycle()
+    val youthPolicies = viewModel.youthPolicyPagingFlow.collectAsLazyPagingItems()
+
+    LaunchedEffect(key1 = viewModel.uiEvent) {
+        viewModel.uiEvent.collect {
+            when (it) {
+                SearchUiEvent.BookmarkSuccess -> {
+                    onNavigationSnackBar("관심 목록에 추가되었습니다.")
+                }
+
+                SearchUiEvent.BookmarkFailure -> {
+                    onShowSnackBar("찜하기에 실패했습니다. 다시 시도해주세요.")
+                }
+
+                SearchUiEvent.UnBookmarkSuccess -> {
+                    onShowSnackBar("관심목록에서 삭제되었습니다.")
+                }
+            }
+        }
+    }
     SearchScreen(
-        onKeywordTextChanged = {},
-        searchKeyword = "",
+        onKeywordTextChanged = viewModel::onChangedKeyword,
+        searchKeyword = searchKeyword.value,
         onBackButtonClick = onBackButtonClick,
         onClickSearchKeyword = {},
-        onRemoveKeyword = {},
-
-        )
+        onRemoveRecentKeyword = {},
+        onRecentKeywordClick = viewModel::search,
+        youthPolicies = youthPolicies,
+        onBookmarkClick = viewModel::bookmark,
+        onPolicyClick = onPolicyClick,
+    )
 }
 
 @Composable
 private fun SearchScreen(
     modifier: Modifier = Modifier,
     searchKeyword: String,
-    // youthPolicies: LazyPagingItems<YouthPolicyUiModel>,
+    youthPolicies: LazyPagingItems<YouthPolicyUiModel>, //TODO 이친구 연결해야 제대로 동작하는 듯
     onBackButtonClick: () -> Unit,
     onKeywordTextChanged: (String) -> Unit,
     onClickSearchKeyword: (String) -> Unit,
-    onRemoveKeyword: () -> Unit,
+    onRemoveRecentKeyword: () -> Unit,
+    onRecentKeywordClick: () -> Unit,
+    onPolicyClick: (String) -> Unit,
+    onBookmarkClick: (id: String, isChecked: Boolean) -> Unit,
 ) {
     val rememberKeyword = remember { mutableStateOf("") }
     val interactionSource = remember { MutableInteractionSource() }
@@ -90,21 +131,31 @@ private fun SearchScreen(
                 contentDescription = "뒤로 가기",
             )
             Spacer(modifier = modifier.width(8.dp))
-            SearchComponent(modifier, rememberKeyword, interactionSource)
+            SearchComponent(
+                modifier = modifier,
+                interactionSource = interactionSource,
+                onSearchKeywordChanged = onKeywordTextChanged,
+                onSearchClick = onRecentKeywordClick,
+                searchKeyword = searchKeyword,
+            )
         }
         Spacer(modifier = modifier.height(7.dp))
         HorizontalDivider(
             thickness = 1.dp,
             color = WithpeaceTheme.colors.SystemGray3,
         )
-        // SearchCompleted(modifier)
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .background(color = Color(0xFFF8F9FB)),
-        ) {
-
-        }
+        SearchCompleted(
+            youthPolicies = youthPolicies,
+            onPolicyClick = onPolicyClick,
+            onBookmarkClick = onBookmarkClick,
+        )
+        // Column( TODO 에러 뷰
+        //     modifier = modifier
+        //         .fillMaxSize()
+        //         .background(color = Color(0xFFF8F9FB)),
+        // ) {
+        //
+        // }
         // SearchIntro(
         //     onClickSearchKeyword = onClickSearchKeyword,
         //     onRemoveKeyword = onRemoveKeyword,
@@ -113,18 +164,58 @@ private fun SearchScreen(
 }
 
 @Composable
-private fun SearchCompleted(modifier: Modifier) {
+private fun SearchCompleted(
+    modifier: Modifier = Modifier,
+    youthPolicies: LazyPagingItems<YouthPolicyUiModel>,
+    onPolicyClick: (String) -> Unit,
+    onBookmarkClick: (id: String, isChecked: Boolean) -> Unit,
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(color = Color(0xFFF8F9FB)),
     ) {
-        Spacer(modifier = modifier.height(16.dp))
-        Text("총 4개")
-        Spacer(modifier = modifier.height(16.dp))
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = modifier
+                .fillMaxSize()
+                .testTag("home:policies"),
+            contentPadding = PaddingValues(start = 24.dp, end = 24.dp, bottom = 16.dp),
         ) {
+            item {
+                Spacer(modifier = modifier.height(16.dp))
+                Text("총 4개", style = WithpeaceTheme.typography.caption, color = WithpeaceTheme.colors.SystemGray1)
+                Spacer(modifier = modifier.height(16.dp))
+            }
+            items(
+                count = youthPolicies.itemCount,
+                key = youthPolicies.itemKey { it.id },
+            ) {
+                val youthPolicy = youthPolicies[it] ?: throw IllegalStateException()
+                Spacer(modifier = modifier.height(8.dp))
+                YouthPolicyCard(
+                    modifier = modifier,
+                    youthPolicy = youthPolicy,
+                    onPolicyClick = onPolicyClick,
+                    onBookmarkClick = onBookmarkClick,
+                )
+            }
+            item {
+                if (youthPolicies.loadState.append is LoadState.Loading) {
+                    Column(
+                        modifier = modifier
+                            .padding(top = 8.dp)
+                            .fillMaxWidth()
+                            .background(
+                                Color.Transparent,
+                            ),
+                    ) {
+                        CircularProgressIndicator(
+                            modifier.align(Alignment.CenterHorizontally),
+                            color = WithpeaceTheme.colors.MainPurple,
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -133,8 +224,10 @@ private fun SearchCompleted(modifier: Modifier) {
 @OptIn(ExperimentalMaterial3Api::class)
 private fun SearchComponent(
     modifier: Modifier,
-    rememberKeyword: MutableState<String>,
+    searchKeyword: String,
     interactionSource: MutableInteractionSource,
+    onSearchKeywordChanged: (String) -> Unit,
+    onSearchClick: () -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -155,10 +248,9 @@ private fun SearchComponent(
         )
         Spacer(modifier.width(8.dp))
         BasicTextField(
-            value = rememberKeyword.value,
+            value = searchKeyword,
             onValueChange = {
-                rememberKeyword.value = it
-                // onSearchKeywordChanged(it)
+                onSearchKeywordChanged(it)
             },
             modifier = modifier.fillMaxWidth(),
             enabled = true,
@@ -167,13 +259,13 @@ private fun SearchComponent(
             maxLines = 1,
             keyboardActions = KeyboardActions(
                 onSearch = {
-
+                    onSearchClick()
                 },
             ),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         ) {
             TextFieldDefaults.DecorationBox(
-                value = rememberKeyword.value,
+                value = searchKeyword,
                 innerTextField = it,
                 enabled = true,
                 singleLine = false,
