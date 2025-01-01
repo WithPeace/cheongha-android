@@ -5,6 +5,7 @@ import com.withpeace.withpeace.core.network.di.response.BaseResponse
 import com.withpeace.withpeace.core.network.di.response.policy.BookmarkedPolicyResponse
 import com.withpeace.withpeace.core.network.di.response.policy.PolicyDetailResponse
 import com.withpeace.withpeace.core.network.di.response.policy.PolicyResponse
+import com.withpeace.withpeace.core.network.di.response.policy.PolicySearchResponse
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -37,4 +38,11 @@ interface YouthPolicyService {
 
     @GET("/api/v1/policies/hot")
     suspend fun getHots(): ApiResponse<BaseResponse<List<PolicyResponse>>>
+
+    @GET("/api/v1/policies/search")
+    suspend fun search(
+        @Query("keyword") keyword: String,
+        @Query("pageIndex") pageIndex: Int,
+        @Query("pageSize") pageSize: Int,
+    ): ApiResponse<BaseResponse<PolicySearchResponse>>
 }

@@ -217,10 +217,26 @@ fun WithpeaceNavHost(
             },
         )
         searchGraph(
-            onShowSnackBar = {},
             onAuthExpired = {},
             onBackButtonClick = {
                 navController.popBackStack()
+            },
+            onShowSnackBar = { onShowSnackBar(SnackbarState(it)) },
+            onNavigationSnackBar = {
+                onShowSnackBar(
+                    SnackbarState(
+                        it,
+                        SnackbarType.Navigator(
+                            actionName = "목록 보러가기",
+                            action = {
+                                navController.navigatePolicyBookmarks()
+                            },
+                        ),
+                    ),
+                )
+            },
+            onPolicyClick = {
+                navController.navigateToPolicyDetail(policyId = it)
             },
         )
         policyDetailNavGraph(

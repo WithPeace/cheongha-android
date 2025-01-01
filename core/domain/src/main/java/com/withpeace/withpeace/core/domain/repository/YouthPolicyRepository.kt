@@ -4,8 +4,10 @@ import androidx.paging.PagingData
 import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import com.withpeace.withpeace.core.domain.model.policy.BookmarkedPolicy
 import com.withpeace.withpeace.core.domain.model.policy.PolicyFilters
+import com.withpeace.withpeace.core.domain.model.policy.PolicySearchResult
 import com.withpeace.withpeace.core.domain.model.policy.YouthPolicy
 import com.withpeace.withpeace.core.domain.model.policy.YouthPolicyDetail
+import com.withpeace.withpeace.core.domain.model.search.SearchKeyword
 import kotlinx.coroutines.flow.Flow
 
 interface YouthPolicyRepository {
@@ -40,4 +42,10 @@ interface YouthPolicyRepository {
     fun getHotPolicy(
         onError: suspend (CheonghaError) -> Unit,
     ): Flow<List<YouthPolicy>>
+
+    fun search(
+        searchKeyword: SearchKeyword,
+        onError: suspend (CheonghaError) -> Unit,
+        onReceiveTotalCount: (Int) -> Unit,
+    ): Flow<PagingData<Pair<Int, YouthPolicy>>>
 }

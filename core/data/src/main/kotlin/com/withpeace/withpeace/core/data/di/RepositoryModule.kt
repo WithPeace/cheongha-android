@@ -3,12 +3,14 @@ package com.withpeace.withpeace.core.data.di
 import com.withpeace.withpeace.core.data.repository.DefaultAppUpdateRepository
 import com.withpeace.withpeace.core.data.repository.DefaultImageRepository
 import com.withpeace.withpeace.core.data.repository.DefaultPostRepository
+import com.withpeace.withpeace.core.data.repository.DefaultRecentSearchKeywordRepository
 import com.withpeace.withpeace.core.data.repository.DefaultTokenRepository
 import com.withpeace.withpeace.core.data.repository.DefaultUserRepository
 import com.withpeace.withpeace.core.data.repository.DefaultYouthPolicyRepository
 import com.withpeace.withpeace.core.domain.repository.AppUpdateRepository
 import com.withpeace.withpeace.core.domain.repository.ImageRepository
 import com.withpeace.withpeace.core.domain.repository.PostRepository
+import com.withpeace.withpeace.core.domain.repository.RecentSearchKeywordRepository
 import com.withpeace.withpeace.core.domain.repository.TokenRepository
 import com.withpeace.withpeace.core.domain.repository.UserRepository
 import com.withpeace.withpeace.core.domain.repository.YouthPolicyRepository
@@ -17,8 +19,6 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ViewModelScoped
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 
 @Module
 @InstallIn(ViewModelComponent::class)
@@ -41,6 +41,13 @@ interface RepositoryModule {
     fun bindsUserRepository(
         defaultUserRepository: DefaultUserRepository,
     ): UserRepository
+
+    @Binds
+    @ViewModelScoped
+    fun bindsRecentSearchKeywordRepository(
+        defaultRecentSearchKeywordRepository: DefaultRecentSearchKeywordRepository,
+    ): RecentSearchKeywordRepository
+
 
     @Binds
     @ViewModelScoped

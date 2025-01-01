@@ -8,4 +8,13 @@ sealed interface ClientError : CheonghaError {
 
     data object AuthExpired : ClientError
     data object ProfileNotChanged : ClientError
+
+    sealed interface SearchError : ClientError {
+        data object NoSearchResult : SearchError
+        data object SingleCharacterSearch : SearchError
+    }
 }
+
+class NoSearchResultException: IllegalStateException()
+class SingleCharacterSearchException: IllegalStateException()
+

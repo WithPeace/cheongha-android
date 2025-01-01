@@ -17,6 +17,8 @@ fun NavGraphBuilder.searchGraph(
     onShowSnackBar: (String) -> Unit,
     onAuthExpired: () -> Unit,
     onBackButtonClick: () -> Unit,
+    onNavigationSnackBar: (message: String) -> Unit = {},
+    onPolicyClick: (String) -> Unit,
 ) {
     composable(
         route = SEARCH_ROUTE,
@@ -34,7 +36,10 @@ fun NavGraphBuilder.searchGraph(
         },
     ) {
         SearchRoute(
+            onShowSnackBar = onShowSnackBar,
+            onNavigationSnackBar = onNavigationSnackBar,
             onBackButtonClick = onBackButtonClick,
+            onPolicyClick = onPolicyClick,
         )
     }
 }
