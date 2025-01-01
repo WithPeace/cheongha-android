@@ -81,7 +81,7 @@ class SearchViewModel @Inject constructor(
     val recentSearchKeywords = _recentSearchKeywords.asStateFlow()
 
     private val _totalCountFlow = MutableStateFlow(0)
-    val totalCountFlow = _totalCountFlow.asStateFlow()
+    val totalCountFlow = _totalCountFlow.asStateFlow() // Paging3에서 데이터를 같이 가져오는 것이 어려워 해당 프로퍼티로 구현
 
     init {
         viewModelScope.launch {
@@ -125,14 +125,12 @@ class SearchViewModel @Inject constructor(
                         onError = {
                         },
                         onReceiveTotalCount = {
-                            Log.d("test",it.toString())
                             _totalCountFlow.value = it
                         },
                     ).onStart {
                         _uiState.update {
                             SearchUiState.PagingData
                         }
-                        // 여기서 검색 state로 변경
                     }.map { data ->
                         data.map {
                             it.second.toUiModel()
