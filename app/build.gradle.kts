@@ -61,6 +61,8 @@ dependencies {
     implementation(project(":feature:disablepolicy"))
     implementation(project(":feature:policylist"))
     implementation(project(":feature:policyfilter"))
+    implementation(project(":feature:search"))
+    implementation(project(":feature:balancegame"))
     implementation(project(":core:ui"))
     implementation(project(":core:interceptor"))
     implementation(project(":core:data"))
@@ -69,6 +71,5 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:analytics"))
     implementation(project(":core:designsystem"))
-    implementation(project(":feature:search"))
     testImplementation(project(":core:testing"))
 }
