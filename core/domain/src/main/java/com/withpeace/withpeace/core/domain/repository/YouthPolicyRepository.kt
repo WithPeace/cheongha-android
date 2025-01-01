@@ -46,5 +46,6 @@ interface YouthPolicyRepository {
     fun search(
         searchKeyword: SearchKeyword,
         onError: suspend (CheonghaError) -> Unit,
-    ): Flow<PagingData<YouthPolicy>>
+        onReceiveTotalCount: (Int) -> Unit,
+    ): Flow<PagingData<Pair<Int, YouthPolicy>>>
 }

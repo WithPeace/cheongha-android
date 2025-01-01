@@ -4,5 +4,5 @@ import com.withpeace.withpeace.core.database.SearchKeywordEntity
 import com.withpeace.withpeace.core.domain.model.search.SearchKeyword
 
 fun SearchKeywordEntity.toDomain(): SearchKeyword {
-    return SearchKeyword(keyword ?: "")
+    return SearchKeyword(keyword)
 }

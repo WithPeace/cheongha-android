@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.core.data.repository
 
+import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -107,7 +108,8 @@ class DefaultYouthPolicyRepository @Inject constructor(
     override fun search(
         searchKeyword: SearchKeyword,
         onError: suspend (CheonghaError) -> Unit,
-    ): Flow<PagingData<YouthPolicy>> {
+        onReceiveTotalCount: (Int) -> Unit,
+    ): Flow<PagingData<Pair<Int, YouthPolicy>>> {
         return Pager(
             config = PagingConfig(PAGE_SIZE),
             pagingSourceFactory = {
@@ -117,6 +119,7 @@ class DefaultYouthPolicyRepository @Inject constructor(
                     onError = onError,
                     userRepository = userRepository,
                     pageSize = PAGE_SIZE,
+                    onReceiveTotalCount = onReceiveTotalCount
                 )
             },
         ).flow

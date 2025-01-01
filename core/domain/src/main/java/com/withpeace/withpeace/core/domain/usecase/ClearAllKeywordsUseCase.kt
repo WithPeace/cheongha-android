@@ -6,7 +6,7 @@ import javax.inject.Inject
 class ClearAllKeywordsUseCase @Inject constructor(
     private val repository: RecentSearchKeywordRepository
 ) {
-    suspend fun invoke() {
+    suspend operator fun invoke() {
         repository.clearAllKeywords()
     }
 }

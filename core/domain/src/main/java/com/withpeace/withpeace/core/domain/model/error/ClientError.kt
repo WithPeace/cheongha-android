@@ -14,3 +14,7 @@ sealed interface ClientError : CheonghaError {
         data object SingleCharacterSearch : SearchError
     }
 }
+
+class NoSearchResultException: IllegalStateException()
+class SingleCharacterSearchException: IllegalStateException()
+
