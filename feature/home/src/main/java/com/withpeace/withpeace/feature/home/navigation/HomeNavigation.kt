@@ -21,6 +21,7 @@ fun NavGraphBuilder.homeNavGraph(
     onPolicyClick: (String) -> Unit,
     onPostClick: (PostTopicUiModel) -> Unit,
     onSearchClick: () -> Unit,
+    onClickBalanceGame: () -> Unit,
 ) {
     composable(
         route = HOME_ROUTE,
@@ -33,6 +34,7 @@ fun NavGraphBuilder.homeNavGraph(
             onPolicyClick = onPolicyClick,
             onPostClick = onPostClick,
             onSearchClick = onSearchClick,
+            onClickBalanceGame = onClickBalanceGame
         )
     }
 }

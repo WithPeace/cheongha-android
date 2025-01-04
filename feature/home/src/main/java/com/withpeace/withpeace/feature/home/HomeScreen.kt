@@ -71,6 +71,7 @@ fun HomeRoute(
     onPolicyClick: (String) -> Unit,
     onPostClick: (PostTopicUiModel) -> Unit,
     onSearchClick: () -> Unit,
+    onClickBalanceGame: () -> Unit,
 ) {
     val selectingFilterUiState = viewModel.selectingFilters.collectAsStateWithLifecycle()
     val recentPosts = viewModel.recentPostsUiState.collectAsStateWithLifecycle()
@@ -92,6 +93,7 @@ fun HomeRoute(
         recommendPolicyUiState = recommendPolicies.value,
         completedFilterState = completedFilterUiState.value,
         onSearchClick = onSearchClick,
+        onClickBalanceGame = onClickBalanceGame,
     )
 }
 
@@ -112,11 +114,13 @@ fun HomeScreen(
     onPolicyClick: (String) -> Unit,
     completedFilterState: PolicyFiltersUiModel,
     onSearchClick: () -> Unit = {},
+    onClickBalanceGame: () -> Unit,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         HomeHeader(
             modifier = modifier,
             onSearchClick = onSearchClick,
+            onClickBalanceGame = onClickBalanceGame,
         )
         HorizontalDivider(
             modifier = modifier.height(1.dp),
@@ -481,6 +485,7 @@ private fun ScrollSection(
 private fun HomeHeader(
     modifier: Modifier,
     onSearchClick: () -> Unit,
+    onClickBalanceGame: () -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -496,15 +501,30 @@ private fun HomeHeader(
             painter = painterResource(id = R.drawable.ic_home_logo),
             contentDescription = stringResource(R.string.cheongha_logo),
         )
-        Image(
-            painter = painterResource(R.drawable.ic_search),
-            contentDescription = "검색",
+        Row(
             modifier = modifier
                 .align(Alignment.CenterEnd)
-                .padding(top = 16.dp)
-                .clickable {
-                    onSearchClick()
-                },
-        )
+                .padding(top = 16.dp),
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_balance_game),
+                contentDescription = "밸런스 게임",
+                modifier = modifier
+                    .clickable {
+                        onClickBalanceGame()
+                    },
+            )
+            Spacer(modifier.width(12.dp))
+            Image(
+                painter = painterResource(R.drawable.ic_search),
+                contentDescription = "검색",
+                modifier = modifier
+                    .clickable {
+                        onSearchClick()
+                    },
+            )
+
+        }
+
     }
 }
