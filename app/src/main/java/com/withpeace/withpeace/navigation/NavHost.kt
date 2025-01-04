@@ -431,7 +431,7 @@ fun WithpeaceNavHost(
                 onShowSnackBar(SnackbarState(it))
             },
             onAuthExpired = {},
-            onBackButtonClick = navController::popBackStack,
+            onClickBackButton = navController::popBackStack,
         )
     }
 }

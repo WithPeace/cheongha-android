@@ -16,7 +16,7 @@ fun NavController.navigateToBalanceGame(navOptions: NavOptions? = null) =
 fun NavGraphBuilder.balanceGameGraph(
     onShowSnackBar: (String) -> Unit,
     onAuthExpired: () -> Unit,
-    onBackButtonClick: () -> Unit,
+    onClickBackButton: () -> Unit,
 ) {
     composable(
         route = BALANCE_GAME_ROUTE,
@@ -35,7 +35,7 @@ fun NavGraphBuilder.balanceGameGraph(
     ) {
         BalanceGameRoute(
             onShowSnackBar = onShowSnackBar,
-            onBackButtonClick = onBackButtonClick,
+            onClickBackButton = onClickBackButton,
         )
     }
 }
