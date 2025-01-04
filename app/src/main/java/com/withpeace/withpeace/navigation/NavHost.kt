@@ -14,6 +14,7 @@ import com.app.profileeditor.navigation.navigateProfileEditor
 import com.app.profileeditor.navigation.profileEditorNavGraph
 import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarState
 import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarType
+import com.withpeace.withpeace.feature.balancegame.navigation.balanceGameGraph
 import com.withpeace.withpeace.feature.disablepolicy.navigation.disabledPolicyNavGraph
 import com.withpeace.withpeace.feature.disablepolicy.navigation.navigateDisabledPolicy
 import com.withpeace.withpeace.feature.gallery.navigation.galleryNavGraph
@@ -420,6 +421,13 @@ fun WithpeaceNavHost(
             onPolicyClick = {
                 navController.navigateToPolicyDetail(policyId = it)
             },
+        )
+        balanceGameGraph(
+            onShowSnackBar = {
+                onShowSnackBar(SnackbarState(it))
+            },
+            onAuthExpired = {},
+            onBackButtonClick = navController::popBackStack,
         )
     }
 }
