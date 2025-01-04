@@ -49,6 +49,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
 import com.skydoves.balloon.compose.Balloon
+import com.skydoves.balloon.compose.BalloonWindow
 import com.skydoves.balloon.compose.rememberBalloonBuilder
 import com.skydoves.balloon.compose.setBackgroundColor
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
@@ -487,6 +488,21 @@ private fun HomeHeader(
     onSearchClick: () -> Unit,
     onClickBalanceGame: () -> Unit,
 ) {
+    var balloonWindow: BalloonWindow? by remember { mutableStateOf(null) }
+    val builder = rememberBalloonBuilder {
+        setIsVisibleArrow(true)
+        setWidth(BalloonSizeSpec.WRAP)
+        setHeight(BalloonSizeSpec.WRAP)
+        setPaddingLeft(6)
+        setPaddingRight(6)
+        setPaddingTop(6)
+        setPaddingBottom(6)
+        setCornerRadius(3f)
+        setDismissWhenTouchOutside(false)
+        setBackgroundColor(Color(0xFF9A70E2))
+        setBalloonAnimation(BalloonAnimation.FADE)
+        setArrowSize(8)
+    }
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -506,20 +522,35 @@ private fun HomeHeader(
                 .align(Alignment.CenterEnd)
                 .padding(top = 16.dp),
         ) {
-            Image(
-                painter = painterResource(R.drawable.ic_balance_game),
-                contentDescription = "밸런스 게임",
-                modifier = modifier
-                    .clickable {
-                        onClickBalanceGame()
-                    },
-            )
+            Balloon(
+                builder = builder,
+                onBalloonWindowInitialized = { balloonWindow = it },
+                onComposedAnchor = { balloonWindow?.showAlignBottom() },
+                balloonContent = {
+                    Text(
+                        text = "밸런스게임",
+                        color = WithpeaceTheme.colors.SystemWhite,
+                        style = WithpeaceTheme.typography.Tag,
+                    )
+                },
+            ) { _ ->
+                Image(
+                    painter = painterResource(R.drawable.ic_balance_game),
+                    contentDescription = "밸런스 게임",
+                    modifier = modifier
+                        .clickable {
+                            onClickBalanceGame()
+                        },
+                )
+            }
+
             Spacer(modifier.width(12.dp))
             Image(
                 painter = painterResource(R.drawable.ic_search),
                 contentDescription = "검색",
                 modifier = modifier
                     .clickable {
+                        balloonWindow?.dismiss()
                         onSearchClick()
                     },
             )
