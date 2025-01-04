@@ -15,6 +15,7 @@ import com.app.profileeditor.navigation.profileEditorNavGraph
 import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarState
 import com.withpeace.withpeace.core.designsystem.ui.snackbar.SnackbarType
 import com.withpeace.withpeace.feature.balancegame.navigation.balanceGameGraph
+import com.withpeace.withpeace.feature.balancegame.navigation.navigateToBalanceGame
 import com.withpeace.withpeace.feature.disablepolicy.navigation.disabledPolicyNavGraph
 import com.withpeace.withpeace.feature.disablepolicy.navigation.navigateDisabledPolicy
 import com.withpeace.withpeace.feature.gallery.navigation.galleryNavGraph
@@ -216,6 +217,9 @@ fun WithpeaceNavHost(
             onSearchClick = {
                 navController.navigateToSearch()
             },
+            onClickBalanceGame = {
+                navController.navigateToBalanceGame()
+            }
         )
         searchGraph(
             onAuthExpired = {},
