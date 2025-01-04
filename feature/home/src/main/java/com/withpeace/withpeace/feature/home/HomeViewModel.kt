@@ -3,10 +3,12 @@ package com.withpeace.withpeace.feature.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.withpeace.withpeace.core.domain.model.policy.PolicyFilters
+import com.withpeace.withpeace.core.domain.usecase.BalanceGameVisitedUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetHotPoliciesUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetPolicyFilterUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetRecentPostUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetRecommendPoliciesUseCase
+import com.withpeace.withpeace.core.domain.usecase.UpdateBalanceGameVisitedStatus
 import com.withpeace.withpeace.core.domain.usecase.UpdatePolicyFilterUseCase
 import com.withpeace.withpeace.core.ui.policy.ClassificationUiModel
 import com.withpeace.withpeace.core.ui.policy.RegionUiModel
@@ -37,6 +39,9 @@ class HomeViewModel @Inject constructor(
     private val getHotPoliciesUseCase: GetHotPoliciesUseCase,
     private val getPolicyFilterUseCase: GetPolicyFilterUseCase,
     private val updatePolicyFilterUseCase: UpdatePolicyFilterUseCase,
+    private val updateBalanceGameVisitedStatus: UpdateBalanceGameVisitedStatus,
+    balanceGameVisitedUseCase: BalanceGameVisitedUseCase,
+
 ) : ViewModel() {
     private val _recentPostsUiState: MutableStateFlow<RecentPostsUiState> =
         MutableStateFlow(RecentPostsUiState.Loading)
@@ -65,6 +70,8 @@ class HomeViewModel @Inject constructor(
             SharingStarted.WhileSubscribed(),
             PolicyFiltersUiModel(),
         )
+
+    val isBalanceGameVisited = balanceGameVisitedUseCase()
 
 
     init {
@@ -160,6 +167,12 @@ class HomeViewModel @Inject constructor(
     fun onFilterAllOff() {
         _selectingFilters.update {
             it.removeAll()
+        }
+    }
+
+    fun visitBalanceGame() {
+        viewModelScope.launch {
+            updateBalanceGameVisitedStatus(true)
         }
     }
 }

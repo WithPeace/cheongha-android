@@ -79,6 +79,7 @@ fun HomeRoute(
     val hotPolicies = viewModel.hotPolicyUiState.collectAsStateWithLifecycle()
     val recommendPolicies = viewModel.recommendPolicyUiState.collectAsStateWithLifecycle()
     val completedFilterUiState = viewModel.completedFilters.collectAsStateWithLifecycle()
+    val isVisitedBalanceGame = viewModel.isBalanceGameVisited.collectAsStateWithLifecycle(true)
     HomeScreen(
         selectedFilterUiState = selectingFilterUiState.value,
         onClassificationCheckChanged = viewModel::onCheckClassification,
@@ -94,7 +95,11 @@ fun HomeRoute(
         recommendPolicyUiState = recommendPolicies.value,
         completedFilterState = completedFilterUiState.value,
         onSearchClick = onSearchClick,
-        onClickBalanceGame = onClickBalanceGame,
+        onClickBalanceGame = {
+            viewModel.visitBalanceGame()
+            onClickBalanceGame()
+        },
+        isBalanceGameVisited = isVisitedBalanceGame.value,
     )
 }
 
@@ -102,6 +107,7 @@ fun HomeRoute(
 fun HomeScreen(
     modifier: Modifier = Modifier,
     recentPosts: RecentPostsUiState,
+    isBalanceGameVisited: Boolean,
     hotPolicyUiState: HotPolicyUiState,
     recommendPolicyUiState: RecommendPolicyUiState,
     selectedFilterUiState: PolicyFiltersUiModel,
@@ -122,6 +128,7 @@ fun HomeScreen(
             modifier = modifier,
             onSearchClick = onSearchClick,
             onClickBalanceGame = onClickBalanceGame,
+            isBalanceGameVisited = isBalanceGameVisited,
         )
         HorizontalDivider(
             modifier = modifier.height(1.dp),
@@ -487,6 +494,7 @@ private fun HomeHeader(
     modifier: Modifier,
     onSearchClick: () -> Unit,
     onClickBalanceGame: () -> Unit,
+    isBalanceGameVisited: Boolean,
 ) {
     var balloonWindow: BalloonWindow? by remember { mutableStateOf(null) }
     val builder = rememberBalloonBuilder {
@@ -522,18 +530,7 @@ private fun HomeHeader(
                 .align(Alignment.CenterEnd)
                 .padding(top = 16.dp),
         ) {
-            Balloon(
-                builder = builder,
-                onBalloonWindowInitialized = { balloonWindow = it },
-                onComposedAnchor = { balloonWindow?.showAlignBottom() },
-                balloonContent = {
-                    Text(
-                        text = "밸런스게임",
-                        color = WithpeaceTheme.colors.SystemWhite,
-                        style = WithpeaceTheme.typography.Tag,
-                    )
-                },
-            ) { _ ->
+            if (isBalanceGameVisited) {
                 Image(
                     painter = painterResource(R.drawable.ic_balance_game),
                     contentDescription = "밸런스 게임",
@@ -542,6 +539,28 @@ private fun HomeHeader(
                             onClickBalanceGame()
                         },
                 )
+            } else {
+                Balloon(
+                    builder = builder,
+                    onBalloonWindowInitialized = { balloonWindow = it },
+                    onComposedAnchor = { balloonWindow?.showAlignBottom() },
+                    balloonContent = {
+                        Text(
+                            text = "밸런스게임",
+                            color = WithpeaceTheme.colors.SystemWhite,
+                            style = WithpeaceTheme.typography.Tag,
+                        )
+                    },
+                ) { _ ->
+                    Image(
+                        painter = painterResource(R.drawable.ic_balance_game),
+                        contentDescription = "밸런스 게임",
+                        modifier = modifier
+                            .clickable {
+                                onClickBalanceGame()
+                            },
+                    )
+                }
             }
 
             Spacer(modifier.width(12.dp))

@@ -13,7 +13,7 @@ class DefaultBalanceGameDataStore @Inject constructor(
     @Named("balance_game") private val dataStore: DataStore<Preferences>,
 ) : BalanceGameDataStore {
     override val isVisited: Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[BALANCE_GAME_VISITED] ?: true
+        preferences[BALANCE_GAME_VISITED] ?: false
     }
 
     override suspend fun updateVisitedStatus(visited: Boolean) {
