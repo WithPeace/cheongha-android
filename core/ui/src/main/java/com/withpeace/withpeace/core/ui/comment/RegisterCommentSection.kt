@@ -1,4 +1,4 @@
-package com.withpeace.withpeace.feature.postdetail
+package com.withpeace.withpeace.core.ui.comment
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
+import com.withpeace.withpeace.core.ui.R
 
 @Composable
 fun RegisterCommentSection(

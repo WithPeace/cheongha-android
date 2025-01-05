@@ -33,10 +33,10 @@ import com.skydoves.landscapist.glide.GlideImage
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.ui.DateUiModel
 import com.withpeace.withpeace.core.ui.R
+import com.withpeace.withpeace.core.ui.comment.CommentSize
 import com.withpeace.withpeace.core.ui.post.PostTopicUiModel
 import com.withpeace.withpeace.core.ui.post.PostUserUiModel
 import com.withpeace.withpeace.core.ui.toRelativeString
-import com.withpeace.withpeace.feature.postdetail.R.drawable
 import com.withpeace.withpeace.feature.postdetail.R.string
 
 fun LazyListScope.PostSection(
@@ -215,25 +215,5 @@ fun PostUserProfile(
                 color = WithpeaceTheme.colors.SystemGray4,
             )
         }
-    }
-}
-
-@Composable
-fun CommentSize(
-    commentSize: Int,
-) {
-    Row(
-        modifier = Modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            painter = painterResource(id = drawable.ic_chat),
-            contentDescription = "댓글 개수",
-            modifier = Modifier.padding(end = 4.dp),
-        )
-        Text(
-            text = "$commentSize",
-            style = WithpeaceTheme.typography.caption,
-        )
     }
 }
