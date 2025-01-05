@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
@@ -31,6 +32,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
+import com.withpeace.withpeace.core.ui.DateUiModel
+import com.withpeace.withpeace.core.ui.comment.CommentSection
+import com.withpeace.withpeace.core.ui.comment.CommentSize
+import com.withpeace.withpeace.core.ui.post.CommentUiModel
+import com.withpeace.withpeace.core.ui.post.CommentUserUiModel
+import java.time.LocalDateTime
 
 @Composable
 fun BalanceGameRoute(
@@ -240,6 +247,7 @@ fun BalanceGameScreen(
             }
             Spacer(modifier = modifier.height(12.dp))
             Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp),
@@ -254,6 +262,27 @@ fun BalanceGameScreen(
                     "100명 참여",
                     style = WithpeaceTheme.typography.medium16LineHeight20,
                     color = WithpeaceTheme.colors.SystemGray2,
+                )
+            }
+            Spacer(modifier = modifier.height(8.dp))
+            CommentSize(modifier.fillMaxWidth(), commentSize = 5)
+            Spacer(modifier = modifier.height(8.dp))
+            LazyColumn {
+                CommentSection(
+                    comments = List(5) {
+                        CommentUiModel(
+                            id = it.toLong(),
+                            content = "가나다",
+                            createDate = DateUiModel(LocalDateTime.now()),
+                            commentUser = CommentUserUiModel(
+                                id = it.toLong(),
+                                nickname = "청하다",
+                                profileImageUrl = ""
+                            ),
+                            isMyComment = false
+                        )
+                    },
+                    onReportComment = { _, _ -> },
                 )
             }
         }

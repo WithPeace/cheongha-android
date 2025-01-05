@@ -1,5 +1,6 @@
 package com.withpeace.withpeace.core.ui.comment
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -14,11 +15,14 @@ import com.withpeace.withpeace.core.ui.R
 
 @Composable
 fun CommentSize(
+    modifier: Modifier = Modifier,
     commentSize: Int,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start
 ) {
     Row(
-        modifier = Modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
+        modifier = modifier.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = horizontalArrangement
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_chat),

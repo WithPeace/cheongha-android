@@ -652,3 +652,4 @@ private fun PostDetailScreenPreview() {
         )
     }
 }
+//TODO 하단 댓글창 및 댓글 창 밸런스 게임 선택
