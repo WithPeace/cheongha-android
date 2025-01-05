@@ -1,6 +1,7 @@
 package com.withpeace.withpeace.core.data.di
 
 import com.withpeace.withpeace.core.data.repository.DefaultAppUpdateRepository
+import com.withpeace.withpeace.core.data.repository.DefaultBalanceGameRepository
 import com.withpeace.withpeace.core.data.repository.DefaultImageRepository
 import com.withpeace.withpeace.core.data.repository.DefaultPostRepository
 import com.withpeace.withpeace.core.data.repository.DefaultRecentSearchKeywordRepository
@@ -8,6 +9,7 @@ import com.withpeace.withpeace.core.data.repository.DefaultTokenRepository
 import com.withpeace.withpeace.core.data.repository.DefaultUserRepository
 import com.withpeace.withpeace.core.data.repository.DefaultYouthPolicyRepository
 import com.withpeace.withpeace.core.domain.repository.AppUpdateRepository
+import com.withpeace.withpeace.core.domain.repository.BalanceGameRepository
 import com.withpeace.withpeace.core.domain.repository.ImageRepository
 import com.withpeace.withpeace.core.domain.repository.PostRepository
 import com.withpeace.withpeace.core.domain.repository.RecentSearchKeywordRepository
@@ -60,4 +62,11 @@ interface RepositoryModule {
     fun bindsAppUpdateRepository(
         appUpdateRepository: DefaultAppUpdateRepository,
     ): AppUpdateRepository
+
+    @Binds
+    @ViewModelScoped
+    fun bindsBalanceGameRepository(
+        defaultBalanceGameRepository: DefaultBalanceGameRepository
+    ): BalanceGameRepository
+
 }

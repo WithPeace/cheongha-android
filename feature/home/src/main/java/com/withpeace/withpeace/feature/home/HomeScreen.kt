@@ -49,6 +49,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.BalloonSizeSpec
 import com.skydoves.balloon.compose.Balloon
+import com.skydoves.balloon.compose.BalloonWindow
 import com.skydoves.balloon.compose.rememberBalloonBuilder
 import com.skydoves.balloon.compose.setBackgroundColor
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
@@ -71,12 +72,14 @@ fun HomeRoute(
     onPolicyClick: (String) -> Unit,
     onPostClick: (PostTopicUiModel) -> Unit,
     onSearchClick: () -> Unit,
+    onClickBalanceGame: () -> Unit,
 ) {
     val selectingFilterUiState = viewModel.selectingFilters.collectAsStateWithLifecycle()
     val recentPosts = viewModel.recentPostsUiState.collectAsStateWithLifecycle()
     val hotPolicies = viewModel.hotPolicyUiState.collectAsStateWithLifecycle()
     val recommendPolicies = viewModel.recommendPolicyUiState.collectAsStateWithLifecycle()
     val completedFilterUiState = viewModel.completedFilters.collectAsStateWithLifecycle()
+    val isVisitedBalanceGame = viewModel.isBalanceGameVisited.collectAsStateWithLifecycle(true)
     HomeScreen(
         selectedFilterUiState = selectingFilterUiState.value,
         onClassificationCheckChanged = viewModel::onCheckClassification,
@@ -92,6 +95,11 @@ fun HomeRoute(
         recommendPolicyUiState = recommendPolicies.value,
         completedFilterState = completedFilterUiState.value,
         onSearchClick = onSearchClick,
+        onClickBalanceGame = {
+            viewModel.visitBalanceGame()
+            onClickBalanceGame()
+        },
+        isBalanceGameVisited = isVisitedBalanceGame.value,
     )
 }
 
@@ -99,6 +107,7 @@ fun HomeRoute(
 fun HomeScreen(
     modifier: Modifier = Modifier,
     recentPosts: RecentPostsUiState,
+    isBalanceGameVisited: Boolean,
     hotPolicyUiState: HotPolicyUiState,
     recommendPolicyUiState: RecommendPolicyUiState,
     selectedFilterUiState: PolicyFiltersUiModel,
@@ -112,11 +121,14 @@ fun HomeScreen(
     onPolicyClick: (String) -> Unit,
     completedFilterState: PolicyFiltersUiModel,
     onSearchClick: () -> Unit = {},
+    onClickBalanceGame: () -> Unit,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         HomeHeader(
             modifier = modifier,
             onSearchClick = onSearchClick,
+            onClickBalanceGame = onClickBalanceGame,
+            isBalanceGameVisited = isBalanceGameVisited,
         )
         HorizontalDivider(
             modifier = modifier.height(1.dp),
@@ -481,7 +493,24 @@ private fun ScrollSection(
 private fun HomeHeader(
     modifier: Modifier,
     onSearchClick: () -> Unit,
+    onClickBalanceGame: () -> Unit,
+    isBalanceGameVisited: Boolean,
 ) {
+    var balloonWindow: BalloonWindow? by remember { mutableStateOf(null) }
+    val builder = rememberBalloonBuilder {
+        setIsVisibleArrow(true)
+        setWidth(BalloonSizeSpec.WRAP)
+        setHeight(BalloonSizeSpec.WRAP)
+        setPaddingLeft(6)
+        setPaddingRight(6)
+        setPaddingTop(6)
+        setPaddingBottom(6)
+        setCornerRadius(3f)
+        setDismissWhenTouchOutside(false)
+        setBackgroundColor(Color(0xFF9A70E2))
+        setBalloonAnimation(BalloonAnimation.FADE)
+        setArrowSize(8)
+    }
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -496,15 +525,56 @@ private fun HomeHeader(
             painter = painterResource(id = R.drawable.ic_home_logo),
             contentDescription = stringResource(R.string.cheongha_logo),
         )
-        Image(
-            painter = painterResource(R.drawable.ic_search),
-            contentDescription = "검색",
+        Row(
             modifier = modifier
                 .align(Alignment.CenterEnd)
-                .padding(top = 16.dp)
-                .clickable {
-                    onSearchClick()
-                },
-        )
+                .padding(top = 16.dp),
+        ) {
+            if (isBalanceGameVisited) {
+                Image(
+                    painter = painterResource(R.drawable.ic_balance_game),
+                    contentDescription = "밸런스 게임",
+                    modifier = modifier
+                        .clickable {
+                            onClickBalanceGame()
+                        },
+                )
+            } else {
+                Balloon(
+                    builder = builder,
+                    onBalloonWindowInitialized = { balloonWindow = it },
+                    onComposedAnchor = { balloonWindow?.showAlignBottom() },
+                    balloonContent = {
+                        Text(
+                            text = "밸런스게임",
+                            color = WithpeaceTheme.colors.SystemWhite,
+                            style = WithpeaceTheme.typography.Tag,
+                        )
+                    },
+                ) { _ ->
+                    Image(
+                        painter = painterResource(R.drawable.ic_balance_game),
+                        contentDescription = "밸런스 게임",
+                        modifier = modifier
+                            .clickable {
+                                onClickBalanceGame()
+                            },
+                    )
+                }
+            }
+
+            Spacer(modifier.width(12.dp))
+            Image(
+                painter = painterResource(R.drawable.ic_search),
+                contentDescription = "검색",
+                modifier = modifier
+                    .clickable {
+                        balloonWindow?.dismiss()
+                        onSearchClick()
+                    },
+            )
+
+        }
+
     }
 }

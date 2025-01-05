@@ -1,4 +1,4 @@
-package com.withpeace.withpeace.feature.postdetail
+package com.withpeace.withpeace.core.ui.comment
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -41,10 +41,12 @@ import com.skydoves.landscapist.glide.GlideImage
 import com.withpeace.withpeace.core.designsystem.theme.PretendardFont
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.ui.DateUiModel
+import com.withpeace.withpeace.core.ui.R
 import com.withpeace.withpeace.core.ui.R.drawable
 import com.withpeace.withpeace.core.ui.post.CommentUiModel
 import com.withpeace.withpeace.core.ui.post.CommentUserUiModel
 import com.withpeace.withpeace.core.ui.post.ReportTypeUiModel
+import com.withpeace.withpeace.core.ui.report.PostDetailReportBottomSheet
 import com.withpeace.withpeace.core.ui.toRelativeString
 import java.time.LocalDateTime
 

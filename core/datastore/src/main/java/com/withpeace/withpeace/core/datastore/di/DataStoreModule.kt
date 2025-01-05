@@ -18,9 +18,11 @@ object DataStoreModule {
 
     private const val AUTH_DATASTORE_NAME = "AUTH_PREFERENCES"
     private const val USER_DATASTORE_NAME = "USER_PREFERENCES"
+    private const val BALANCE_GAME_DATASTORE_NAME = "BALANCE_GAME_DATASTORE_NAME"
 
     private val Context.authDataStore: DataStore<Preferences> by preferencesDataStore(name = AUTH_DATASTORE_NAME)
     private val Context.userDataStore: DataStore<Preferences> by preferencesDataStore(name = USER_DATASTORE_NAME)
+    private val Context.balanceGameDataStore: DataStore<Preferences> by preferencesDataStore(name = BALANCE_GAME_DATASTORE_NAME)
 
     @Provides
     @Singleton
@@ -35,4 +37,11 @@ object DataStoreModule {
     fun providesUserDataStore(
         @ApplicationContext context: Context,
     ): DataStore<Preferences> = context.userDataStore
+
+    @Provides
+    @Singleton
+    @Named("balance_game")
+    fun providesBalanceGameDataStore(
+        @ApplicationContext context: Context,
+    ): DataStore<Preferences> = context.balanceGameDataStore
 }

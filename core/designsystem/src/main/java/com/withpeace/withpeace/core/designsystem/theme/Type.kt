@@ -181,4 +181,10 @@ data class WithPeaceTypography(
         lineHeight = 21.sp,
         letterSpacing = 0.16.sp,
     ),
+    val medium16LineHeight20: TextStyle = TextStyle(
+        fontFamily = PretendardFont,
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp,
+        lineHeight = 20.sp,
+    ),
 )

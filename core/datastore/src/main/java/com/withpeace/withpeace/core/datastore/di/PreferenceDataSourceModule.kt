@@ -1,5 +1,7 @@
 package com.withpeace.withpeace.core.datastore.di
 
+import com.withpeace.withpeace.core.datastore.dataStore.balancegame.BalanceGameDataStore
+import com.withpeace.withpeace.core.datastore.dataStore.balancegame.DefaultBalanceGameDataStore
 import com.withpeace.withpeace.core.datastore.dataStore.token.DefaultTokenPreferenceDataSource
 import com.withpeace.withpeace.core.datastore.dataStore.token.TokenPreferenceDataSource
 import com.withpeace.withpeace.core.datastore.dataStore.user.DefaultUserPreferenceDataSource
@@ -25,4 +27,10 @@ interface PreferenceDataSourceModule {
     fun bindsUserPreferenceDataSource(
         defaultUserPreferenceDataSource: DefaultUserPreferenceDataSource,
     ): UserPreferenceDataSource
+
+    @Binds
+    @Singleton
+    fun bindsBalanceGamePreferenceDataSource(
+        defaultBalanceGameDataStore: DefaultBalanceGameDataStore
+    ): BalanceGameDataStore
 }

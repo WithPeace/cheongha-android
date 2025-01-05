@@ -52,6 +52,8 @@ import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.KeyboardAware
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.ui.DateUiModel
+import com.withpeace.withpeace.core.ui.comment.CommentSection
+import com.withpeace.withpeace.core.ui.comment.RegisterCommentSection
 import com.withpeace.withpeace.core.ui.post.CommentUiModel
 import com.withpeace.withpeace.core.ui.post.CommentUserUiModel
 import com.withpeace.withpeace.core.ui.post.PostDetailUiModel
@@ -525,9 +527,11 @@ fun ReportTypeItem(
     }
     val title = if (isPostReport) reportTypeUiModel.postTitle else reportTypeUiModel.commentTitle
     Column(
-        modifier = modifier.clickable {
-            showReportDialog = true
-        }.padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
+        modifier = modifier
+            .clickable {
+                showReportDialog = true
+            }
+            .padding(horizontal = WithpeaceTheme.padding.BasicHorizontalPadding),
     ) {
         Text(
             text = title,
@@ -648,3 +652,4 @@ private fun PostDetailScreenPreview() {
         )
     }
 }
+//TODO 하단 댓글창 및 댓글 창 밸런스 게임 선택
