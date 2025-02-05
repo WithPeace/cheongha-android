@@ -16,7 +16,7 @@ interface BalanceGameRepository {
     ): Flow<List<BalanceGame>>
 
     fun selectBalanceGame(
-        gameId: String,
+        gameId: Long,
         selection: String,
         onError: (CheonghaError) -> Unit,
     ): Flow<Unit>

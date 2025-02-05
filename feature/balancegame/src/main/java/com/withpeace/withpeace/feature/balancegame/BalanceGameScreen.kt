@@ -93,6 +93,8 @@ fun BalanceGameRoute(
         onClickAfterDay = viewModel::onClickAfterDay,
         uiState = uiState.value,
         pagerState = pagerState,
+        onSelectA = viewModel::onSelectA,
+        onSelectB = viewModel::onSelectB,
     )
 }
 
@@ -104,6 +106,8 @@ fun BalanceGameScreen(
     onClickBackButton: () -> Unit,
     onClickBeforeDay: () -> Unit,
     onClickAfterDay: () -> Unit,
+    onSelectA: (BalanceGameUiModel) -> Unit,
+    onSelectB: (BalanceGameUiModel) -> Unit,
 ) {
     Scaffold(
         modifier = modifier
@@ -212,63 +216,7 @@ fun BalanceGameScreen(
                                 Spacer(modifier = modifier.height(32.dp))
                                 // isActive && selectedStatus == null & isToday
                                 //
-                                Box(
-                                    modifier = modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 24.dp),
-                                ) {
-                                    Column(
-                                        modifier
-                                            .fillMaxWidth()
-                                            .border(
-                                                width = 1.dp,
-                                                color = WithpeaceTheme.colors.MainPurple,
-                                                shape = RoundedCornerShape(16.dp),
-                                            )
-                                            .align(Alignment.BottomCenter),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                    ) {
-                                        Spacer(modifier = modifier.height(28.dp))
-                                        Text(
-                                            balanceGame[it].optionA,
-                                            style = WithpeaceTheme.typography.body,
-                                            color = WithpeaceTheme.colors.SnackbarBlack,
-                                        )
-                                        Spacer(modifier = modifier.height(20.dp))
-                                        Row(
-                                            modifier.padding(start = 28.dp, end = 24.dp),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                        ) {
-                                            LinearProgressIndicator(
-                                                gapSize = (-10).dp, // 갭을 -2이하로 안할시 진행도와 남은 track이 분리되어 보임
-                                                strokeCap = StrokeCap.Round,
-                                                trackColor = Color(0xffd9d9d9),
-                                                drawStopIndicator = {},
-                                                color = WithpeaceTheme.colors.MainPurple,
-                                                progress = { balanceGame[it].percentageOptionA.toFloat() / 100 },
-                                            )
-                                            Spacer(modifier.width(6.dp))
-                                            Text(
-                                                balanceGame[it].percentageOptionA.toString() + "%",
-                                                style = WithpeaceTheme.typography.Tag,
-                                                color = WithpeaceTheme.colors.SystemGray1,
-                                            )
-                                        }
-                                        Spacer(modifier = modifier.height(20.dp))
-                                    }
-                                    Image(
-                                        painter = painterResource(R.drawable.ic_a),
-                                        modifier = modifier
-                                            .offset((-7).dp, (-5).dp)
-                                            .align(Alignment.TopStart)
-                                            .background(
-                                                shape = CircleShape,
-                                                color = WithpeaceTheme.colors.MainPurple,
-                                            )
-                                            .padding(horizontal = 8.3.dp, vertical = 7.7.dp),
-                                        contentDescription = "a 선택",
-                                    )
-                                }
+                                GameA(modifier, onSelectA, balanceGame[it])
                                 Spacer(modifier = modifier.height(16.dp))
                                 Text(
                                     text = "VS",
@@ -276,63 +224,11 @@ fun BalanceGameScreen(
                                     color = WithpeaceTheme.colors.MainPurple,
                                 )
                                 Spacer(modifier = modifier.height(16.dp))
-                                Box(
-                                    modifier = modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 24.dp),
-                                ) {
-                                    Column(
-                                        modifier
-                                            .fillMaxWidth()
-                                            .border(
-                                                width = 1.dp,
-                                                color = WithpeaceTheme.colors.MainPurple,
-                                                shape = RoundedCornerShape(16.dp),
-                                            )
-                                            .align(Alignment.BottomCenter),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                    ) {
-                                        Spacer(modifier = modifier.height(28.dp))
-                                        Text(
-                                            balanceGame[it].optionB,
-                                            style = WithpeaceTheme.typography.body,
-                                            color = WithpeaceTheme.colors.SnackbarBlack,
-                                        )
-                                        Spacer(modifier = modifier.height(20.dp))
-                                        Row(
-                                            modifier.padding(start = 28.dp, end = 24.dp),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                        ) {
-                                            LinearProgressIndicator(
-                                                gapSize = (-10).dp, // 갭을 -2이하로 안할시 진행도와 남은 track이 분리되어 보임
-                                                strokeCap = StrokeCap.Round,
-                                                trackColor = Color(0xffd9d9d9),
-                                                drawStopIndicator = {},
-                                                color = WithpeaceTheme.colors.MainPurple,
-                                                progress = { balanceGame[it].percentageOptionB.toFloat() / 100 },
-                                            )
-                                            Spacer(modifier.width(6.dp))
-                                            Text(
-                                                balanceGame[it].percentageOptionB.toString() + "%",
-                                                style = WithpeaceTheme.typography.Tag,
-                                                color = WithpeaceTheme.colors.SystemGray1,
-                                            )
-                                        }
-                                        Spacer(modifier = modifier.height(20.dp))
-                                    }
-                                    Image(
-                                        painter = painterResource(R.drawable.ic_b),
-                                        modifier = modifier
-                                            .offset((-7).dp, (-5).dp)
-                                            .align(Alignment.TopStart)
-                                            .background(
-                                                shape = CircleShape,
-                                                color = WithpeaceTheme.colors.MainPurple,
-                                            )
-                                            .padding(horizontal = 9.0.dp, vertical = 7.7.dp),
-                                        contentDescription = "b 선택",
-                                    )
-                                }
+                                GameB(
+                                    modifier = modifier,
+                                    onSelectB = onSelectB,
+                                    balanceGame = balanceGame[it],
+                                )
                                 Spacer(modifier = modifier.height(12.dp))
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
@@ -407,6 +303,352 @@ fun BalanceGameScreen(
 }
 
 @Composable
+private fun GameA(
+    modifier: Modifier,
+    onSelectA: (BalanceGameUiModel) -> Unit,
+    balanceGame: BalanceGameUiModel,
+) {
+    if (balanceGame.date.contains("오늘의") && balanceGame.userChoice == null) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .background(Color(color = 0xFFF9FBFB))
+                .padding(horizontal = 24.dp)
+                .clickable {
+                    onSelectA(balanceGame)
+                },
+        ) {
+            Column(
+                modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Spacer(modifier = modifier.height(28.dp))
+                Text(
+                    balanceGame.optionA,
+                    style = WithpeaceTheme.typography.body,
+                    color = WithpeaceTheme.colors.SnackbarBlack,
+                )
+                Spacer(modifier = modifier.height(20.dp))
+                Row(
+                    modifier.padding(start = 28.dp, end = 24.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    LinearProgressIndicator(
+                        gapSize = (-10).dp, // 갭을 -2이하로 안할시 진행도와 남은 track이 분리되어 보임
+                        strokeCap = StrokeCap.Round,
+                        trackColor = Color(0xffd9d9d9),
+                        drawStopIndicator = {},
+                        color = WithpeaceTheme.colors.MainPurple,
+                        progress = { balanceGame.percentageOptionA.toFloat() / 100 },
+                    )
+                    Spacer(modifier.width(6.dp))
+                    Text(
+                        balanceGame.percentageOptionA.toString() + "%",
+                        style = WithpeaceTheme.typography.Tag,
+                        color = WithpeaceTheme.colors.SystemGray1,
+                    )
+                }
+                Spacer(modifier = modifier.height(20.dp))
+            }
+            Image(
+                painter = painterResource(R.drawable.ic_a),
+                modifier = modifier
+                    .offset((-7).dp, (-5).dp)
+                    .align(Alignment.TopStart)
+                    .background(
+                        shape = CircleShape,
+                        color = WithpeaceTheme.colors.SystemGray2,
+                    )
+                    .padding(horizontal = 8.3.dp, vertical = 7.7.dp),
+                contentDescription = "a 선택",
+            )
+        }
+    } else {
+        Box(
+            modifier = if (balanceGame.userChoice == "OPTION_A" ||
+                (balanceGame.userChoice == null
+                    && balanceGame.percentageOptionA > balanceGame.percentageOptionB
+                    && !balanceGame.date.contains(
+                    "오늘의",
+                ))
+            ) modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .background(
+                    WithpeaceTheme.colors.SystemWhite,
+                )
+                .clickable {
+                    onSelectA(balanceGame)
+                } else modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .background(
+                    shape = RoundedCornerShape(16.dp),
+                    color = WithpeaceTheme.colors.SystemGray3,
+                )
+                .clickable {
+                    onSelectA(balanceGame)
+                },
+        ) {
+            Column(
+                modifier = if (balanceGame.userChoice == "OPTION_A" ||
+                    (balanceGame.userChoice == null
+                        && balanceGame.percentageOptionA > balanceGame.percentageOptionB
+                        && !balanceGame.date.contains(
+                        "오늘의",
+                    ))
+                ) modifier
+                    .fillMaxWidth()
+                    .border(
+                        width = 1.dp,
+                        color = WithpeaceTheme.colors.MainPurple,
+                        shape = RoundedCornerShape(16.dp),
+                    )
+                    .align(Alignment.BottomCenter)
+                else modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Spacer(modifier = modifier.height(28.dp))
+                Text(
+                    balanceGame.optionA,
+                    style = WithpeaceTheme.typography.body,
+                    color = WithpeaceTheme.colors.SnackbarBlack,
+                )
+                Spacer(modifier = modifier.height(20.dp))
+                Row(
+                    modifier.padding(start = 28.dp, end = 24.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    LinearProgressIndicator(
+                        gapSize = (-10).dp, // 갭을 -2이하로 안할시 진행도와 남은 track이 분리되어 보임
+                        strokeCap = StrokeCap.Round,
+                        trackColor = Color(0xffd9d9d9),
+                        drawStopIndicator = {},
+                        color = if (balanceGame.userChoice == "OPTION_A" ||
+                            (balanceGame.userChoice == null
+                                && balanceGame.percentageOptionA > balanceGame.percentageOptionB
+                                && !balanceGame.date.contains(
+                                "오늘의",
+                            ))
+                        ) WithpeaceTheme.colors.MainPurple else WithpeaceTheme.colors.SystemGray2,
+                        progress = { balanceGame.percentageOptionA.toFloat() / 100 },
+                    )
+                    Spacer(modifier.width(6.dp))
+                    Text(
+                        balanceGame.percentageOptionA.toString() + "%",
+                        style = WithpeaceTheme.typography.Tag,
+                        color = WithpeaceTheme.colors.SystemGray1,
+                    )
+                }
+                Spacer(modifier = modifier.height(20.dp))
+            }
+            if (balanceGame.userChoice == "OPTION_A") {
+                Image(
+                    painter =
+                    painterResource(R.drawable.ic_balance_game_selection),
+                    modifier = modifier
+                        .offset((-7).dp, (-5).dp)
+                        .align(Alignment.TopStart),
+                    contentDescription = "a 선택",
+                )
+            } else {
+                Image(
+                    painter =
+                    painterResource(R.drawable.ic_a),
+                    modifier = modifier
+                        .offset((-7).dp, (-5).dp)
+                        .align(Alignment.TopStart)
+                        .background(
+                            shape = CircleShape,
+                            color = if (balanceGame.percentageOptionA > balanceGame.percentageOptionB) WithpeaceTheme.colors.MainPurple else WithpeaceTheme.colors.SystemGray2, // 사람들이 a를 더 많이 선택했으면, 안했으면
+                        )
+                        .padding(horizontal = 8.3.dp, vertical = 7.7.dp),
+                    contentDescription = "a 선택",
+                )
+            }
+
+        }
+    }
+}
+
+@Composable
+private fun GameB(
+    modifier: Modifier,
+    onSelectB: (BalanceGameUiModel) -> Unit,
+    balanceGame: BalanceGameUiModel,
+) {
+    if (balanceGame.date.contains("오늘의") && balanceGame.userChoice == null) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .background(Color(color = 0xFFF9FBFB))
+                .padding(horizontal = 24.dp)
+                .clickable {
+                    onSelectB(balanceGame)
+                },
+        ) {
+            Column(
+                modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Spacer(modifier = modifier.height(28.dp))
+                Text(
+                    balanceGame.optionB,
+                    style = WithpeaceTheme.typography.body,
+                    color = WithpeaceTheme.colors.SnackbarBlack,
+                )
+                Spacer(modifier = modifier.height(20.dp))
+                Row(
+                    modifier.padding(start = 28.dp, end = 24.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    LinearProgressIndicator(
+                        gapSize = (-10).dp, // 갭을 -2이하로 안할시 진행도와 남은 track이 분리되어 보임
+                        strokeCap = StrokeCap.Round,
+                        trackColor = Color(0xffd9d9d9),
+                        drawStopIndicator = {},
+                        color = WithpeaceTheme.colors.MainPurple,
+                        progress = { balanceGame.percentageOptionB.toFloat() / 100 },
+                    )
+                    Spacer(modifier.width(6.dp))
+                    Text(
+                        balanceGame.percentageOptionB.toString() + "%",
+                        style = WithpeaceTheme.typography.Tag,
+                        color = WithpeaceTheme.colors.SystemGray1,
+                    )
+                }
+                Spacer(modifier = modifier.height(20.dp))
+            }
+            Image(
+                painter = painterResource(R.drawable.ic_b),
+                modifier = modifier
+                    .offset((-7).dp, (-5).dp)
+                    .align(Alignment.TopStart)
+                    .background(
+                        shape = CircleShape,
+                        color = WithpeaceTheme.colors.SystemGray2,
+                    )
+                    .padding(horizontal = 9.0.dp, vertical = 7.7.dp),
+                contentDescription = "b 선택",
+            )
+        }
+    } else {
+        Box(
+            modifier = if (balanceGame.userChoice == "OPTION_B" ||
+                (balanceGame.userChoice == null
+                    && balanceGame.percentageOptionA < balanceGame.percentageOptionB
+                    && !balanceGame.date.contains(
+                    "오늘의",
+                ))
+            ) modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .background(
+                    WithpeaceTheme.colors.SystemWhite,
+                )
+                .clickable {
+                    onSelectB(balanceGame)
+                } else modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .background(
+                    shape = RoundedCornerShape(16.dp),
+                    color = WithpeaceTheme.colors.SystemGray3,
+                )
+                .clickable {
+                    onSelectB(balanceGame)
+                },
+        ) {
+            Column(
+                modifier = if (balanceGame.userChoice == "OPTION_B" ||
+                    (balanceGame.userChoice == null
+                        && balanceGame.percentageOptionA < balanceGame.percentageOptionB
+                        && !balanceGame.date.contains(
+                        "오늘의",
+                    ))
+                ) modifier
+                    .fillMaxWidth()
+                    .border(
+                        width = 1.dp,
+                        color = WithpeaceTheme.colors.MainPurple,
+                        shape = RoundedCornerShape(16.dp),
+                    )
+                    .align(Alignment.BottomCenter)
+                else modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Spacer(modifier = modifier.height(28.dp))
+                Text(
+                    balanceGame.optionB,
+                    style = WithpeaceTheme.typography.body,
+                    color = WithpeaceTheme.colors.SnackbarBlack,
+                )
+                Spacer(modifier = modifier.height(20.dp))
+                Row(
+                    modifier.padding(start = 28.dp, end = 24.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    LinearProgressIndicator(
+                        gapSize = (-10).dp, // 갭을 -2이하로 안할시 진행도와 남은 track이 분리되어 보임
+                        strokeCap = StrokeCap.Round,
+                        trackColor = Color(0xffd9d9d9),
+                        drawStopIndicator = {},
+                        color = if (balanceGame.userChoice == "OPTION_B" ||
+                            (balanceGame.userChoice == null
+                                && balanceGame.percentageOptionA < balanceGame.percentageOptionB
+                                && !balanceGame.date.contains(
+                                "오늘의",
+                            ))
+                        ) WithpeaceTheme.colors.MainPurple else WithpeaceTheme.colors.SystemGray2,
+                        progress = { balanceGame.percentageOptionB.toFloat() / 100 },
+                    )
+                    Spacer(modifier.width(6.dp))
+                    Text(
+                        balanceGame.percentageOptionB.toString() + "%",
+                        style = WithpeaceTheme.typography.Tag,
+                        color = WithpeaceTheme.colors.SystemGray1,
+                    )
+                }
+                Spacer(modifier = modifier.height(20.dp))
+            }
+            if (balanceGame.userChoice == "OPTION_B") {
+                Image(
+                    painter =
+                    painterResource(R.drawable.ic_balance_game_selection),
+                    modifier = modifier
+                        .offset((-7).dp, (-5).dp)
+                        .align(Alignment.TopStart),
+                    contentDescription = "b 선택",
+                )
+            } else {
+                Image(
+                    painter =
+                    painterResource(R.drawable.ic_b),
+                    modifier = modifier
+                        .offset((-7).dp, (-5).dp)
+                        .align(Alignment.TopStart)
+                        .background(
+                            shape = CircleShape,
+                            color = if (balanceGame.percentageOptionA < balanceGame.percentageOptionB) WithpeaceTheme.colors.MainPurple else WithpeaceTheme.colors.SystemGray2, // 사람들이 a를 더 많이 선택했으면, 안했으면
+                        )
+                        .padding(horizontal = 8.3.dp, vertical = 7.7.dp),
+                    contentDescription = "a 선택",
+                )
+            }
+
+        }
+    }
+}
+
+@Composable
 @Preview
 fun BalanceGamePreview() {
     WithpeaceTheme {
@@ -415,7 +657,10 @@ fun BalanceGamePreview() {
             onClickBackButton = {},
             onClickBeforeDay = {},
             uiState = BalanceGameUIState.Success(listOf()),
-        ) { }
+            onSelectA = {},
+            onSelectB = {},
+            onClickAfterDay = {},
+        )
 
     }
 }

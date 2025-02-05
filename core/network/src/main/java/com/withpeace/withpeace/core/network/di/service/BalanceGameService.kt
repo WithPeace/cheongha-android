@@ -20,7 +20,7 @@ interface BalanceGameService {
 
     @POST("/api/v1/balance-games/{gameId}/choices")
     suspend fun postBalanceGame(
-        @Path("gameId") gameId: String,
+        @Path("gameId") gameId: Long,
         @Body choice: SelectBalanceGameRequest,
     ): ApiResponse<BaseResponse<SelectBalanceGameResponse>>
 }
