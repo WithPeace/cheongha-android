@@ -37,8 +37,7 @@ class BalanceGameViewModel @Inject constructor(
         fetchBalanceGame()
     }
 
-    // TODO 계산 공식 수정 및 이전 날짜 선택 막기, 에러를 repository단에서 안발생했을 수도 있음
-    fun fetchBalanceGame() {
+    private fun fetchBalanceGame() {
         viewModelScope.launch {
             getBalanceGameUseCase(
                 pageIndex = loadingAnchor,
@@ -89,7 +88,7 @@ class BalanceGameViewModel @Inject constructor(
     }
 
     fun onSelectA(balanceGameUiModel: BalanceGameUiModel) {
-        if (balanceGameUiModel.userChoice == "OPTION_A") return
+        if (balanceGameUiModel.userChoice == "OPTION_A" || !balanceGameUiModel.date.contains("오늘의")) return
 
         val aCount = balanceGameUiModel.totalCount * balanceGameUiModel.percentageOptionA / 100
         val bCount = balanceGameUiModel.totalCount - aCount
@@ -120,7 +119,7 @@ class BalanceGameViewModel @Inject constructor(
 
 
     fun onSelectB(balanceGameUiModel: BalanceGameUiModel) {
-        if (balanceGameUiModel.userChoice == "OPTION_B") return
+        if (balanceGameUiModel.userChoice == "OPTION_B" || !balanceGameUiModel.date.contains("오늘의")) return
 
         val aCount = balanceGameUiModel.totalCount * balanceGameUiModel.percentageOptionA / 100
         val bCount = balanceGameUiModel.totalCount - aCount
