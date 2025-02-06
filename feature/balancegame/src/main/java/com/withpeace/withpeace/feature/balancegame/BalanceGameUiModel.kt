@@ -2,6 +2,8 @@ package com.withpeace.withpeace.feature.balancegame
 
 import com.withpeace.withpeace.core.domain.model.balancegame.BalanceGame
 import com.withpeace.withpeace.core.domain.model.balancegame.BalanceGameComment
+import com.withpeace.withpeace.core.ui.DateUiModel
+import com.withpeace.withpeace.core.ui.toUiModel
 
 data class BalanceGameUiModel(
     val gameId: Long,
@@ -26,10 +28,11 @@ data class Comment(
     val profileImageUrl: String,
     val content: String,
     val userChoice: String?,
-    val createDate: String,
+    val createDate: DateUiModel,
+    val isMyComment: Boolean,
 )
 
-fun BalanceGame.toUIModel(): BalanceGameUiModel {
+fun BalanceGame.toUIModel(currentUserId: Long): BalanceGameUiModel {
     return BalanceGameUiModel(
         gameId = id,
         date = date,
@@ -43,11 +46,11 @@ fun BalanceGame.toUIModel(): BalanceGameUiModel {
         hasPrevious = hasPrevious,
         totalCount = (optionACount + optionBCount).toInt(),
         commentCount = comments.size,
-        comments = comments.map { it.toUiModel() },
+        comments = comments.map { it.toUiModel(currentUserId) },
     )
 }
 
-fun BalanceGameComment.toUiModel(): Comment {
+fun BalanceGameComment.toUiModel(currentUserId: Long): Comment {
     return Comment(
         commentId = id,
         userId = userId,
@@ -55,6 +58,9 @@ fun BalanceGameComment.toUiModel(): Comment {
         profileImageUrl = profileImageUrl,
         content = content,
         userChoice = userChoice,
-        createDate = createDate,
+        createDate = createDate.toUiModel(),
+        isMyComment = currentUserId==userId,
     )
 }
+
+//TODO 맵핑 수정, 신고

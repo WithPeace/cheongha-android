@@ -2,8 +2,10 @@ package com.withpeace.withpeace.core.data.mapper
 
 import com.withpeace.withpeace.core.domain.model.balancegame.BalanceGame
 import com.withpeace.withpeace.core.domain.model.balancegame.BalanceGameComment
+import com.withpeace.withpeace.core.domain.model.date.Date
 import com.withpeace.withpeace.core.network.di.response.BalanceGameCommentEntity
 import com.withpeace.withpeace.core.network.di.response.GameEntity
+import java.time.LocalDateTime
 
 fun GameEntity.toDomain(): BalanceGame {
     return BalanceGame(
@@ -30,6 +32,6 @@ fun BalanceGameCommentEntity.toDomain(): BalanceGameComment {
         profileImageUrl = this.profileImageUrl,
         content = this.content,
         userChoice = this.userChoice,
-        createDate = this.createDate,
+        createDate = Date(LocalDateTime.now()) //TODO 바꿔야 함 Date(this.createDate.toLocalDateTime()),
     )
 }

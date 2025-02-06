@@ -1,5 +1,7 @@
 package com.withpeace.withpeace.core.domain.model.balancegame
 
+import com.withpeace.withpeace.core.domain.model.date.Date
+
 data class BalanceGame(
     val id: Long,
     val date: String,
@@ -36,5 +38,5 @@ data class BalanceGameComment(
     val profileImageUrl: String,
     val content: String,
     val userChoice: String?,
-    val createDate: String,
+    val createDate: Date,
 )

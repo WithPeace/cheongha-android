@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -39,13 +41,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
-import com.withpeace.withpeace.core.ui.DateUiModel
-import com.withpeace.withpeace.core.ui.comment.CommentSection
 import com.withpeace.withpeace.core.ui.comment.CommentSize
 import com.withpeace.withpeace.core.ui.comment.RegisterCommentSection
-import com.withpeace.withpeace.core.ui.post.CommentUiModel
-import com.withpeace.withpeace.core.ui.post.CommentUserUiModel
-import java.time.LocalDateTime
+import com.withpeace.withpeace.core.ui.post.ReportTypeUiModel
+import com.withpeace.withpeace.feature.balancegame.comment.CommentSection
 
 @Composable
 fun BalanceGameRoute(
@@ -59,6 +58,8 @@ fun BalanceGameRoute(
     val pagerState = rememberPagerState(
         pageCount = { (uiState.value as? BalanceGameUIState.Success)?.games?.size ?: 0 },
     )
+    val comment = viewModel.commentText.collectAsStateWithLifecycle()
+    val lazyListState = rememberLazyListState()
 
     LaunchedEffect(uiState.value) {
         // rememberPagerState
@@ -70,9 +71,6 @@ fun BalanceGameRoute(
     LaunchedEffect(viewModel.uiEvent) {
         viewModel.uiEvent.collect {
             when (it) {
-                //TODO 1. 밸런스 게임 선택기능
-                // 클릭했을 때
-                // 2. 댓글 기능
                 BalanceGameUiEvent.NextPage -> {
                     if (uiState.value is BalanceGameUIState.Success) {
                         pagerState.animateScrollToPage(page = pagerState.currentPage + 1)
@@ -84,10 +82,25 @@ fun BalanceGameRoute(
                         pagerState.animateScrollToPage(page = pagerState.currentPage - 1)
                     }
                 }
+                BalanceGameUiEvent.RegisterCommentFailure -> {
+                    onShowSnackBar("댓글 등록 실패하였습니다")
+                }
+
+                BalanceGameUiEvent.RegisterCommentSuccess -> {
+                    lazyListState.fullAnimatedScroll()
+                }
+
+                BalanceGameUiEvent.ReportCommentFailure -> onShowSnackBar("신고에 실패하였습니다")
+                BalanceGameUiEvent.ReportCommentSuccess -> onShowSnackBar("신고 되었습니다")
+                BalanceGameUiEvent.UnAuthorized -> {}
+                BalanceGameUiEvent.ReportCommentDuplicated -> {
+                    onShowSnackBar("이미 신고한 댓글입니다.")
+                }
             }
         }
     }
     BalanceGameScreen(
+        lazyListState = lazyListState,
         onClickBackButton = onClickBackButton,
         onClickBeforeDay = viewModel::onClickBeforeDay,
         onClickAfterDay = viewModel::onClickAfterDay,
@@ -95,12 +108,17 @@ fun BalanceGameRoute(
         pagerState = pagerState,
         onSelectA = viewModel::onSelectA,
         onSelectB = viewModel::onSelectB,
+        onClickRegisterButton = viewModel::onClickCommentRegister,
+        onTextChanged = viewModel::onCommentTextChanged,
+        onReportComment = viewModel::reportComment,
+        comment = comment.value,
     )
 }
 
 @Composable
 fun BalanceGameScreen(
     modifier: Modifier = Modifier,
+    lazyListState: LazyListState,
     uiState: BalanceGameUIState,
     pagerState: PagerState,
     onClickBackButton: () -> Unit,
@@ -108,6 +126,10 @@ fun BalanceGameScreen(
     onClickAfterDay: () -> Unit,
     onSelectA: (BalanceGameUiModel) -> Unit,
     onSelectB: (BalanceGameUiModel) -> Unit,
+    onClickRegisterButton: () -> Unit,
+    onTextChanged: (String) -> Unit,
+    onReportComment: (Long, ReportTypeUiModel) -> Unit,
+    comment: String,
 ) {
     Scaffold(
         modifier = modifier
@@ -115,7 +137,11 @@ fun BalanceGameScreen(
             .background(WithpeaceTheme.colors.SystemWhite),
         bottomBar = {
             Column(modifier = modifier.background(color = WithpeaceTheme.colors.SystemWhite)) {
-                RegisterCommentSection()
+                RegisterCommentSection(
+                    onClickRegisterButton = onClickRegisterButton,
+                    onTextChanged = onTextChanged,
+                    text = comment,
+                )
             }
 
         },
@@ -153,10 +179,12 @@ fun BalanceGameScreen(
                 HorizontalPager(
                     userScrollEnabled = false,
                     modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically,
                     state = pagerState,
                 ) {
-                    LazyColumn {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        state = lazyListState,
+                    ) {
                         item {
                             Column(
                                 modifier = modifier.fillMaxWidth(),
@@ -249,7 +277,10 @@ fun BalanceGameScreen(
                                     )
                                 }
                                 Spacer(modifier = modifier.height(8.dp))
-                                CommentSize(modifier.fillMaxWidth(), commentSize = 5)
+                                CommentSize(
+                                    modifier.fillMaxWidth(),
+                                    commentSize = balanceGame[it].commentCount,
+                                )
                                 Spacer(modifier = modifier.height(8.dp))
                                 HorizontalDivider(
                                     thickness = 4.dp,
@@ -258,21 +289,11 @@ fun BalanceGameScreen(
                             }
                         }
                         CommentSection(
-                            comments = List(5) {
-                                CommentUiModel(
-                                    id = it.toLong(),
-                                    content = "가나다",
-                                    createDate = DateUiModel(LocalDateTime.now()),
-                                    commentUser = CommentUserUiModel(
-                                        id = it.toLong(),
-                                        nickname = "청하다",
-                                        profileImageUrl = "",
-                                    ),
-                                    isMyComment = false,
-                                )
+                            comments = balanceGame[it].comments,
+                            onReportComment = { id, reportType ->
+                                onReportComment(id, reportType)
                             },
-                            onReportComment = { _, _ -> },
-                        )
+                        ) //TODO 댓글 달기, 신고하기 API 연동
                     }
                 }
             }
@@ -643,9 +664,14 @@ private fun GameB(
                     contentDescription = "a 선택",
                 )
             }
-
         }
     }
+}
+
+private suspend fun LazyListState.fullAnimatedScroll() {
+    val maxIndex = Integer.MAX_VALUE
+    val maxOffset = Integer.MAX_VALUE
+    animateScrollToItem(maxIndex, maxOffset)
 }
 
 @Composable
@@ -653,6 +679,7 @@ private fun GameB(
 fun BalanceGamePreview() {
     WithpeaceTheme {
         BalanceGameScreen(
+            lazyListState = rememberLazyListState(),
             pagerState = PagerState { 0 },
             onClickBackButton = {},
             onClickBeforeDay = {},
@@ -660,6 +687,10 @@ fun BalanceGamePreview() {
             onSelectA = {},
             onSelectB = {},
             onClickAfterDay = {},
+            onClickRegisterButton = {},
+            onTextChanged = {},
+            onReportComment = { _, _ -> },
+            comment = "",
         )
 
     }

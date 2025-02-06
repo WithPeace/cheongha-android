@@ -1,14 +1,27 @@
 package com.withpeace.withpeace.feature.balancegame
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.withpeace.withpeace.core.domain.model.balancegame.BalanceGame
+import com.withpeace.withpeace.core.domain.model.error.ClientError
+import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.usecase.GetBalanceGameUseCase
+import com.withpeace.withpeace.core.domain.usecase.GetCurrentUserIdUseCase
+import com.withpeace.withpeace.core.domain.usecase.RegisterCommentUseCase
+import com.withpeace.withpeace.core.domain.usecase.ReportCommentUseCase
 import com.withpeace.withpeace.core.domain.usecase.SelectBalanceGameUseCase
+import com.withpeace.withpeace.core.ui.post.CommentUiModel
+import com.withpeace.withpeace.core.ui.post.ReportTypeUiModel
+import com.withpeace.withpeace.core.ui.post.toDomain
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -18,6 +31,9 @@ import javax.inject.Inject
 class BalanceGameViewModel @Inject constructor(
     private val getBalanceGameUseCase: GetBalanceGameUseCase,
     private val selectBalanceGameUseCase: SelectBalanceGameUseCase,
+    private val currentUserIdUseCase: GetCurrentUserIdUseCase,
+    private val registerCommentUseCase: RegisterCommentUseCase,
+    private val reportCommentUseCase: ReportCommentUseCase,
 ) : ViewModel() {
     private val _currentPage = MutableStateFlow<Int>(0)
     val currentPage = _currentPage.asStateFlow()
@@ -33,6 +49,12 @@ class BalanceGameViewModel @Inject constructor(
 
     private val lastGamesSelectionCache = mutableListOf<BalanceGame>()
 
+    private val _commentText = MutableStateFlow("")
+    val commentText = _commentText.asStateFlow()
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
+
     init {
         fetchBalanceGame()
     }
@@ -46,12 +68,13 @@ class BalanceGameViewModel @Inject constructor(
 
                 },
             ).collect {
+                val userId = currentUserIdUseCase()
                 if (balanceGamesState.value is BalanceGameUIState.Success) {
                     _balanceGamesState.value = BalanceGameUIState.Success(
                         it.reversed()
                             .map {
                                 lastGamesSelectionCache.add(it)
-                                it.toUIModel()
+                                it.toUIModel(userId)
                             } + (balanceGamesState.value as BalanceGameUIState.Success).games,
                     )
                     _currentPage.value = it.size-1
@@ -59,7 +82,43 @@ class BalanceGameViewModel @Inject constructor(
                 } else { // 최초 로딩시에
                     _currentPage.value = it.lastIndex
                     _balanceGamesState.value =
-                        BalanceGameUIState.Success(it.reversed().map { it.toUIModel() })
+                        BalanceGameUIState.Success(it.reversed().map { it.toUIModel(userId) })
+                }
+            }
+        }
+    }
+
+    private fun fetchCommentBalanceGame(onSuccess: suspend () -> Unit) {
+        if (balanceGamesState.value is BalanceGameUIState.Success) {
+            viewModelScope.launch {
+                val currentState = balanceGamesState.value as BalanceGameUIState.Success
+                val currentIndex = currentPage.value
+                val userId = currentUserIdUseCase()
+
+                // API 호출 시 필요한 인덱스 계산 (리스트 뒤집은 순서 기준)
+                val gameIndexForApi = currentState.games.size - currentIndex - 1
+
+                getBalanceGameUseCase(
+                    pageIndex = gameIndexForApi,
+                    pageSize = 1,
+                    onError = {
+                        // 에러 처리 필요 시 작성
+                    },
+                ).collect { updatedGames ->
+                    if (updatedGames.isNotEmpty()) {
+                        val updateGame = updatedGames.last()
+                        _balanceGamesState.update { prevState ->
+                            if (prevState is BalanceGameUIState.Success) {
+                                val updatedList = prevState.games.toMutableList()
+                                updatedList[currentIndex] = updateGame.toUIModel(userId)
+                                BalanceGameUIState.Success(updatedList)
+                            } else {
+                                prevState
+                            }
+                        }
+                        // 업데이트 성공 후 onSuccess 람다 호출
+                        onSuccess()
+                    }
                 }
             }
         }
@@ -85,6 +144,10 @@ class BalanceGameViewModel @Inject constructor(
             _uiEvent.send(BalanceGameUiEvent.NextPage)
             _currentPage.value += 1
         }
+    }
+
+    fun onCommentTextChanged(input: String) {
+        _commentText.update { input }
     }
 
     fun onSelectA(balanceGameUiModel: BalanceGameUiModel) {
@@ -162,13 +225,17 @@ class BalanceGameViewModel @Inject constructor(
         }
     }
     private fun restorePreviousState(gameId: Long) {
-        _balanceGamesState.update {
-            BalanceGameUIState.Success(
-                (it as BalanceGameUIState.Success).games.map { game ->
-                    lastGamesSelectionCache.find { it.id == gameId }?.toUIModel() ?: game
-                }
-            )
+        viewModelScope.launch {
+            val userId = currentUserIdUseCase()
+            _balanceGamesState.update {
+                BalanceGameUIState.Success(
+                    (it as BalanceGameUIState.Success).games.map { game ->
+                        lastGamesSelectionCache.find { it.id == gameId }?.toUIModel(userId) ?: game
+                    },
+                )
+            }
         }
+
     }
     private fun updateLastGamesCache(gameId: Long, newData: BalanceGameUiModel) {
         lastGamesSelectionCache.map {
@@ -176,5 +243,52 @@ class BalanceGameViewModel @Inject constructor(
                 return@map newData
             } else return@map it
         }
+    }
+
+    fun onClickCommentRegister() {
+        if (commentText.value == "") return
+        registerCommentUseCase(
+            targetType = "BALANCE_GAME",
+            content = commentText.value,
+            onError = {
+                Log.d("test",it.toString())
+                when (it) {
+                    ClientError.AuthExpired -> _uiEvent.send(BalanceGameUiEvent.UnAuthorized)
+                    else -> _uiEvent.send(BalanceGameUiEvent.RegisterCommentFailure)
+                }
+            },
+            targetId = (balanceGamesState.value as BalanceGameUIState.Success).games[currentPage.value].gameId,
+        ).onStart {
+            _isLoading.update { true }
+        }.onEach {
+            fetchCommentBalanceGame {
+                _commentText.update { "" }
+                _uiEvent.send(BalanceGameUiEvent.RegisterCommentSuccess)
+            }
+        }.onCompletion {
+            _isLoading.update { false }
+        }.launchIn(viewModelScope)
+    }
+
+    fun reportComment(
+        commentId: Long,
+        reportTypeUiModel: ReportTypeUiModel,
+    ) {
+        reportCommentUseCase(
+            commentId,
+            reportTypeUiModel.toDomain(),
+            onError = {
+                when (it) {
+                    ResponseError.COMMENT_DUPLICATED_ERROR -> _uiEvent.send(BalanceGameUiEvent.ReportCommentFailure)
+                    else -> _uiEvent.send(BalanceGameUiEvent.ReportCommentFailure)
+                }
+            },
+        ).onStart {
+            _isLoading.update { true }
+        }.onEach {
+            _uiEvent.send(BalanceGameUiEvent.ReportCommentSuccess)
+        }.onCompletion {
+            _isLoading.update { false }
+        }.launchIn(viewModelScope)
     }
 }
