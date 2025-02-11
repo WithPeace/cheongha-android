@@ -2,6 +2,8 @@ package com.withpeace.withpeace.core.network.di.di
 
 import com.withpeace.withpeace.core.network.di.service.AppUpdateService
 import com.withpeace.withpeace.core.network.di.service.AuthService
+import com.withpeace.withpeace.core.network.di.service.BalanceGameService
+import com.withpeace.withpeace.core.network.di.service.CommentService
 import com.withpeace.withpeace.core.network.di.service.PostService
 import com.withpeace.withpeace.core.network.di.service.UserService
 import com.withpeace.withpeace.core.network.di.service.YouthPolicyService
@@ -41,4 +43,14 @@ object ServiceModule {
     @Singleton
     fun providesYouthPolicyService(@Named("general") retrofit: Retrofit): YouthPolicyService =
         retrofit.create(YouthPolicyService::class.java)
+
+    @Provides
+    @Singleton
+    fun providesBalanceGameService(@Named("general") retrofit: Retrofit): BalanceGameService =
+        retrofit.create(BalanceGameService::class.java)
+
+    @Provides
+    @Singleton
+    fun providesCommentService(@Named("general") retrofit: Retrofit): CommentService =
+        retrofit.create(CommentService::class.java)
 }

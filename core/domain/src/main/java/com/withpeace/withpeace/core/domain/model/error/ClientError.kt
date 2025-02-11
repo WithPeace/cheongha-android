@@ -13,6 +13,8 @@ sealed interface ClientError : CheonghaError {
         data object NoSearchResult : SearchError
         data object SingleCharacterSearch : SearchError
     }
+
+    data object BalanceGameExpired : ClientError
 }
 
 class NoSearchResultException: IllegalStateException()

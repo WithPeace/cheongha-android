@@ -8,8 +8,8 @@ import com.withpeace.withpeace.core.domain.model.error.ResponseError
 import com.withpeace.withpeace.core.domain.usecase.DeletePostUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetCurrentUserIdUseCase
 import com.withpeace.withpeace.core.domain.usecase.GetPostDetailUseCase
-import com.withpeace.withpeace.core.domain.usecase.RegisterCommentUseCase
-import com.withpeace.withpeace.core.domain.usecase.ReportCommentUseCase
+import com.withpeace.withpeace.core.domain.usecase.RegisterPostCommentUseCase
+import com.withpeace.withpeace.core.domain.usecase.ReportPostCommentUseCase
 import com.withpeace.withpeace.core.domain.usecase.ReportPostUseCase
 import com.withpeace.withpeace.core.ui.post.ReportTypeUiModel
 import com.withpeace.withpeace.core.ui.post.toDomain
@@ -34,9 +34,9 @@ class PostDetailViewModel @Inject constructor(
     private val getPostDetailUseCase: GetPostDetailUseCase,
     private val getCurrentUserIdUseCase: GetCurrentUserIdUseCase,
     private val deletePostUseCase: DeletePostUseCase,
-    private val registerCommentUseCase: RegisterCommentUseCase,
+    private val registerPostCommentUseCase: RegisterPostCommentUseCase,
     private val reportPostUseCase: ReportPostUseCase,
-    private val reportCommentUseCase: ReportCommentUseCase,
+    private val reportPostCommentUseCase: ReportPostCommentUseCase,
 ) : ViewModel() {
 
     private val postId =
@@ -101,7 +101,7 @@ class PostDetailViewModel @Inject constructor(
 
     fun registerComment() {
         if (commentText.value == "") return
-        registerCommentUseCase(
+        registerPostCommentUseCase(
             postId = postId,
             content = commentText.value,
             onError = {
@@ -148,7 +148,7 @@ class PostDetailViewModel @Inject constructor(
         commentId: Long,
         reportTypeUiModel: ReportTypeUiModel,
     ) {
-        reportCommentUseCase(
+        reportPostCommentUseCase(
             commentId,
             reportTypeUiModel.toDomain(),
             onError = {

@@ -1,6 +1,7 @@
-package com.withpeace.withpeace.core.ui.comment
+package com.withpeace.withpeace.feature.balancegame.comment
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -43,20 +45,19 @@ import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
 import com.withpeace.withpeace.core.ui.DateUiModel
 import com.withpeace.withpeace.core.ui.R
 import com.withpeace.withpeace.core.ui.R.drawable
-import com.withpeace.withpeace.core.ui.post.CommentUiModel
-import com.withpeace.withpeace.core.ui.post.CommentUserUiModel
 import com.withpeace.withpeace.core.ui.post.ReportTypeUiModel
 import com.withpeace.withpeace.core.ui.report.PostDetailReportBottomSheet
 import com.withpeace.withpeace.core.ui.toRelativeString
+import com.withpeace.withpeace.feature.balancegame.Comment
 import java.time.LocalDateTime
 
 fun LazyListScope.CommentSection(
-    comments: List<CommentUiModel>,
+    comments: List<Comment>,
     onReportComment: (id: Long, ReportTypeUiModel) -> Unit,
 ) {
     itemsIndexed(
         items = comments,
-        key = { index, item -> item.id },
+        key = { index, item -> item.commentId },
     ) { index, comment ->
         Column(
             modifier = Modifier
@@ -80,7 +81,7 @@ fun LazyListScope.CommentSection(
 
 @Composable
 fun CommentItem(
-    comment: CommentUiModel,
+    comment: Comment,
     onReportComment: (id: Long, ReportTypeUiModel) -> Unit,
 ) {
     var showCommentBottomSheet by rememberSaveable {
@@ -98,8 +99,8 @@ fun CommentItem(
             Row(modifier = Modifier.weight(1f)) {
                 GlideImage(
                     modifier = imageModifier,
-                    imageModel = { comment.commentUser.profileImageUrl },
-                    previewPlaceholder = R.drawable.ic_chat,
+                    imageModel = { comment.profileImageUrl },
+                    previewPlaceholder = drawable.ic_chat,
                     failure = {
                         Image(
                             painterResource(id = drawable.ic_default_profile),
@@ -110,10 +111,41 @@ fun CommentItem(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Column {
-                    Text(
-                        text = comment.commentUser.nickname,
-                        style = WithpeaceTheme.typography.body,
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = comment.nickname,
+                            style = WithpeaceTheme.typography.body,
+                        )
+                        if (comment.userChoice != null) {
+                            Spacer(modifier = Modifier.width(7.dp))
+                            if (comment.userChoice == "OPTION_A") {
+                                Text(
+                                    "A 선택",
+                                    color = WithpeaceTheme.colors.SystemGray3,
+                                    style = WithpeaceTheme.typography.caption,
+                                    modifier = Modifier
+                                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                                        .background(
+                                            color = Color(0xFF61B0FF),
+                                            shape = RoundedCornerShape(10.dp),
+                                        ),
+                                )
+                            } else if(comment.userChoice == "OPTION_B") {
+                                Text(
+                                    "B 선택",
+                                    color = WithpeaceTheme.colors.SystemGray3,
+                                    style = WithpeaceTheme.typography.caption,
+                                    modifier = Modifier
+                                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                                        .background(
+                                            color = Color(0xFFFF6868),
+                                            shape = RoundedCornerShape(10.dp),
+                                        ),
+                                )
+                            }
+                        }
+                    }
+
                     Spacer(modifier = Modifier.height(7.dp))
                     Text(
                         text = comment.createDate.toRelativeString(context),
@@ -129,7 +161,7 @@ fun CommentItem(
                     modifier = Modifier.clickable {
                         showCommentBottomSheet = true
                     },
-                    painter = painterResource(id = R.drawable.ic_more),
+                    painter = painterResource(id = drawable.ic_more),
                     contentDescription = stringResource(
                         R.string.comment_menu_icon_description,
                     ),
@@ -144,7 +176,7 @@ fun CommentItem(
         if (showCommentBottomSheet) {
             CommentBottomSheet(
                 isMyComment = comment.isMyComment,
-                commentId = comment.id,
+                commentId = comment.commentId,
                 onDismissRequest = { showCommentBottomSheet = false },
                 onClickDeleteButton = { },
                 onReportComment = onReportComment,
@@ -193,7 +225,7 @@ fun CommentBottomSheet(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_delete),
+                        painter = painterResource(id = drawable.ic_delete),
                         contentDescription = stringResource(R.string.delete_icon_content_description),
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -223,7 +255,7 @@ fun CommentBottomSheet(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_complain),
+                        painter = painterResource(id = drawable.ic_complain),
                         contentDescription = stringResource(R.string.complain_icon_content_description),
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -256,12 +288,17 @@ private fun CommentSectionPreview() {
         LazyColumn {
             CommentSection(
                 comments = List(10) {
-                    CommentUiModel(
-                        it.toLong(),
-                        "안녕하세요",
-                        DateUiModel(LocalDateTime.now()),
-                        CommentUserUiModel(it.toLong(), "우석", ""),
-                        false,
+                    Comment(
+                        commentId = 3455,
+                        userId = 1755,
+                        nickname = "Reynaldo Dennis",
+                        profileImageUrl = "",
+                        content = "ut",
+                        userChoice = null,
+                        createDate = DateUiModel(
+                            date = LocalDateTime.now(),
+                        ),
+                        isMyComment = false,
                     )
                 },
                 onReportComment = { _, _ -> },

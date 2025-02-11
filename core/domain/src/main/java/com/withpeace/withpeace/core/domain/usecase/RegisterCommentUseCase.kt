@@ -1,18 +1,20 @@
 package com.withpeace.withpeace.core.domain.usecase
 
 import com.withpeace.withpeace.core.domain.model.error.CheonghaError
-import com.withpeace.withpeace.core.domain.repository.PostRepository
+import com.withpeace.withpeace.core.domain.repository.CommentRepository
 import javax.inject.Inject
 
 class RegisterCommentUseCase @Inject constructor(
-    private val postRepository: PostRepository,
+    private val commentRepository: CommentRepository,
 ) {
     operator fun invoke(
-        postId: Long,
+        targetType: String,
+        targetId: Long,
         content: String,
         onError: suspend (CheonghaError) -> Unit,
-    ) = postRepository.registerComment(
-        postId = postId,
+    ) = commentRepository.registerComment(
+        targetType = targetType,
+        targetId = targetId,
         content = content,
         onError = onError,
     )
