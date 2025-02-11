@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.withpeace.withpeace.core.designsystem.theme.WithpeaceTheme
+import com.withpeace.withpeace.core.designsystem.ui.KeyboardAware
 import com.withpeace.withpeace.core.designsystem.ui.WithPeaceBackButtonTopAppBar
 import com.withpeace.withpeace.core.ui.comment.CommentSize
 import com.withpeace.withpeace.core.ui.comment.RegisterCommentSection
@@ -52,7 +53,7 @@ fun BalanceGameRoute(
     onShowSnackBar: (String) -> Unit,
     onClickBackButton: () -> Unit,
 ) {
-
+    //TODO 내일 키보드 수정 및 배포
     val uiState = viewModel.balanceGamesState.collectAsStateWithLifecycle()
     val currentPage = viewModel.currentPage.collectAsStateWithLifecycle()
     val pagerState = rememberPagerState(
@@ -99,20 +100,23 @@ fun BalanceGameRoute(
             }
         }
     }
-    BalanceGameScreen(
-        lazyListState = lazyListState,
-        onClickBackButton = onClickBackButton,
-        onClickBeforeDay = viewModel::onClickBeforeDay,
-        onClickAfterDay = viewModel::onClickAfterDay,
-        uiState = uiState.value,
-        pagerState = pagerState,
-        onSelectA = viewModel::onSelectA,
-        onSelectB = viewModel::onSelectB,
-        onClickRegisterButton = viewModel::onClickCommentRegister,
-        onTextChanged = viewModel::onCommentTextChanged,
-        onReportComment = viewModel::reportComment,
-        comment = comment.value,
-    )
+    KeyboardAware {
+        BalanceGameScreen(
+            lazyListState = lazyListState,
+            onClickBackButton = onClickBackButton,
+            onClickBeforeDay = viewModel::onClickBeforeDay,
+            onClickAfterDay = viewModel::onClickAfterDay,
+            uiState = uiState.value,
+            pagerState = pagerState,
+            onSelectA = viewModel::onSelectA,
+            onSelectB = viewModel::onSelectB,
+            onClickRegisterButton = viewModel::onClickCommentRegister,
+            onTextChanged = viewModel::onCommentTextChanged,
+            onReportComment = viewModel::reportComment,
+            comment = comment.value,
+        )
+    }
+
 }
 
 @Composable
@@ -301,10 +305,7 @@ fun BalanceGameScreen(
         ) {
             Box(Modifier.fillMaxSize()) {
                 CircularProgressIndicator(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .fillMaxSize()
-                        .background(WithpeaceTheme.colors.SystemWhite),
+                    modifier = Modifier.align(Alignment.Center),
                     color = WithpeaceTheme.colors.MainPurple,
                 )
             }

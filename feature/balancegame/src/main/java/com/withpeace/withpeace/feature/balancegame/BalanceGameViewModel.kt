@@ -11,7 +11,6 @@ import com.withpeace.withpeace.core.domain.usecase.GetCurrentUserIdUseCase
 import com.withpeace.withpeace.core.domain.usecase.RegisterCommentUseCase
 import com.withpeace.withpeace.core.domain.usecase.ReportCommentUseCase
 import com.withpeace.withpeace.core.domain.usecase.SelectBalanceGameUseCase
-import com.withpeace.withpeace.core.ui.post.CommentUiModel
 import com.withpeace.withpeace.core.ui.post.ReportTypeUiModel
 import com.withpeace.withpeace.core.ui.post.toDomain
 import dagger.hilt.android.lifecycle.HiltViewModel

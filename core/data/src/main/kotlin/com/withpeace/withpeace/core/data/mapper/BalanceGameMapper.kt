@@ -32,6 +32,6 @@ fun BalanceGameCommentEntity.toDomain(): BalanceGameComment {
         profileImageUrl = this.profileImageUrl,
         content = this.content,
         userChoice = this.userChoice,
-        createDate = Date(LocalDateTime.now()) //TODO 바꿔야 함 Date(this.createDate.toLocalDateTime()),
+        createDate = Date(this.createDate.toLocalDateTime()),
     )
 }
