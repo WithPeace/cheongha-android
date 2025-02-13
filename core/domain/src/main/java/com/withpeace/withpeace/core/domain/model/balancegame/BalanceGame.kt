@@ -20,7 +20,7 @@ data class BalanceGame(
         if(optionACount + optionBCount == 0L) {
             return 0
         }
-        return (optionACount / (optionACount + optionBCount)).toInt()
+        return ((optionACount / (optionACount + optionBCount)) * 100).toInt()
     }
 
     fun getBPercentage(): Int {
