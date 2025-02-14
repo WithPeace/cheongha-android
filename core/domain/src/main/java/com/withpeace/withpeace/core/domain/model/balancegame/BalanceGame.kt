@@ -1,6 +1,7 @@
 package com.withpeace.withpeace.core.domain.model.balancegame
 
 import com.withpeace.withpeace.core.domain.model.date.Date
+import kotlin.math.roundToInt
 
 data class BalanceGame(
     val id: Long,
@@ -17,10 +18,12 @@ data class BalanceGame(
     val comments: List<BalanceGameComment>,
 ) {
     fun getAPercentage(): Int {
-        if(optionACount + optionBCount == 0L) {
+        val totalSum = optionACount.toDouble() + optionBCount.toDouble()
+
+        if (totalSum == 0.0) {
             return 0
         }
-        return ((optionACount / (optionACount + optionBCount)) * 100).toInt()
+        return ((optionACount.toDouble() / totalSum) * 100).roundToInt()
     }
 
     fun getBPercentage(): Int {
