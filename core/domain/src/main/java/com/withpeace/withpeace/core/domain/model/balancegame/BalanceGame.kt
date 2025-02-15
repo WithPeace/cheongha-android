@@ -19,11 +19,13 @@ data class BalanceGame(
 ) {
     fun getAPercentage(): Int {
         val totalSum = optionACount.toDouble() + optionBCount.toDouble()
-
+        if(id== 7L) {
+            println(totalSum)
+        }
         if (totalSum == 0.0) {
             return 0
         }
-        return ((optionACount.toDouble() / totalSum) * 100).roundToInt()
+        return ((optionACount*100.toDouble() / totalSum)).roundToInt()
     }
 
     fun getBPercentage(): Int {
