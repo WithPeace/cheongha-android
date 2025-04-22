@@ -50,7 +50,7 @@ import eu.wewox.textflow.TextFlowObstacleAlignment
 fun PolicyDetailRoute(
     onShowSnackBar: (message: String) -> Unit,
     onNavigationSnackbar: (message: String) -> Unit,
-    viewModel: PolicyDetailViewModel = hiltViewModel(),
+    viewModel: PolicyDetailViewModel = hiltViewModel<PolicyDetailViewModel>(),
     onClickBackButton: () -> Unit,
 ) {
     val policyDetailUiState = viewModel.policyDetailUiState.collectAsStateWithLifecycle()
@@ -268,6 +268,11 @@ fun PolicySummarySection(modifier: Modifier = Modifier, policy: YouthPolicyDetai
             title = "지원 내용",
             content = policy.applicationDetails,
         )
+        DescriptionTitleAndContent(
+            modifier = modifier,
+            title = "운영 기간",
+            content = policy.operationPeriod,
+        )
 
         Spacer(modifier = modifier.height(8.dp))
     }
@@ -289,8 +294,13 @@ fun ApplyQualificationSection(
         DescriptionTitleAndContent(modifier = modifier, title = "연령", content = policy.ageInfo)
         DescriptionTitleAndContent(
             modifier = modifier,
-            title = "거주지 및 소득",
-            content = policy.residenceAndIncome,
+            title = "거주지",
+            content = policy.residence,
+        )
+        DescriptionTitleAndContent(
+            modifier = modifier,
+            title = "소득",
+            content = policy.income,
         )
         DescriptionTitleAndContent(modifier = modifier, title = "학력", content = policy.education)
         DescriptionTitleAndContent(
@@ -380,12 +390,12 @@ fun AdditionalInfoSection(
         HyperLinkDescriptionTitleAndContent(
             modifier = modifier,
             title = "사업관련 참고 사이트 1",
-            content = policy.businessRelatedReferenceSite1,
+            content = policy.referenceSite1,
         )
         HyperLinkDescriptionTitleAndContent(
             modifier = modifier,
             title = "사업관련 참고 사이트 2",
-            content = policy.businessRelatedReferenceSite2,
+            content = policy.referenceSite2,
         )
         Spacer(modifier = modifier.height(24.dp))
     }
@@ -397,27 +407,30 @@ fun PolicyDetailPreview() {
     WithpeaceTheme {
         PolicyDetailContent(
             policy = YouthPolicyDetailUiModel(
-                id = "sociosqu",
-                title = "facilis",
-                content = "가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바가나다라마사바",
-                ageInfo = "cum",
-                applicationDetails = "지원내용들.....",
-                residenceAndIncome = "sale",
-                education = "vestibulum",
-                specialization = "mattis",
-                additionalNotes = "arcu",
-                participationRestrictions = "urna",
-                applicationProcess = "deterruisset",
-                screeningAndAnnouncement = "adolescens",
-                applicationSite = "consul",
-                submissionDocuments = "an",
+                id = "vestibulum",
+                title = "delenit",
+                content = "adipiscing",
+                ageInfo = "vocent",
                 classification = ClassificationUiModel.JOB,
-                additionalUsefulInformation = "lorem",
-                supervisingAuthority = "congue",
-                operatingOrganization = "brute",
-                businessRelatedReferenceSite1 = "noluisse",
-                businessRelatedReferenceSite2 = "quo",
-                isBookmarked = false
+                applicationDetails = "sociis",
+                applicationPeriodStatus = "epicurei",
+                operationPeriod = "animal",
+                residence = "fugit",
+                income = "ferri",
+                education = "populo",
+                specialization = "duis",
+                additionalNotes = "mel",
+                participationRestrictions = "nunc",
+                applicationProcess = "sea",
+                screeningAndAnnouncement = "ridens",
+                applicationSite = "malesuada",
+                submissionDocuments = "fuisset",
+                additionalUsefulInformation = "conceptam",
+                supervisingAuthority = "tortor",
+                operatingOrganization = "iisque",
+                referenceSite1 = "dolores",
+                referenceSite2 = "interpretaris",
+                isBookmarked = false,
             ),
             onClickBackButton = {},
             onBookmarkClick = {},

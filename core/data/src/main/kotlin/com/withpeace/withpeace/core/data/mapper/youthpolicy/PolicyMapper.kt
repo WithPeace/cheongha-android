@@ -10,7 +10,7 @@ internal fun PolicyResponse.toDomain(): YouthPolicy {
         id = id,
         title = title,
         introduce = introduce,
-        region = region.codeToRegion(),
+        region = region.firstOrNull().codeToRegion(), //TODO 추후 변경 필요
         policyClassification = classification.codeToPolicyClassification(),
         ageInfo = ageInfo,
         isBookmarked = isBookmarked,

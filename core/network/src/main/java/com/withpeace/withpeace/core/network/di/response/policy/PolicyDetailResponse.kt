@@ -10,8 +10,11 @@ data class PolicyDetailResponse(
     val introduce: String, // 정책 소개
     val classification: String, // 정책 분야
     val applicationDetails: String, // 지원 내용
+    val applicationPeriodStatus: String, // 신청기간 상태
+    val operationPeriod: String, // 운영 기간
     val ageInfo: String, // 연령
-    val residenceAndIncome: String, // 거주지 및 소득
+    val residence: String, // 거주지
+    val income: String, // 소득
     val education: String, // 학력
     val specialization: String, // 특화 분야
     val additionalNotes: String, // 추가 단서 사항
@@ -20,10 +23,10 @@ data class PolicyDetailResponse(
     val screeningAndAnnouncement: String, // 심사 및 발표
     val applicationSite: String, // 신청 사이트
     val submissionDocuments: String, // 제출 서류
-    val additionalUsefulInformation: String, // 기타 유익 정보
-    val supervisingAuthority: String, // 주관 기관
+    val etc: String, // 기타 유익 정보
+    val managingInstitution: String, // 주관 기관
     val operatingOrganization: String, // 운영 기관
-    val businessRelatedReferenceSite1: String, // 사업관련 참고 사이트 1
-    val businessRelatedReferenceSite2: String, // 사업관련 참고 사이트 2
-    @SerialName("isFavorite") val isBookmarked: Boolean,
+    val referenceSite1: String, // 참고 사이트 1
+    val referenceSite2: String, // 참고 사이트 2
+    @SerialName("isFavorite") val isBookmarked: Boolean // 찜하기 여부
 )
