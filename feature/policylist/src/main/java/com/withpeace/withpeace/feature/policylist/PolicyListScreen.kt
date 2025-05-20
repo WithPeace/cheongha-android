@@ -42,6 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -368,8 +369,10 @@ private fun YouthPolicyCard(
         ) {
             val (
                 title, content,
-                region, ageRange, thumbnail, heart,
+                region, ageRange, thumbnail, heart, dDay,
             ) = createRefs()
+
+            createVerticalChain(thumbnail, dDay, chainStyle = ChainStyle.SpreadInside)
 
             Text(
                 text = youthPolicy.title,
@@ -468,11 +471,97 @@ private fun YouthPolicyCard(
                             start.linkTo(title.end)
                             end.linkTo(parent.end)
                             top.linkTo(parent.top)
+                            bottom.linkTo(dDay.top)
                         },
                     ),
                 painter = painterResource(id = youthPolicy.classification.drawableResId),
                 contentDescription = stringResource(R.string.policy_classification_image),
             )
+            val policyApplicationPeriodStatus = youthPolicy.applicationPeriodStatus
+            if (policyApplicationPeriodStatus.contains("D-")) {
+                val period = policyApplicationPeriodStatus.substringAfter("D-").toIntOrNull() ?: 99
+                if (period <= 7) {
+                    Text(
+                        policyApplicationPeriodStatus,
+                        modifier = modifier
+                            .background(
+                                shape = RoundedCornerShape(10.dp),
+                                color = Color(0xFFFF6868),
+                            )
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                            .constrainAs(
+                                dDay,
+                                {
+                                    top.linkTo(thumbnail.bottom)
+                                    end.linkTo(parent.end)
+                                    bottom.linkTo(parent.bottom)
+                                },
+                            ),
+                        style = WithpeaceTheme.typography.Tag,
+                        color = WithpeaceTheme.colors.SystemGray3,
+                    )
+                } else if (period in 8..14) {
+                    Text(
+                        policyApplicationPeriodStatus,
+                        modifier = modifier
+                            .background(
+                                shape = RoundedCornerShape(10.dp),
+                                color = Color(0xFFFFB762),
+                            )
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                            .constrainAs(
+                                dDay,
+                                {
+                                    top.linkTo(thumbnail.bottom)
+                                    end.linkTo(parent.end)
+                                    bottom.linkTo(parent.bottom)
+                                },
+                            ),
+                        style = WithpeaceTheme.typography.Tag,
+                        color = WithpeaceTheme.colors.SystemGray3,
+                    )
+                } else {
+                    Text(
+                        policyApplicationPeriodStatus,
+                        modifier = modifier
+                            .background(
+                                shape = RoundedCornerShape(10.dp),
+                                color = Color(0xFF61B0FF),
+                            )
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                            .constrainAs(
+                                dDay,
+                                {
+                                    top.linkTo(thumbnail.bottom)
+                                    end.linkTo(parent.end)
+                                    bottom.linkTo(parent.bottom)
+                                },
+                            ),
+                        style = WithpeaceTheme.typography.Tag,
+                        color = WithpeaceTheme.colors.SystemGray3,
+                    )
+                }
+            } else {
+                Text(
+                    policyApplicationPeriodStatus,
+                    modifier = modifier
+                        .background(
+                            shape = RoundedCornerShape(10.dp),
+                            color = Color(0xFF61B0FF),
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .constrainAs(
+                            dDay,
+                            {
+                                top.linkTo(thumbnail.bottom)
+                                end.linkTo(parent.end)
+                                bottom.linkTo(parent.bottom)
+                            },
+                        ),
+                    style = WithpeaceTheme.typography.Tag,
+                    color = WithpeaceTheme.colors.SystemGray3,
+                )
+            }
         }
     }
 }
@@ -494,6 +583,7 @@ fun PolicyListPreview() {
                             ageInfo = "quo",
                             classification = ClassificationUiModel.JOB,
                             isBookmarked = false,
+                            applicationPeriodStatus = "D-7",
                         ),
                     ),
                 ),
