@@ -6,12 +6,15 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -20,7 +23,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.res.painterResource
@@ -211,11 +216,69 @@ private fun TitleSection(
         modifier = modifier.padding(horizontal = 24.dp),
     ) {
         Spacer(modifier = modifier.height(24.dp))
-        Text(
-            text = policy.title,
-            style = WithpeaceTheme.typography.title1,
-            color = WithpeaceTheme.colors.SystemBlack,
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            val policyApplicationPeriodStatus = policy.applicationPeriodStatus
+            if(policyApplicationPeriodStatus.contains("D-")) {
+                val period = policyApplicationPeriodStatus.substringAfter("D-").toIntOrNull() ?: 99
+                if(period <= 7) {
+                    Text(
+                        policyApplicationPeriodStatus,
+                        modifier = modifier
+                            .background(
+                                shape = RoundedCornerShape(10.dp),
+                                color = Color(0xFFFF6868),
+                            )
+                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                        style = WithpeaceTheme.typography.Tag,
+                        color = WithpeaceTheme.colors.SystemGray3,
+                    )
+                } else if(period in 8..14) {
+                    Text(
+                        policyApplicationPeriodStatus,
+                        modifier = modifier
+                            .background(
+                                shape = RoundedCornerShape(10.dp),
+                                color = Color(0xFFFFB762),
+                            )
+                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                        style = WithpeaceTheme.typography.Tag,
+                        color = WithpeaceTheme.colors.SystemGray3,
+                    )
+                } else {
+                    Text(
+                        policyApplicationPeriodStatus,
+                        modifier = modifier
+                            .background(
+                                shape = RoundedCornerShape(10.dp),
+                                color = Color(0xFF61B0FF),
+                            )
+                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                        style = WithpeaceTheme.typography.Tag,
+                        color = WithpeaceTheme.colors.SystemGray3,
+                    )
+                }
+            } else {
+                Text(
+                    policyApplicationPeriodStatus,
+                    modifier = modifier
+                        .background(
+                            shape = RoundedCornerShape(10.dp),
+                            color = Color(0xFF61B0FF),
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                    style = WithpeaceTheme.typography.Tag,
+                    color = WithpeaceTheme.colors.SystemGray3,
+                )
+            }
+
+            Spacer(modifier = modifier.width(8.dp))
+            Text(
+                text = policy.title,
+                style = WithpeaceTheme.typography.title1,
+                color = WithpeaceTheme.colors.SystemBlack,
+            )
+        }
+
         Spacer(
             modifier = modifier
                 .fillMaxWidth()
