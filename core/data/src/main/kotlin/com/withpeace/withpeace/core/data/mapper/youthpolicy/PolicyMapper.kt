@@ -14,6 +14,7 @@ internal fun PolicyResponse.toDomain(): YouthPolicy {
         policyClassification = classification.codeToPolicyClassification(),
         ageInfo = ageInfo,
         isBookmarked = isBookmarked,
+        applicationPeriodStatus = applicationPeriodStatus,
     )
 }
 

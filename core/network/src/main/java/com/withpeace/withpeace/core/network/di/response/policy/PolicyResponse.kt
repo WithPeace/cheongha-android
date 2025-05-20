@@ -12,4 +12,5 @@ data class PolicyResponse(
     val region: List<String>,
     val ageInfo: String,
     @SerialName("isFavorite") val isBookmarked: Boolean = false,
+    val applicationPeriodStatus: String,
 )
