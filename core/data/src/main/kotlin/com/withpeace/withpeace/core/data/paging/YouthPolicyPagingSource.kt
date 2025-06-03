@@ -1,9 +1,12 @@
 package com.withpeace.withpeace.core.data.paging
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.skydoves.sandwich.ApiResponse
-import com.withpeace.withpeace.core.data.mapper.youthpolicy.toCode
+import com.skydoves.sandwich.message
+import com.skydoves.sandwich.onFailure
+import com.withpeace.withpeace.core.data.mapper.youthpolicy.toEnglish
 import com.withpeace.withpeace.core.data.mapper.youthpolicy.toDomain
 import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import com.withpeace.withpeace.core.domain.model.error.ClientError
@@ -26,8 +29,8 @@ class YouthPolicyPagingSource(
         val response = youthPolicyService.getPolicies(
             display = params.loadSize,
             pageIndex = pageIndex,
-            region = filterInfo.regions.joinToString(",") { it.toCode() },
-            classification = filterInfo.classifications.joinToString(",") { it.toCode() },
+            region = filterInfo.regions.joinToString(",") { it.toEnglish() },
+            classification = filterInfo.classifications.joinToString(",") { it.toEnglish() },
         )
 
         if (response is ApiResponse.Success) {
@@ -38,6 +41,9 @@ class YouthPolicyPagingSource(
                 nextKey = if (successResponse.data.isEmpty()) null else pageIndex + (params.loadSize / pageSize),
             )
         } else {
+            response.onFailure {
+                Log.d("TAG12", "load: ${this.message()}")
+            }
             // 방법1 Error exception 으로 구분
             // 방법2 exception을 하단에서 방출
             return LoadResult.Error(IllegalStateException("api state error"))

@@ -13,7 +13,10 @@ data class YouthPolicyDetailUiModel(
     val classification: ClassificationUiModel,
 
     val applicationDetails: String,
-    val residenceAndIncome: String,
+    val applicationPeriodStatus: String,
+    val operationPeriod: String,
+    val residence: String,
+    val income: String,
     val education: String,
     val specialization: String,
     val additionalNotes: String,
@@ -23,12 +26,12 @@ data class YouthPolicyDetailUiModel(
     val applicationSite: String,
     val submissionDocuments: String,
 
-    //추가 정보를 확인해 보세요
+    // 추가 정보를 확인해 보세요
     val additionalUsefulInformation: String,
     val supervisingAuthority: String,
     val operatingOrganization: String,
-    val businessRelatedReferenceSite1: String,
-    val businessRelatedReferenceSite2: String,
+    val referenceSite1: String,
+    val referenceSite2: String,
 
     val isBookmarked: Boolean,
 )
@@ -42,7 +45,10 @@ fun YouthPolicyDetail.toUiModel(): YouthPolicyDetailUiModel {
         classification = classification.toUiModel(),
 
         applicationDetails = applicationDetails,
-        residenceAndIncome = residenceAndIncome,
+        applicationPeriodStatus = applicationPeriodStatus,
+        operationPeriod = operationPeriod,
+        residence = residence,
+        income = income,
         education = education,
         specialization = specialization,
         additionalNotes = additionalNotes,
@@ -51,11 +57,11 @@ fun YouthPolicyDetail.toUiModel(): YouthPolicyDetailUiModel {
         screeningAndAnnouncement = screeningAndAnnouncement,
         applicationSite = applicationSite,
         submissionDocuments = submissionDocuments,
-        additionalUsefulInformation = additionalUsefulInformation,
-        supervisingAuthority = supervisingAuthority,
+        additionalUsefulInformation = etc,
+        supervisingAuthority = managingInstitution,
         operatingOrganization = operatingOrganization,
-        businessRelatedReferenceSite1 = businessRelatedReferenceSite1,
-        businessRelatedReferenceSite2 = businessRelatedReferenceSite2,
+        referenceSite1 = referenceSite1,
+        referenceSite2 = referenceSite2,
         isBookmarked = isBookmarked,
     )
 }
@@ -69,7 +75,10 @@ fun YouthPolicyDetailUiModel.toDomain(): YouthPolicyDetail {
         classification = classification.toDomain(),
 
         applicationDetails = applicationDetails,
-        residenceAndIncome = residenceAndIncome,
+        applicationPeriodStatus = applicationPeriodStatus,
+        operationPeriod = operationPeriod,
+        residence = residence,
+        income = income,
         education = education,
         specialization = specialization,
         additionalNotes = additionalNotes,
@@ -78,11 +87,11 @@ fun YouthPolicyDetailUiModel.toDomain(): YouthPolicyDetail {
         screeningAndAnnouncement = screeningAndAnnouncement,
         applicationSite = applicationSite,
         submissionDocuments = submissionDocuments,
-        additionalUsefulInformation = additionalUsefulInformation,
-        supervisingAuthority = supervisingAuthority,
+        etc = additionalUsefulInformation,
+        managingInstitution = supervisingAuthority,
         operatingOrganization = operatingOrganization,
-        businessRelatedReferenceSite1 = businessRelatedReferenceSite1,
-        businessRelatedReferenceSite2 = businessRelatedReferenceSite2,
+        referenceSite1 = referenceSite1,
+        referenceSite2 = referenceSite2,
         isBookmarked = isBookmarked,
     )
 }

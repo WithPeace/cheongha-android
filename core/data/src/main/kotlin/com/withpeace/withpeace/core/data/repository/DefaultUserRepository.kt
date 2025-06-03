@@ -7,7 +7,7 @@ import com.withpeace.withpeace.core.analytics.AnalyticsEvent
 import com.withpeace.withpeace.core.analytics.AnalyticsHelper
 import com.withpeace.withpeace.core.data.analytics.event
 import com.withpeace.withpeace.core.data.mapper.toDomain
-import com.withpeace.withpeace.core.data.mapper.youthpolicy.toCode
+import com.withpeace.withpeace.core.data.mapper.youthpolicy.toEnglish
 import com.withpeace.withpeace.core.data.mapper.youthpolicy.toDomain
 import com.withpeace.withpeace.core.data.util.convertToFile
 import com.withpeace.withpeace.core.data.util.handleApiFailure
@@ -141,8 +141,8 @@ class DefaultUserRepository @Inject constructor(
         onError: suspend (CheonghaError) -> Unit,
     ): Flow<Unit> = flow {
         userService.patchPolicyFilter(
-            region = policyFilters.regions.joinToString(",") { it.toCode() },
-            classification = policyFilters.classifications.joinToString(",") { it.toCode() },
+            region = policyFilters.regions.joinToString(",") { it.toEnglish() },
+            classification = policyFilters.classifications.joinToString(",") { it.toEnglish() },
         ).suspendMapSuccess {
             emit(Unit)
         }.handleApiFailure(onError)

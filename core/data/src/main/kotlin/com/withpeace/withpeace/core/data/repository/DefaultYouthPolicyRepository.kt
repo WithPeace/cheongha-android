@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.skydoves.sandwich.message
+import com.skydoves.sandwich.onFailure
 import com.skydoves.sandwich.suspendMapSuccess
 import com.withpeace.withpeace.core.data.mapper.youthpolicy.toDomain
 import com.withpeace.withpeace.core.data.paging.PolicySearchPagingSource
@@ -50,6 +52,8 @@ class DefaultYouthPolicyRepository @Inject constructor(
     ): Flow<YouthPolicyDetail> = flow {
         youthPolicyService.getPolicyDetail(policyId).suspendMapSuccess {
             emit(data.toDomain())
+        }.onFailure {
+            Log.d("TAG12", "getPolicy: ${this.message()}")
         }.handleApiFailure {
             onErrorWithAuthExpired(it, onError)
         }

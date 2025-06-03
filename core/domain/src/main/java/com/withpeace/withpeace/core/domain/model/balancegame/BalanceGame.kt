@@ -19,9 +19,6 @@ data class BalanceGame(
 ) {
     fun getAPercentage(): Int {
         val totalSum = optionACount.toDouble() + optionBCount.toDouble()
-        if(id== 7L) {
-            println(totalSum)
-        }
         if (totalSum == 0.0) {
             return 0
         }

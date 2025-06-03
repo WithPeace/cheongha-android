@@ -10,6 +10,7 @@ data class YouthPolicyUiModel(
     val ageInfo: String,
     val classification: ClassificationUiModel,
     val isBookmarked: Boolean,
+    val applicationPeriodStatus: String,
 )
 
 fun YouthPolicy.toUiModel(): YouthPolicyUiModel {
@@ -21,6 +22,7 @@ fun YouthPolicy.toUiModel(): YouthPolicyUiModel {
         ageInfo = ageInfo,
         classification = policyClassification.toUiModel(),
         isBookmarked = isBookmarked,
+        applicationPeriodStatus = applicationPeriodStatus,
     )
 }
 
@@ -33,5 +35,6 @@ fun YouthPolicyUiModel.toDomain(): YouthPolicy {
         policyClassification = classification.toDomain(),
         ageInfo = ageInfo,
         isBookmarked = isBookmarked,
+        applicationPeriodStatus = applicationPeriodStatus,
     )
 }
