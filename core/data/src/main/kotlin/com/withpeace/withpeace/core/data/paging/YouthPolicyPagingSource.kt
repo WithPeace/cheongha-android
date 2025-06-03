@@ -5,9 +5,8 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.skydoves.sandwich.ApiResponse
 import com.skydoves.sandwich.message
-import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onFailure
-import com.withpeace.withpeace.core.data.mapper.youthpolicy.toCode
+import com.withpeace.withpeace.core.data.mapper.youthpolicy.toEnglish
 import com.withpeace.withpeace.core.data.mapper.youthpolicy.toDomain
 import com.withpeace.withpeace.core.domain.model.error.CheonghaError
 import com.withpeace.withpeace.core.domain.model.error.ClientError
@@ -30,8 +29,8 @@ class YouthPolicyPagingSource(
         val response = youthPolicyService.getPolicies(
             display = params.loadSize,
             pageIndex = pageIndex,
-            region = filterInfo.regions.joinToString(",") { it.toCode() },
-            classification = filterInfo.classifications.joinToString(",") { it.toCode() },
+            region = filterInfo.regions.joinToString(",") { it.toEnglish() },
+            classification = filterInfo.classifications.joinToString(",") { it.toEnglish() },
         )
 
         if (response is ApiResponse.Success) {

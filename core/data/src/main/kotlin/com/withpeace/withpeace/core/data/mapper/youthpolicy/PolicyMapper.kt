@@ -22,27 +22,27 @@ internal fun String?.codeToRegion(): PolicyRegion {
     return PolicyRegion.entries.find { it.toString() == this } ?: PolicyRegion.기타
 }
 
-internal fun PolicyRegion.toCode(): String {
+internal fun PolicyRegion.toEnglish(): String {
     return when (this) {
-        PolicyRegion.중앙부처 -> "003001"
-        PolicyRegion.서울 -> "003002001"
-        PolicyRegion.부산 -> "003002002"
-        PolicyRegion.대구 -> "003002003"
-        PolicyRegion.인천 -> "003002004"
-        PolicyRegion.광주 -> "003002005"
-        PolicyRegion.대전 -> "003002006"
-        PolicyRegion.울산 -> "003002007"
-        PolicyRegion.경기 -> "003002008"
-        PolicyRegion.강원 -> "003002009"
-        PolicyRegion.충북 -> "003002010"
-        PolicyRegion.충남 -> "003002011"
-        PolicyRegion.전북 -> "003002012"
-        PolicyRegion.전남 -> "003002013"
-        PolicyRegion.경북 -> "003002014"
-        PolicyRegion.경남 -> "003002015"
-        PolicyRegion.제주 -> "003002016"
-        PolicyRegion.세종 -> "003002017"
-        PolicyRegion.기타 -> throw IllegalStateException("찾을 수 없는 지역입니다.")
+        PolicyRegion.전국 -> "NATIONWIDE"
+        PolicyRegion.서울 -> "SEOUL"
+        PolicyRegion.부산 -> "BUSAN"
+        PolicyRegion.대구 -> "DAEGU"
+        PolicyRegion.인천 -> "INCHEON"
+        PolicyRegion.광주 -> "GWANGJU"
+        PolicyRegion.대전 -> "DAEJEON"
+        PolicyRegion.울산 -> "ULSAN"
+        PolicyRegion.경기 -> "GYEONGGI"
+        PolicyRegion.강원 -> "GANGWON"
+        PolicyRegion.충북 -> "CHUNGBUK"
+        PolicyRegion.충남 -> "CHUNGNAM"
+        PolicyRegion.전북 -> "JEONBUK"
+        PolicyRegion.전남 -> "JEONNAM"
+        PolicyRegion.경북 -> "GYEONGBUK"
+        PolicyRegion.경남 -> "GYEONGNAM"
+        PolicyRegion.제주 -> "JEJU"
+        PolicyRegion.세종 -> "SEJONG"
+        PolicyRegion.기타 -> "ETC"
     }
 }
 
@@ -50,13 +50,13 @@ internal fun String?.codeToPolicyClassification(): PolicyClassification {
     return PolicyClassification.entries.find { it.toString() == this } ?: PolicyClassification.ETC
 }
 
-internal fun PolicyClassification.toCode(): String {
+internal fun PolicyClassification.toEnglish(): String {
     return when (this) {
-        PolicyClassification.JOB -> "023010"
-        PolicyClassification.RESIDENT -> "023020"
-        PolicyClassification.EDUCATION -> "023030"
-        PolicyClassification.WELFARE_AND_CULTURE -> "023040"
-        PolicyClassification.PARTICIPATION_AND_RIGHT -> "023050"
+        PolicyClassification.JOB -> "JOB"
+        PolicyClassification.RESIDENT -> "RESIDENT"
+        PolicyClassification.EDUCATION -> "EDUCATION"
+        PolicyClassification.WELFARE_AND_CULTURE -> "WELFARE_AND_CULTURE"
+        PolicyClassification.PARTICIPATION_AND_RIGHT -> "PARTICIPATION_AND_RIGHT"
         PolicyClassification.ETC -> throw IllegalStateException("정책 분류를 찾을 수 없습니다.")
     }
 }
